@@ -3,6 +3,13 @@
 This version of the Scalexpert plugin is compatible with PHP7.4, Woocommerce 6.3.1 and WordPress 6.3. A PHP8.2 version
 is available
 
+Date: 12/02/2024
+
+Version: 1.1.0
+content: Scalexpert E-financing solutions supported : Split payment, Long credit
+
+Documentation
+
 # 1. How to install the project
 
 Download the version compatible with your Wordpress / Woocommerce installation. For security reasons, we advise you to
