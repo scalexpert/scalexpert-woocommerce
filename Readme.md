@@ -5,7 +5,7 @@ is available
 
 Date: 12/02/2024
 
-Version: 1.1.0
+Version: 1.0.0
 content: Scalexpert E-financing solutions supported : Split payment, Long credit
 
 Documentation
