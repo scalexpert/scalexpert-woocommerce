@@ -113,7 +113,18 @@ of the template you're using. The display order is
 - 1 Woocommerce template
 - 2 Woo-Scalexpert template
 - 3 Template of the Wordpress theme used
+- 4 You should not show errors in front during testing and production as this may disrupt JS and Ajax. The checkout,
+    especially the Paybuttons, will not work anymore.
 
 You'll need to use all the code embedded in these templates to display the features developed for Scalexpert.
+
+# 8.wp-config.php settings recommended for testing and production
+- ini_set( 'log_errors', TRUE ); //you tell php to log errore
+- ini_set( 'error_reporting', E_ALL & ~E_NOTICE ); //you log all errors and warnings
+- ini_set( 'error_log', dirname( __FILE__ ) . '/error_log.txt' ); //you may log errors to any filename you name here
+- define( 'WP_DEBUG', FALSE ); //you may keep this on TRUE in testing
+- define( 'WP_DEBUG_LOG', FALSE ); //you may keep this on TRUE in testing
+- define( 'WP_DEBUG_DISPLAY', FALSE ); //you should switch this to false to test all the checkout
+- @ini_set( 'display_errors', 0 ); //be sure to not show notices, warnings, errors in front to anyone
 
 Have a lot of fun
