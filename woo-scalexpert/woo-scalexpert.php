@@ -6,7 +6,7 @@
 	Description: Solutions de financement - SG Scalexpert
 	Text Domain: woo-scalexpert
 	Domain Path: /languages
-	Version: 1.0.0
+	Version: 1.0.2
 	Author: SOCIETE GENERALE
 	Author URI: https://scalexpert.societegenerale.com
 	*/
@@ -876,41 +876,47 @@
 				
 				
 			}
-			
-			/**
-			 * @param $basket
-			 *
-			 * @return void
-			 */
-			public function getBasketItems( $basket = array(), $orderID ) {
+		  
+		  /**
+			* @param $basket
+			* @param $orderID
+			*
+			* @return array
+			*/
+		  public function getBasketItems( $basket = array(), $orderID ) {
+			 
+			 
+			 $basketItems     = array();
+			 $attributesNames = get_option( 'sg_scalexpert_configurable_settings' );
+			 $attributMarque  = ( sanitize_title( $attributesNames['attrmarque'] ) ) ? sanitize_title( $attributesNames['attrmarque'] ) : "NC";
+			 $attributModel   = ( sanitize_title( $attributesNames['attrmodel'] ) ) ? sanitize_title( $attributesNames['attrmodel'] ) : "NC";
+			 
+			 foreach ( $basket as $item ) {
+				$product    = wc_get_product( $item['product_id'] );
+				$attributes = $product->get_attributes();
+				$model      = ( $attributModel != 'NC' && isset( $attributes[ $attributModel ] ) ) ? $attributes[ $attributModel ]->get_data()['value'] : 'NC';
+				$brandName  = ( $attributMarque != 'NC' && isset( $attributes[ $attributMarque ] ) ) ? $attributes[ $attributMarque ]->get_data()['value'] : 'NC';
 				
-				$basketItems     = array();
-				$attributesNames = get_option( 'sg_scalexpert_configurable_settings' );
-				$attributMarque  = sanitize_title( $attributesNames['attrmarque'] );
-				$attributModel   = sanitize_title( $attributesNames['attrmodel'] );
-				
-				foreach ( $basket as $item ) {
-					$product       = wc_get_product( $item['product_id'] );
-					$basketItem    = array(
-						"id"             => "'" . $item['product_id'] . "'",
-						"quantity"       => $item['quantity'],
-						"model"          => $product->get_attributes()[ $attributModel ]->get_data()['value'],
-						"label"          => $product->get_data()['name'],
-						"price"          => $item['line_total'],
-						"currencyCode"   => "EUR",
-						"orderId"        => "'" . $orderID . "'",
-						"brandName"      => $product->get_attributes()[ $attributMarque ]->get_data()['value'],
-						"description"    => "Puissance",//( $product->get_data()['short_description'] != "" ) ? $product->get_data()['short_description'] : "NC",
-						"specifications" => "NC",
-						"category"       => "NC",
-						"sku"            => "NC",
-						"isFinanced"     => TRUE
-					);
-					$basketItems[] = $basketItem;
-				}
-				
-				return $basketItems;
-			}
+				$basketItem    = array(
+				  "id"             => "'" . $item['product_id'] . "'",
+				  "quantity"       => $item['quantity'],
+				  "model"          => $model,
+				  "label"          => $product->get_data()['name'],
+				  "price"          => $item['line_total'],
+				  "currencyCode"   => "EUR",
+				  "orderId"        => "'" . $orderID . "'",
+				  "brandName"      => $brandName,
+				  "description"    => "NC",
+				  "specifications" => "NC",
+				  "category"       => "NC",
+				  "sku"            => "NC",
+				  "isFinanced"     => TRUE
+				);
+				$basketItems[] = $basketItem;
+			 }
+			 
+			 return $basketItems;
+		  }
 			
 			
 			/**

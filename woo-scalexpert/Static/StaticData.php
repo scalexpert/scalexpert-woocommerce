@@ -73,8 +73,8 @@
 	defined( 'SCALEXPERTGROUPEDSOLUTIONS' ) or define( 'SCALEXPERTGROUPEDSOLUTIONS', $solutionGrouped );
 	defined( 'SCALEXPERTSOLUTIONS' ) or define( 'SCALEXPERTSOLUTIONS', $financements );
 	defined( 'URL_SCALEXPERT_SG' ) or define( "URL_SCALEXPERT_SG", "https://dev.scalexpert.societegenerale.com/fr/prod/" );
-	defined( 'URLAPIPROD' ) or define( 'URLAPIPROD', 'https://api.scalexpert.societegenerale.com/baas/prod/' );
-	defined( 'URLAPIUAT' ) or define( 'URLAPIUAT', 'https://api.scalexpert.hml.societegenerale.com/baas/uat/' );
+   defined( 'URLAPIPROD' ) or define( 'URLAPIPROD', 'https://api.scalexpert.societegenerale.com/baas/prod/' );
+   defined( 'URLAPIUAT' ) or define( 'URLAPIUAT', 'https://api.scalexpert.uatc.societegenerale.com/baas/uatc/' );
 	defined( 'SCALEXPERT_ENDPOINT_AUTH' ) or define( "SCALEXPERT_ENDPOINT_AUTH", "auth-server/api/v1/oauth2/token" );
 	defined( 'SCALEXPERT_ENDPOINT_ELIGIBLE_SOLUTIONS' ) or define( "SCALEXPERT_ENDPOINT_ELIGIBLE_SOLUTIONS", "e-financing/api/v1/eligible-solutions" );
 	defined( 'SCALEXPERT_ENDPOINT_SUBSCRIPTION' ) or define( "SCALEXPERT_ENDPOINT_SUBSCRIPTION", "e-financing/api/v1/subscriptions/" );
