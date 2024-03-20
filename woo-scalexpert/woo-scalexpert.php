@@ -6,7 +6,7 @@
 	Description: Solutions de financement - SG Scalexpert
 	Text Domain: woo-scalexpert
 	Domain Path: /languages
-	Version: 1.0.2
+	Version: 1.0.3
 	Author: SOCIETE GENERALE
 	Author URI: https://scalexpert.societegenerale.com
 	*/
