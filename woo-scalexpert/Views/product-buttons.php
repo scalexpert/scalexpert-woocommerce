@@ -33,7 +33,7 @@
 		<?php if ( $DesignSolution['showlogo'] == 1 ) { ?>
 			<img class="sep_main_productsButtons-logo"
 			     src="<?= $CommunicationKit['visualLogo'] ?>"
-			     alt="<?= $visualTitle ?>"
+			     alt="<?= $DesignSolution['bloc_title'] ?>"
 			>
 		<?php } ?>
 	</a>
