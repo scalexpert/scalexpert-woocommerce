@@ -19,7 +19,7 @@
 <li class="list-group-item sep_financialSolution">
   <?php if ( $showlogoCart == 1 ) { ?>
 	 <img src="<?= $CommunicationKit['visualLogo'] ?>"
-			alt="<?= $visualTitle ?>">
+			alt="<?= $DesignSolution['payment_title']  ?>">
   <?php } ?>
   <div class="sep_financialSolution-title">
 	 <?= $visualTitle ?>
