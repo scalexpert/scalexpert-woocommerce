@@ -1,3 +1,11 @@
+[add 1.0.4] - 2024-03-25
+### Added
+- add comments around custom code in /woocommerce/checkout/form-pay.php
+- add comments around custom code in /woocommerce/checkout/thankyou.php
+- add comments around custom code in /woocommerce/order/order-details.php
+- add comments around custom code in /woocommerce/single-product/meta.php
+- add comments around custom code in /woocommerce/single-product/short-description.php
+
 [fix 1.0.3] - 2024-03-20
 ### Fixed
 - Fix DOM in buttons if API does not return images

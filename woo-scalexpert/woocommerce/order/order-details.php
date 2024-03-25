@@ -14,10 +14,10 @@
 	 * @package WooCommerce\Templates
 	 * @version 4.6.0
 	 */
-	
+	/**  SG Paiement en plusieurs fois */
 	require_once( PLUGIN_DIR . '/Static/StaticData.php' );
 	$solutionnames = SCALEXPERTSOLUTIONS;
-	
+	/**  SG Paiement en plusieurs fois */
 	
 	defined( 'ABSPATH' ) || exit;
 	$order = wc_get_order( $order_id ); // phpcs:ignore WordPress.WP.GlobalVariablesOverride.Prohibited
@@ -89,7 +89,7 @@
 							<?php
 								
 								/**
-								 * Scalexpert Add
+								 * SG Paiement en plusieurs fois
 								 */
 								if ( ( 'payment_method' === $key ) && $order->get_payment_method() == "scalexpert" ) {
 									$productController  = new \wooScalexpert\Controller\Front\ProductController();
@@ -102,7 +102,7 @@
 								} else {
 									echo ( 'payment_method' === $key ) ? esc_html( $total['value'] ) : wp_kses_post( $total['value'] ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 								}
-							
+								/** SG Paiement en plusieurs fois */
 							?></td>
 					</tr>
 					<?php
