@@ -18,19 +18,20 @@
 	if ( ! defined( 'ABSPATH' ) ) {
 		exit; // Exit if accessed directly.
 	}
-	global $product;
 	global $post;
+	/** SG Paiement en plusieurs fois */
+	global $product;
 	global $productController;
 	$short_description = apply_filters( 'woocommerce_short_description', $post->post_excerpt );
-	
 	if ( ! $short_description ) {
 		//return;
 	}
-
+	/** SG Paiement en plusieurs fois */
 ?>
-	<div class="woocommerce-product-details__short-description">
-		<?php echo $short_description; // WPCS: XSS ok. ?>
-	</div>
+<div class="woocommerce-product-details__short-description">
+	<?php echo $short_description; // WPCS: XSS ok. ?>
+</div>
 
-
+<!--  SG Paiement en plusieurs fois -->
 <?= $productController->showActifSolutions( 'product-buttons', 'over', $product->get_category_ids(), $product->get_price() ) ?>
+<!--  SG Paiement en plusieurs fois -->

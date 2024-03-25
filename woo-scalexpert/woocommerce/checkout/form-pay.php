@@ -73,9 +73,11 @@
 				<?php
 					if ( ! empty( $available_gateways ) ) {
 						foreach ( $available_gateways as $gateway ) {
+							/**  SG Paiement en plusieurs fois */
 							if ( $gateway->id == "scalexpert" ) {
 								continue;
 							}
+							/**  SG Paiement en plusieurs fois */
 							wc_get_template( 'checkout/payment-method.php', array( 'gateway' => $gateway ) );
 						}
 					} else {

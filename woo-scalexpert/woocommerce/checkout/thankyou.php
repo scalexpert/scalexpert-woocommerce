@@ -25,12 +25,10 @@
 	<?php
 		if ( $order ) :
 			
+			/**  SG Paiement en plusieurs fois */
 			$classNotice = "success";
 			do_action( 'woocommerce_before_thankyou', $order->get_id() );
 			
-			/**
-			 * SCALEXPERT
-			 */
 			$orderData   = $order->get_data();
 			$orderStatus = $order->get_status();
 			if ( $orderData['payment_method'] == "scalexpert" ) {
@@ -39,7 +37,7 @@
 				$API_CALL     = $wcScalexpert->update_scalexpert( $order->get_id() );
 				$classNotice  = ( ( $API_CALL['API'] == TRUE ) && ( $API_CALL['FinancialStatus'] != "REJECTED" ) ) ? "success" : "error";
 			}
-			
+			/**  SG Paiement en plusieurs fois */
 			?>
 			
 			<?php if ( $order->has_status( 'failed' ) ) : ?>
@@ -54,12 +52,10 @@
 			</p>
 		
 		<?php else : ?>
-			
+			<!--  SG Paiement en plusieurs fois -->
 			<p class="woocommerce-notice woocommerce-notice--<?= $classNotice ?> woocommerce-thankyou-order-received">
 				<?php
-					/**
-					 * SCALEXPERT
-					 */
+					/**  SG Paiement en plusieurs fois */
 					if ( $orderData['payment_method'] == "scalexpert" ) {
 						echo apply_filters(
 							'woocommerce_thankyou_order_received_text',
@@ -72,8 +68,10 @@
 								'woocommerce' ),
 							$order );
 					}
+					/**  SG Paiement en plusieurs fois */
 				?>
 			</p>
+			<!--  SG Paiement en plusieurs fois -->
 			
 			<ul class="woocommerce-order-overview woocommerce-thankyou-order-details order_details">
 				

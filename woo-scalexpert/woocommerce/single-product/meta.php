@@ -20,8 +20,9 @@
 	}
 	
 	global $product;
+	/** SG Paiement en plusieurs fois */
 	global $productController;
-
+	/** SG Paiement en plusieurs fois */
 ?>
 <div class="product_meta">
 	
@@ -41,5 +42,6 @@
 	<?php do_action( 'woocommerce_product_meta_end' ); ?>
 
 </div>
-
+<!--  SG Paiement en plusieurs fois -->
 <?= $productController->showActifSolutions( 'product-buttons', 'under', $product->get_category_ids(), $product->get_price() ) ?>
+<!--  SG Paiement en plusieurs fois -->
