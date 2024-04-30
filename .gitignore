@@ -3,3 +3,7 @@
 /.idea/php.xml
 /.idea/scalexpert-woocommerce.iml
 /.idea/vcs.xml
+
+/.run/*
+/.run
+/.idea/dataSources.xml

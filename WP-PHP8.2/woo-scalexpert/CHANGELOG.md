@@ -1,0 +1,73 @@
+[add 1.1.0] - 2024-04-23
+Version 1.1.0 of plugin woocommerce
+
+### Added
+
+- Format check on the telephone number entered by the customer before API call
+- New payment method labels for the Woocommerce BO (default value when the plugin is installed)
+- connection prompt added to API return if session lost (woo-scalexpert/woocommerce/checkout/oder-received.php)
+- ability to recreate a basket from an order lost due to an API processing error
+
+[add 1.0.7] - 2024-04-10
+Version 1.0.7 of plugin woocommerce
+
+### Added
+
+- add verify / check number format in php, does not submit to the api with an inaccurate formatted phone number
+
+[fix 1.0.6] - 2024-04-03
+Version 1.0.6 of plugin woocommerce
+
+### Added
+
+- add redirection to public_view_order_url after checkout API error
+
+### Fixed
+
+- Fix verify / check number format new pattern regex
+
+[add 1.0.5] - 2024-03-27
+Version 1.0.5 of plugin woocommerce
+
+### Added
+
+- add verify / check number format
+
+[add 1.0.4] - 2024-03-25
+
+### Added
+
+- add comments around custom code in /woocommerce/checkout/form-pay.php
+- add comments around custom code in /woocommerce/checkout/thankyou.php
+- add comments around custom code in /woocommerce/order/order-details.php
+- add comments around custom code in /woocommerce/single-product/meta.php
+- add comments around custom code in /woocommerce/single-product/short-description.php
+
+[fix 1.0.3] - 2024-03-20
+
+### Fixed
+
+- Fix DOM in buttons if API does not return images
+
+[fix 1.0.2] - 2024-03-12
+Version 1.0.2 of plugin woocommerce
+Content : e-financing solutions split payment & long term credit.
+
+### Fixed
+
+- Add tests for showlogo_cart in views/payment-buttons
+- Add tests for Product attributes during Checkout
+- Add debug explanation in Readme Template Section
+
+[fix 1.0.1] - 2024-02-26
+Version 1.0.1 of plugin woocommerce
+Content : e-financing solutions split payment & long term credit.
+
+### Fixed
+
+- Fix url api
+
+[1.0.0] - 2024-02-12
+Version 1.0.0 of plugin woocommerce
+Content : e-financing solutions split payment & long term credit.
+
