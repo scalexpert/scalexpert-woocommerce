@@ -1,0 +1,611 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: Woocommerce Scalexpert\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2024-01-19 16:50+0000\n"
+"PO-Revision-Date: 2024-04-25 14:26+0000\n"
+"Last-Translator: \n"
+"Language-Team: Français\n"
+"Language: fr_FR\n"
+"Plural-Forms: nplurals=2; plural=n > 1;\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Generator: Loco https://localise.biz/\n"
+"X-Loco-Version: 2.6.6; wp-6.3.2\n"
+"X-Domain: woo-scalexpert"
+
+#: Helper/API/Client.php:389
+msgid " API credentials are correct !"
+msgstr " Les informations d'identification de l'API sont correctes !"
+
+#: Helper/API/Client.php:391
+msgid " API credentials are invalid !"
+msgstr " Les informations d'identification de l'API ne sont pas valides !"
+
+#: woocommerce/order/order-details.php:154
+msgid " Order again "
+msgstr "Commander à nouveau"
+
+#: woo-scalexpert.php:689 woo-scalexpert.php:718
+msgid "A technical error occurred during process, please retry."
+msgstr ""
+"Une erreur technique est survenue pendant le processus, veuillez réessayer."
+
+#: Controller/Admin/AdminController.php:151
+msgid "Activate / deactivate"
+msgstr "Activer / désactiver"
+
+#. id
+#: Controller/Admin/CronConfigurationController.php:107
+msgid "Activate cron"
+msgstr "Activation de la tâche planifiée"
+
+#. id
+#: Controller/Admin/ConfigController.php:86
+msgid "Activate plugin in Woocommerce"
+msgstr "Activer Scalexpert pour Woocommerce"
+
+#. id
+#: Controller/Admin/FinancingController.php:109
+msgid "Activate/deactivate financing options"
+msgstr "Activer/désactiver les options de financement"
+
+#: Controller/Admin/DesignController.php:274
+#: Controller/Admin/DesignController.php:279
+#: Controller/Admin/DesignController.php:320
+#: Controller/Admin/DesignController.php:325
+#: Controller/Admin/DesignController.php:350
+#: Controller/Admin/DesignController.php:355
+#: Controller/Admin/CronConfigurationController.php:158
+#: Controller/Admin/CronConfigurationController.php:163
+#: Controller/Admin/DebugController.php:111
+#: Controller/Admin/DebugController.php:116
+#: Controller/Admin/FinancingController.php:264
+#: Controller/Admin/FinancingController.php:269
+#: Controller/Admin/FinancingController.php:318
+#: Controller/Admin/FinancingController.php:323
+msgid "Activated"
+msgstr "Activé"
+
+#. id
+#: Controller/Admin/ConfigController.php:79
+#| msgid "Activate"
+msgid "Activation"
+msgstr "Activation "
+
+#: Controller/Admin/ConfigController.php:225
+#: Controller/Admin/ConfigController.php:229
+msgid "Activé"
+msgstr "Activé"
+
+#. page_title
+#: Controller/Admin/AdminController.php:60
+msgid "Administer"
+msgstr "Administrer"
+
+#: woo-scalexpert.php:134
+msgid "Amount to be cancelled:"
+msgstr "Montant à annuler :"
+
+#. id
+#: Controller/Admin/ConfigController.php:95
+msgid "API keys"
+msgstr "Clés API"
+
+#: Controller/Admin/DesignController.php:263
+msgid "At the top of the add to basket block"
+msgstr "En haut du bloc d'ajout au panier"
+
+#: Controller/Admin/SettingController.php:207
+msgid ""
+"Brand attribute to be configured and filled in for products to be financed "
+"by Scalexpert"
+msgstr ""
+"Attribut de la marque à configurer et à remplir pour les produits à financer "
+"par Scalexpert"
+
+#: woo-scalexpert.php:152
+msgid "Cancel financing"
+msgstr "Annuler le financement"
+
+#: woo-scalexpert.php:145
+msgid "Cancelled amount:"
+msgstr "Montant annulé :"
+
+#: Controller/Admin/ConfigController.php:55
+msgid "Check my key"
+msgstr "Vérifier ma clé"
+
+#. id
+#: Controller/Admin/ConfigController.php:102
+msgid "Choose your environment"
+msgstr "Choisissez votre environnement"
+
+#: Views/verify-phone-modal.php:17
+msgid "Close"
+msgstr "Fermer"
+
+#: Controller/Admin/SettingController.php:59
+msgid "Configurations included in WooCommerce"
+msgstr "Configurations incluses dans WooCommerce"
+
+#: Controller/Admin/ConfigController.php:48
+msgid "Configure my keys"
+msgstr "Configurer mes clés"
+
+#. page_title
+#: Controller/Admin/AdminController.php:105
+#: Controller/Admin/CronConfigurationController.php:71
+msgid "Cron settings"
+msgstr "Paramètres de la tâche planifiée"
+
+#: Static/StaticData.php:12
+msgid "Crédit long (avec commission)"
+msgstr "Crédit long (avec commission)"
+
+#: Static/StaticData.php:11
+msgid "Crédit long (sans frais)"
+msgstr "Crédit long (sans frais)"
+
+#: Static/StaticData.php:8
+msgid "Crédit long (SCFRLT-TXNO)"
+msgstr "Crédit long (SCFRLT-TXNO)"
+
+#: Static/StaticData.php:7
+msgid "Crédit long frais partagés (SCFRLT-TXPS)"
+msgstr "Crédit long frais partagés (SCFRLT-TXPS)"
+
+#. page_title
+#. id
+#: Controller/Admin/AdminController.php:87
+#: Controller/Admin/DesignController.php:126
+msgid "Customise"
+msgstr "Personnaliser"
+
+#. id
+#: Controller/Admin/DesignController.php:191
+msgid "Customise payment"
+msgstr "Titre"
+
+#. id
+#: Controller/Admin/DesignController.php:158
+#: Controller/Admin/DesignController.php:371
+#: Controller/Admin/DesignController.php:381
+#: Controller/Admin/DesignController.php:393
+msgid "Customise the block"
+msgstr "Titre"
+
+#. page_title
+#: Controller/Admin/AdminController.php:69
+msgid "Debug"
+msgstr "Débogage"
+
+#. id
+#: Controller/Admin/SettingController.php:101
+msgid "Description Scalexpert"
+msgstr "Description Scalexpert"
+
+#. id
+#: Controller/Admin/DesignController.php:150
+msgid "Display on product sheets"
+msgstr "Affichage sur les fiches produits"
+
+#: Controller/Admin/SettingController.php:57
+msgid "Display settings"
+msgstr "Paramètres d'affichage"
+
+#. id
+#: Controller/Admin/DesignController.php:174
+msgid "Display the logo"
+msgstr "Afficher le logo"
+
+#: Controller/Admin/ConfigController.php:226
+#: Controller/Admin/ConfigController.php:229
+msgid "Désactivé"
+msgstr "Désactivé"
+
+#: Controller/Admin/DesignController.php:299
+msgid "Enable / Disable"
+msgstr "Activer / Désactiver"
+
+#. id
+#: Controller/Admin/DebugController.php:77
+msgid "Enable/Disable Debug"
+msgstr "Activer/désactiver le débogage"
+
+#. id
+#: Controller/Admin/ConfigController.php:126
+msgid "Enter your production ID"
+msgstr "Saisissez votre identifiant de production"
+
+#. id
+#: Controller/Admin/ConfigController.php:134
+msgid "Enter your production key"
+msgstr "Entrez votre clé de production"
+
+#. id
+#: Controller/Admin/ConfigController.php:110
+msgid "Enter your test ID"
+msgstr "Saisissez votre identifiant de test"
+
+#. id
+#: Controller/Admin/ConfigController.php:118
+msgid "Enter your test key"
+msgstr "Entrez votre clé de test"
+
+#: Views/verify-phone-modal.php:12
+msgid "Error validating your telephone number"
+msgstr "Erreur de validation du numéro de téléphone"
+
+#: woo-scalexpert.php:177 Static/StaticData.php:39
+#| msgid "Every 5 Minute"
+msgid "Every 5 Minutes"
+msgstr "Toutes les 5 minutes"
+
+#: woo-scalexpert.php:181 Static/StaticData.php:43
+msgid "Every half an Hour"
+msgstr "Toutes les demi-heures"
+
+#: woo-scalexpert.php:185 Static/StaticData.php:47
+msgid "Every Hour"
+msgstr "Toutes les heures"
+
+#: woo-scalexpert.php:173 Static/StaticData.php:35
+msgid "Every Minute"
+msgstr "Chaque minute"
+
+#: woo-scalexpert.php:201 Static/StaticData.php:63
+msgid "Every two weeks"
+msgstr "Toutes les deux semaines"
+
+#. id
+#: Controller/Admin/DesignController.php:219
+#: Controller/Admin/DesignController.php:402
+msgid "Exclusion of categories"
+msgstr "Exclusion de catégories"
+
+#: Controller/Admin/CronConfigurationController.php:201
+msgid "Execute update status order with following link :"
+msgstr ""
+"Exécutez la mise à jour des status des commandes via le lien suivant : "
+
+#: Helper/API/Client.php:446
+msgid "Financed amount reduced by: "
+msgstr "Montant financé réduit de : "
+
+#. page_title
+#: Controller/Admin/AdminController.php:78
+msgid "Financing"
+msgstr "Financement"
+
+#: woocommerce/order/order-details.php:135
+msgid ""
+"Financing application abandoned by the customer or following a technical "
+"incident"
+msgstr ""
+"La commande a échouée pour une raison technique ou un refus de financement. "
+"<br>\n"
+"Vous pouvez recréer la commande en cliquant sur le bouton ci-dessous."
+
+#: woo-scalexpert.php:686
+msgid "Financing request aborted"
+msgstr ""
+"Demande de financement abandonnée par le client ou suite à un incident "
+"technique"
+
+#: woo-scalexpert.php:677
+msgid "Financing request accepted"
+msgstr "Demande de financement acceptée"
+
+#: woo-scalexpert.php:683
+msgid "Financing request cancelled"
+msgstr "Demande de financement annulée"
+
+#: woo-scalexpert.php:671
+msgid "Financing request in progress"
+msgstr "Demande de financement initiée"
+
+#: woo-scalexpert.php:954 woo-scalexpert.php:957
+msgid "Financing request initiated"
+msgstr "Appel de Scalexpert pour une demande de financement"
+
+#: woo-scalexpert.php:674
+msgid "Financing request pre-accepted"
+msgstr ""
+"Demande de financement transmise à l’organisme prêteur et en attente de "
+"décision"
+
+#: woo-scalexpert.php:680
+msgid "Financing request rejected"
+msgstr "Demande de financement refusée"
+
+#: woo-scalexpert.php:111
+msgid "Financing SG"
+msgstr "Financement SG"
+
+#: Controller/Admin/ConfigController.php:205
+#: Controller/Admin/ConfigController.php:215
+msgid "Find my key"
+msgstr "Trouver ma clé"
+
+#. id
+#: Controller/Admin/DesignController.php:209
+msgid "General Configuration"
+msgstr "Configuration Générale"
+
+#. URI of the plugin
+msgid ""
+"https://docs.scalexpert.societegenerale."
+"com/apidocs/3mLlrPx3sPtekcQvEEUg/developers-docs/readme"
+msgstr ""
+"https://docs.scalexpert.societegenerale."
+"com/apidocs/3mLlrPx3sPtekcQvEEUg/developers-docs/readme"
+
+#. Author URI of the plugin
+msgid "https://scalexpert.societegenerale.com"
+msgstr "https://scalexpert.societegenerale.com"
+
+#. id
+#: Controller/Admin/CronConfigurationController.php:115
+msgid "Interval time"
+msgstr "Intervalle de temps"
+
+#: Controller/Admin/CronConfigurationController.php:202
+msgid ""
+"It is preferable for the performance of your Wordpress installation to run "
+"the CRON task via a server crontab. To do this, give your server "
+"administrator the following url:<br> HOMEURL / SHOPPAGE (shop, boutique, ...)"
+" / ?updateOrder (see example below)"
+msgstr ""
+"Il est préférable pour les performances de votre installation de Wordpress "
+"d'executer la tâche CRON par un crontab serveur. Pour cela communiquez à "
+"votre administrateur serveur l'url composée de la manière suivante : HOMEURL "
+"/ SHOPPAGE (shop, boutique, ... ) / ?updateOrder (voir l'exemple ci-dessous)"
+
+#: Controller/Admin/DebugController.php:121
+msgid "Log files are available in the following folder :"
+msgstr "Les fichiers journaux sont disponibles dans le dossier suivant :"
+
+#: woo-scalexpert.php:169 Static/StaticData.php:31
+msgid "Make a selection"
+msgstr "Effectuer une sélection"
+
+#. id
+#: Controller/Admin/DebugController.php:70
+msgid "Mode Debug"
+msgstr "Mode Debug"
+
+#: Controller/Admin/AdminController.php:149
+msgid "Mode debug"
+msgstr "Mode debug"
+
+#: Controller/Admin/SettingController.php:218
+msgid ""
+"Model attribute to be configured and filled in for products to be financed "
+"by Scalexpert"
+msgstr ""
+"Attribut du modèle à configurer et à remplir pour les produits à financer "
+"par Scalexpert"
+
+#: woo-scalexpert.php:205 Static/StaticData.php:67
+msgid "Monthly"
+msgstr "Mensuel"
+
+#. id
+#: Controller/Admin/SettingController.php:110
+msgid "Name Attribute Brand"
+msgstr "Nom Attribut Marque"
+
+#. id
+#: Controller/Admin/SettingController.php:118
+msgid "Name Attribute Model"
+msgstr "Nom Attribut Modèle"
+
+#: Helper/API/Client.php:445
+msgid "New financed amount: "
+msgstr "Nouveau montant financé : "
+
+#: woocommerce/order/order-details.php:152
+msgid "New order creation failed !"
+msgstr "La création d'une nouvelle commande a échoué !"
+
+#: woo-scalexpert.php:597
+msgid "No orders to update"
+msgstr "Aucunes commandes à mettre à jour"
+
+#: woo-scalexpert.php:155
+msgid "No SG financing for this order"
+msgstr "Pas de financement SG pour cette commande"
+
+#: Controller/Admin/DesignController.php:275
+#: Controller/Admin/DesignController.php:279
+#: Controller/Admin/DesignController.php:321
+#: Controller/Admin/DesignController.php:325
+#: Controller/Admin/DesignController.php:351
+#: Controller/Admin/DesignController.php:355
+#: Controller/Admin/CronConfigurationController.php:158
+#: Controller/Admin/CronConfigurationController.php:164
+#: Controller/Admin/DebugController.php:111
+#: Controller/Admin/DebugController.php:117
+#: Controller/Admin/FinancingController.php:264
+#: Controller/Admin/FinancingController.php:270
+#: Controller/Admin/FinancingController.php:283
+#: Controller/Admin/FinancingController.php:318
+#: Controller/Admin/FinancingController.php:324
+msgid "Off"
+msgstr "Désactivé"
+
+#: woo-scalexpert.php:193 Static/StaticData.php:55
+msgid "Once a Day"
+msgstr "Une fois par jour"
+
+#: woo-scalexpert.php:197 Static/StaticData.php:59
+msgid "Once a Week"
+msgstr "Une fois par semaine"
+
+#: Controller/Admin/ConfigController.php:274
+msgid "Ooops! Scalexpert is not yet activated!"
+msgstr "Oups ! Scalexpert n'est pas encore activé !"
+
+#: woo-scalexpert.php:599
+msgid "Orders updated"
+msgstr "Commandes mises à jour"
+
+#: Static/StaticData.php:9
+msgid "Paiement 3X frais partagés (SCFRSP-3XPS)"
+msgstr "Paiement 3X frais partagés (SCFRSP-3XPS)"
+
+#: Static/StaticData.php:10
+msgid "Paiement 3X sans frais (SCFRSP-3XTS)"
+msgstr "Paiement 3X sans frais (SCFRSP-3XTS)"
+
+#: Static/StaticData.php:6
+msgid "Paiement 4X frais partagés (SCFRSP-4XPS)"
+msgstr "Paiement 4X frais partagés (SCFRSP-4XPS)"
+
+#: Static/StaticData.php:5
+msgid "Paiement 4X sans frais (SCFRSP-4XTS)"
+msgstr "Paiement 4X sans frais (SCFRSP-4XTS)"
+
+#: Views/payment-buttons.php:48
+msgid "Pay"
+msgstr "Payer"
+
+#. id
+#: Controller/Admin/DesignController.php:184
+#: Controller/Admin/DesignController.php:370
+msgid "Payment page"
+msgstr "Page de paiement"
+
+#: Views/verify-phone-modal.php:23
+msgid ""
+"Please enter a valid mobile or landline telephone number to select this "
+"payment method."
+msgstr ""
+"Veuillez saisir un numéro de téléphone mobile ou fixe valide pour "
+"sélectionner ce mode de paiement."
+
+#: Controller/Admin/ConfigController.php:48
+msgid "Please enter your API keys for the different environments here."
+msgstr "Veuillez saisir ici vos clés API pour les différents environnements."
+
+#. id
+#: Controller/Admin/DesignController.php:166
+msgid "Position"
+msgstr "Position"
+
+#. id
+#: Controller/Admin/DesignController.php:143
+#: Controller/Admin/DesignController.php:392
+msgid "Product page"
+msgstr "Page produit"
+
+#: Controller/Admin/SettingController.php:66
+#: Controller/Admin/DesignController.php:97
+#: Controller/Admin/ConfigController.php:56
+#: Controller/Admin/CronConfigurationController.php:80
+#: Controller/Admin/FinancingController.php:94
+msgid "Save changes"
+msgstr "Enregistrer les modifications"
+
+#: Controller/Admin/CronConfigurationController.php:200
+msgid "Save the configuration to make sure it is applied."
+msgstr "Enregistrez la configuration pour vous assurer qu'elle soit appliquée."
+
+#. id
+#: Controller/Admin/SettingController.php:93
+msgid "Scalexpert title Basket"
+msgstr "Titre Panier Scalexpert"
+
+#: Controller/Admin/DesignController.php:105
+msgid "Select a solution"
+msgstr "Choisir une solution"
+
+#: Controller/Admin/AdminController.php:147
+msgid "Setting the keys"
+msgstr "Paramétrer les clés"
+
+#: Controller/Admin/CronConfigurationController.php:73
+msgid "Settings for cron update status"
+msgstr "Paramètres pour de la tâche planifiée"
+
+#. page_title
+#. parent page
+#: Controller/Admin/AdminController.php:48
+#: Controller/Admin/AdminController.php:49
+#: Controller/Admin/AdminController.php:59
+#: Controller/Admin/AdminController.php:68
+#: Controller/Admin/AdminController.php:77
+#: Controller/Admin/AdminController.php:86
+#: Controller/Admin/AdminController.php:95
+#: Controller/Admin/AdminController.php:104
+msgid "SG Scalexpert"
+msgstr "SG Scalexpert"
+
+#. id
+#: Controller/Admin/DesignController.php:199
+msgid "Show logo for basket"
+msgstr "Afficher le logo"
+
+#. Author of the plugin
+msgid "SOCIETE GENERALE"
+msgstr "SOCIÉTÉ GÉNÉRALE"
+
+#. Description of the plugin
+msgid "Solutions de financement - SG Scalexpert"
+msgstr "Solutions de financement - SG Scalexpert"
+
+#: woo-scalexpert.php:571
+msgid "Starting orders update"
+msgstr "Début de la mise à jour des commandes"
+
+#: Controller/Admin/FinancingController.php:286
+msgid "Subscribe to this offer."
+msgstr "Souscrire à cette offre."
+
+#: Controller/Admin/SettingController.php:196
+msgid "This description is displayed in the Woocommerce configuration"
+msgstr "Cette description est affichée dans la configuration de Woocommerce"
+
+#: Controller/Admin/DesignController.php:296
+msgid "This option is disabled on your site"
+msgstr "Cette option est désactivée sur votre site"
+
+#: Controller/Admin/DesignController.php:293
+msgid "This option is enabled on your site"
+msgstr "Cette option est activée sur votre site"
+
+#: Controller/Admin/FinancingController.php:285
+msgid "This option is not available in your contract."
+msgstr "Cette option n'est pas disponible dans votre contrat."
+
+#: Controller/Admin/SettingController.php:178
+msgid "This title is used to display the payment method in the checkout."
+msgstr "Ce titre est utilisé pour afficher le mode de paiement au checkout."
+
+#: Controller/Admin/DesignController.php:309
+#: Controller/Admin/DesignController.php:339
+msgid "Title"
+msgstr "Titre"
+
+#: woo-scalexpert.php:189 Static/StaticData.php:51
+msgid "Twice a Day"
+msgstr "Deux fois par jour"
+
+#: Controller/Admin/DesignController.php:261
+msgid "Under the add to basket blocks"
+msgstr "Sous les blocs d'ajout au panier"
+
+#. page_title
+#: Controller/Admin/AdminController.php:96
+msgid "WooCommerce"
+msgstr "WooCommerce"
+
+#. Name of the plugin
+msgid "Woocommerce Scalexpert"
+msgstr "Woocommerce Scalexpert"
+
+#: woo-scalexpert.php:945
+msgid "Your phone number is not correct !"
+msgstr "Votre numéro de téléphone n'est pas correct !"
