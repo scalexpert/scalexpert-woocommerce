@@ -26,11 +26,14 @@
 		 *
 		 */
 		public function __construct() {
-			require_once( PLUGIN_DIR . '/Static/autoload.php' );
-			$this->apiClient             = new Client();
-			$this->sg_scalexpert_options = get_option( 'sg_scalexpert_keys' );
-			add_action( 'admin_init', array( $this, 'sg_scalexpert_page_init' ) );
-			add_action( 'admin_notices', array( $this, 'activate_notice_error' ) );
+			if ( is_admin() && isset( $_REQUEST['page'] ) || ( $_POST["option_page"] == "sg_scalexpert_option_group" ) ) {
+				require_once( PLUGIN_DIR . '/Static/autoload.php' );
+				$this->apiClient             = new Client();
+				$this->sg_scalexpert_options = get_option( 'sg_scalexpert_keys' );
+				add_action( 'admin_notices', array( $this, 'activate_notice_error' ) );
+				add_action( 'admin_init', array( $this, 'sg_scalexpert_page_init' ) );
+			}
+			
 		}
 		
 		/**

@@ -13,6 +13,7 @@
 	use GuzzleHttp;
 	use wooScalexpert\Helper\Log\LoggerHelper;
 	
+	
 	/**
 	 *
 	 */
@@ -70,6 +71,10 @@
 		 */
 		public function getBearer( $scope = NULL ) : bool {
 			
+			if ( get_transient( "_appBearer" ) ) {
+				return TRUE;
+			}
+			
 			$response = $this->sendRequest(
 				'POST',
 				SCALEXPERT_ENDPOINT_AUTH,
@@ -85,6 +90,7 @@
 			
 			if ( ! empty( $response['contentsDecoded']['access_token'] ) ) {
 				$this->_appBearer = $response['contentsDecoded']['access_token'];
+				Set_transient( "_appBearer", $this->_appBearer, 3600 );
 				
 				return TRUE;
 			}
@@ -113,7 +119,7 @@
 			array $json = array(),
 			bool $isBearerToken = FALSE
 		) : array {
-			if ( ! $isBearerToken && empty( $this->_appBearer ) ) {
+			if ( ! $isBearerToken && empty( get_transient( "_appBearer" ) ) ) {
 				$this->getBearer( self::scope_financing );
 			}
 			
@@ -199,7 +205,7 @@
 		 * @return string|null
 		 */
 		public function getAppBearer() : ?string {
-			return $this->_appBearer;
+			return get_transient( "_appBearer" );
 		}
 		
 		/**
@@ -400,11 +406,12 @@
 		public function sg_cancelFinancing() {
 			
 			$amount2Cancel   = $_POST['cancelAmount'];
+			$amount2Cancel   = str_replace( ",", ".", $amount2Cancel );
 			$scalexpertFinID = $_POST['finID'];
 			$orderID         = $_POST['orderID'];
+			$order           = wc_get_order( $orderID );
 			
-			$order = wc_get_order( $orderID );
-			if ( $scalexpertFinID == $order->get_meta( 'scalexpert_finID' ) ) {
+			if ( $scalexpertFinID ) {
 				
 				//https://api.scalexpert.uatc.societegenerale.com/baas/uatc/e-financing/api/v1/subscriptions/{creditSubscriptionId}/_cancel
 				$apiClient = new \wooScalexpert\Helper\API\Client;
@@ -423,6 +430,7 @@
 				
 				);
 				
+				
 				try {
 					$result = $apiClient->sendRequest(
 						"POST",
@@ -437,31 +445,58 @@
 					$resultContent        = $result['content'];
 					$resultFinancedAmount = $result['contentsDecoded']['financedAmount'];
 					$resultStatus         = $result['contentsDecoded']['status'];
+					$resultStatus         = $this->getFinancialStateName( $resultStatus );
 					
 					if ( $resultCode == 200 && ! isset( $result['errorCode'] ) ) {
-						update_post_meta( $order->get_id(), 'SG_financedAmount', $resultFinancedAmount );
+						
+						update_post_meta( $order->get_id(), 'SG_financedAmount', floatval( $resultFinancedAmount ) );
 						update_post_meta( $order->get_id(), 'SG_reducedAmount', floatval( $amount2Cancel ) );
-						update_post_meta( $order_id, 'scalexpert_status', $resultStatus );
-						$order->add_order_note( __( 'New financed amount: ', 'woo-scalexpert' ) . $resultFinancedAmount . "€" );
-						wp_die( json_encode( __( 'Financed amount reduced by: ', 'woo-scalexpert' ) . $amount2Cancel . "€" ) );
+						update_post_meta( $order->get_id(), 'scalexpert_status', $resultStatus );
+						$order->add_order_note( __( 'New financed amount: ', 'woo-scalexpert' ) . floatval( $resultFinancedAmount ) . "€" );
+						wp_die( json_encode( __( 'Financed amount reduced by: ', 'woo-scalexpert' ) . floatval( $amount2Cancel ) . "€" ) );
+						
 					} else {
 						
+						/**
+						 * Error possibility / API Response properly formatted
+						 */
 						if ( isset( $result['errorCode'] ) && $result['errorCode'] == 400 ) {
+							
 							$errorMessage = json_decode( $result['errorMessage'] );
-							wp_die( json_encode( $errorMessage->errorMessage ) );
+							if ( $errorMessage->errorCode == "INVALID_STATUS" ) {
+								$message = $this->tradAPIErrorMessage( $errorMessage->errorMessage );
+								wp_die( json_encode( $message ) );
+							}
+							if ( $errorMessage->errorCode == "REQUEST_VALIDATION_ERROR" ) {
+								$message = $this->tradAPIErrorMessage( $errorMessage->errorMessage );
+								wp_die( json_encode( $message ) );
+							}
+							
+							$errorMessage = explode( "{", $errorMessage->errorMessage );
+							$errorMessage = explode( '}', $errorMessage[1] );
+							$errorMessage = $errorMessage[0];
+							$errorMessage = str_replace( "<EOL><EOL>", "", $errorMessage );
+							$errorMessage = json_decode( "{" . $errorMessage . "}" );
+							
+							if ( $errorMessage->error == "error_forbidden_doublerequest" ) {
+								$order->add_order_note( $errorMessage->message );
+								update_post_meta( $order->get_id(), 'SG_financedAmount', floatval( $order->get_total() ) );
+								update_post_meta( $order->get_id(), 'SG_reducedAmount', floatval( 0 ) );
+							}
+							$message = $this->tradAPIErrorMessage( $errorMessage->message );
+							wp_die( json_encode( $message ) );
 						}
 						
-						$errorMessage = json_decode( $result['errorMessage'] );
-						if ( $errorMessage->errorCode == "REQUEST_VALIDATION_ERROR" ) {
-							wp_die( json_encode( $errorMessage->errorMessage ) );
-						}
-						
+						/**
+						 * Error possibility / No proper formatted API response
+						 */
 						$errorMessage = explode( "{", $errorMessage->errorMessage );
 						$errorMessage = explode( '}', $errorMessage[1] );
 						$errorMessage = $errorMessage[0];
 						$errorMessage = str_replace( "<EOL><EOL>", "", $errorMessage );
 						$errorMessage = json_decode( "{" . $errorMessage . "}" );
 						wp_die( json_encode( $errorMessage->message ) );
+						
 					}
 					
 				} catch ( Exception $e ) {
@@ -478,6 +513,33 @@
 			
 		}
 		
+		/**
+		 * @param $message
+		 *
+		 * @return mixed
+		 */
+		public function tradAPIErrorMessage( $message ) {
+			
+			switch ( $message ) {
+				case "Final Amount is less than minimum authorized amount":
+					$message = __( "Final Amount is less than minimum authorized amount", "woo-scalexpert" );
+					break;
+				case "The credit subscription is already cancelled.":
+					$message = __( "The credit subscription is already cancelled.", "woo-scalexpert" );
+					break;
+				case "cancelledAmount should be strictly positive":
+					$message = __( "cancelledAmount should be strictly positive", "woo-scalexpert" );
+					break;
+				case "The cancelledAmount is greater than the financedAmount. You can only request cancellation with cancelledAmount equal or lower than the financedAmount.":
+					$message = __( "The cancelledAmount is greater than the financedAmount. You can only request cancellation with cancelledAmount equal or lower than the financedAmount.", "woo-scalexpert" );
+					break;
+				default :
+					return $message;
+					break;
+			}
+			
+			return $message;
+		}
 		
 		/**
 		 * Recreate Cart for new Order
@@ -539,6 +601,40 @@
 			}
 			
 			return $activationPossible;
+		}
+		
+		
+		/**
+		 * @param $sgFinancialStatus
+		 *
+		 * @return string|null
+		 */
+		private function getFinancialStateName( $sgFinancialStatus ) : ?string {
+			switch ( $sgFinancialStatus ) {
+				case 'INITIALIZED':
+					$statusName = __( 'Financing request in progress', 'woo-scalexpert' );
+					break;
+				case 'PRE_ACCEPTED':
+					$statusName = __( 'Financing request pre-accepted', 'woo-scalexpert' );
+					break;
+				case 'ACCEPTED':
+					$statusName = __( 'Financing request accepted', 'woo-scalexpert' );
+					break;
+				case 'REJECTED':
+					$statusName = __( 'Financing request rejected', 'woo-scalexpert' );
+					break;
+				case 'CANCELLED':
+					$statusName = __( 'Financing request cancelled', 'woo-scalexpert' );
+					break;
+				case 'ABORTED':
+					$statusName = __( 'Financing request aborted', 'woo-scalexpert' );
+					break;
+				default:
+					$statusName = __( 'A technical error occurred during process, please retry.', 'woo-scalexpert' );
+					break;
+			}
+			
+			return $statusName;
 		}
 		
 		

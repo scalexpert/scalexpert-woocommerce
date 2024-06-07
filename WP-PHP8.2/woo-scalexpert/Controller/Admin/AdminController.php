@@ -28,7 +28,6 @@
 		public function __construct() {
 			
 			require_once( PLUGIN_DIR . '/Static/autoload.php' );
-			
 			add_action( 'admin_menu', array( $this, 'sg_scalexpert_add_plugin_page' ) );
 			
 			$this->configController            = new ConfigController();
@@ -37,6 +36,7 @@
 			$this->designController            = new DesignController();
 			$this->settingController           = new SettingController();
 			$this->cronConfigurationController = new CronConfigurationController();
+			
 		}
 		
 		

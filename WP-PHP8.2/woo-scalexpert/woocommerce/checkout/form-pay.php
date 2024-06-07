@@ -16,12 +16,9 @@
 	 */
 	defined( 'ABSPATH' ) || exit;
 	
-	//print_r( $_POST );
-	
 	$totals    = $order->get_order_item_totals(); // phpcs:ignore WordPress.WP.GlobalVariablesOverride.Prohibited
 	$urlaction = ( isset( $_POST['action'] ) && $_POST['action'] == "repay_SG" ) ? wc_get_checkout_url() : "";
-	
-	//print wc_get_checkout_url();
+
 ?>
 <form id="order_review" class="checkout woocommerce-checkout" enctype="multipart/form-data" method="post" action="<?= $urlaction ?>">
 	

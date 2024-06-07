@@ -13,6 +13,7 @@ const CssoWebpackPlugin = require('csso-webpack-plugin').default;
 module.exports = {
     entry: {
         scalexpert: ['./js/front.js', './scss/front.scss'],
+        admin: ['./scss/admin.scss'],
         // admin: ['./js/admin.js', './scss/admin.scss'],
     },
     output: {

@@ -134,9 +134,6 @@
 		print "</div>";
 		
 		
-		/**
-		 * Pour l'instant standby jusqu'à validation/livraison ticket #145132
-		 */
 		$cart_page_url = function_exists( 'wc_get_cart_url' ) ? wc_get_cart_url() : $woocommerce->cart->get_cart_url();
 		?>
 		<form id="sg_newOrder" action="<?= $cart_page_url ?>" method="post">

@@ -81,4 +81,5 @@
 	defined( 'SCALEXPERT_ENDPOINT_ELIGIBLE_SOLUTIONS' ) or define( "SCALEXPERT_ENDPOINT_ELIGIBLE_SOLUTIONS", "e-financing/api/v1/eligible-solutions" );
 	defined( 'SCALEXPERT_ENDPOINT_SUBSCRIPTION' ) or define( "SCALEXPERT_ENDPOINT_SUBSCRIPTION", "e-financing/api/v1/subscriptions/" );
 	defined( 'SCALEXPERT_TRANSIENTS' ) or define( "SCALEXPERT_TRANSIENTS", 86400 );
-	
+	defined( 'SCALEXPERT_LOWERLIMIT' ) or define( "SCALEXPERT_LOWERLIMIT", 100 );
+	defined( 'SCALEXPERT_UPPERLIMIT' ) or define( "SCALEXPERT_UPPERLIMIT", 30000 );

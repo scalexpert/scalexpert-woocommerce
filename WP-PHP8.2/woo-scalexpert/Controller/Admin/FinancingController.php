@@ -28,16 +28,18 @@
 		 */
 		public function __construct() {
 			
-			require_once( PLUGIN_DIR . '/Static/autoload.php' );
-			require( PLUGIN_DIR . '/Static/StaticData.php' );
-			$this->apiClient = new Client();
-			try {
-				$this->eFinancingSolutions = $this->apiClient->getFinancialSolutions();
-				$this->missingSolution     = $this->getMissingSolution( $this->eFinancingSolutions, 'financials' );
-				add_action( 'admin_init', array( $this, 'sg_scalexpert_financepage_init' ) );
-			} catch ( Exception $e ) {
-				echo 'Exception reçue : ', $e->getMessage(), "\n";
-				$this->eFinancingSolutions = array();
+			if ( is_admin() && isset( $_REQUEST['page'] ) || ( $_POST["option_page"] == "sg_scalexpert_finances_group" ) ) {
+				require_once( PLUGIN_DIR . '/Static/autoload.php' );
+				require( PLUGIN_DIR . '/Static/StaticData.php' );
+				$this->apiClient = new Client();
+				try {
+					$this->eFinancingSolutions = $this->apiClient->getFinancialSolutions();
+					$this->missingSolution     = $this->getMissingSolution( $this->eFinancingSolutions, 'financials' );
+					add_action( 'admin_init', array( $this, 'sg_scalexpert_financepage_init' ) );
+				} catch ( Exception $e ) {
+					echo 'Exception reçue : ', $e->getMessage(), "\n";
+					$this->eFinancingSolutions = array();
+				}
 			}
 			
 		}
@@ -116,6 +118,7 @@
 				'sg_scalexpert_solutions', // option_name
 				array( $this, 'sg_scalexpert_sanitize' ) // sanitize_callback
 			);
+			
 			
 			foreach ( $this->eFinancingSolutions as $solutionCode => $solution ) {
 				$section_id = 'sg_scalexpert_setting_section_' . $solutionCode;

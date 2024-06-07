@@ -29,8 +29,7 @@
 		 */
 		public function __construct() {
 			require( PLUGIN_DIR . '/Static/StaticData.php' );
-			require_once( PLUGIN_DIR . '/Helper/API/Client.php' );
-			$this->apiclient     = new Client();
+			
 			$this->solutionnames = SCALEXPERTSOLUTIONS;
 			
 		}
@@ -55,19 +54,29 @@
 			if ( ! isset( $config['activate'] ) ) {
 				return FALSE;
 			}
-			$solutions              = $this->getEligibleSolutions( $price, $productID );
+			
+			if ( $template == 'payment-buttons' ) {
+				$solutions = $this->getEligibleSolutions( $price, $productID, 'nocache' );
+			} else {
+				$solutions = $this->getEligibleSolutions( $price, $productID, '' );
+			}
 			$groupFinancingSolution = get_option( "sg_scalexpert_group_financing_solution" );
 			
+			
 			echo '<!-- begin /Views/' . $template . '.php -->';
-			foreach ( $solutions as $solution ) {
-				$solution = $solution['solutionCode'];
-				$actif    = array();
-				$actif    = get_option( 'sg_scalexpert_activated_' . $solution );
-				if ( isset( $actif['activate'] ) && $actif['activate'] == 1 ) {
-					$solutionname     = $this->getTitleBySolution( $solution, 'solutionName' );
-					$CommunicationKit = $this->getCommunicationKit( $solution );
-					$DesignSolution   = get_option( 'sg_scalexpert_design_' . $solution );
-					include( plugin_dir_path( __FILE__ ) . '../../Views/' . $template . '.php' );
+			if ( ! $solutions && $template == 'payment-buttons' ) {
+				echo __( 'Cart value or product not eligible for Scalexpert financing !', 'woo-scalexpert' );
+			} else {
+				foreach ( $solutions as $solution ) {
+					$solution = $solution['solutionCode'];
+					$actif    = array();
+					$actif    = get_option( 'sg_scalexpert_activated_' . $solution );
+					if ( isset( $actif['activate'] ) && $actif['activate'] == 1 ) {
+						$solutionname     = $this->getTitleBySolution( $solution, 'solutionName' );
+						$CommunicationKit = $this->getCommunicationKit( $solution );
+						$DesignSolution   = get_option( 'sg_scalexpert_design_' . $solution );
+						include( plugin_dir_path( __FILE__ ) . '../../Views/' . $template . '.php' );
+					}
 				}
 			}
 			//payment_box payment_method_scalexpert
@@ -81,7 +90,6 @@
                     jQuery("input[name=solutionCode]:radio").click(function () {
                         jQuery("#payment_method_scalexpert").attr('checked', true);
                     });
-				
 				
 				</script>
 				<?php
@@ -132,7 +140,8 @@
 			if ( $price && $productID ) {
 				$solutions = get_transient( "scalexpertProduct_" . $productID );
 				if ( ! $solutions ) {
-					
+					require_once( PLUGIN_DIR . '/Helper/API/Client.php' );
+					$this->apiclient = new Client();
 					try {
 						$apiCall = $this->apiclient->getFinancialSolutions( $price );
 						Set_transient( "scalexpertProduct_" . $productID, $apiCall, SCALEXPERT_TRANSIENTS );
@@ -147,10 +156,19 @@
 				return $solutions;
 			}
 			
+			require_once( PLUGIN_DIR . '/Helper/API/Client.php' );
+			$this->apiclient = new Client();
+			
 			return $this->apiclient->getFinancialSolutions( $price );
 		}
 		
 		
+		/**
+		 * @param $solution
+		 * @param $output
+		 *
+		 * @return string
+		 */
 		public function getTitleBySolution( $solution, $output = NULL ) : string {
 			
 			$data = $this->solutionnames;

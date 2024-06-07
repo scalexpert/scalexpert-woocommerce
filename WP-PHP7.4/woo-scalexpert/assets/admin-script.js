@@ -89,6 +89,10 @@ function toggleActivate(idfield, labelActif, labelNotActif) {
 jQuery(document).ready(function () {
     jQuery("#cancelSGButton").click(function () {
 
+        jQuery("#cancelSGButton").attr('disabled', 'disabled');
+
+        createOverlay();
+
         let cancelAmount = jQuery("#SGcanceledAmount").val();
         let finID = jQuery("#scalexpert_finID").val();
         let orderID = jQuery("#orderID").val();
@@ -104,9 +108,14 @@ jQuery(document).ready(function () {
             },
             function (response) {
                 if (response) {
-                    alert(JSON.parse(response));
+                    if (JSON.parse(response) == null) {
+                        alert("Demande d'annulation impossible, veuillez consulter les logs d'erreurs pour plus de détails.");
+                    } else {
+                        alert(JSON.parse(response));
+                        window.location.replace("/wp-admin/post.php?post=" + orderID + "&action=edit");
+                    }
                 } else {
-                    alert('New order creation failed !');
+                    alert("L'API Scalexpert n'a pu être contacté, veuillez essayer plus tard !");
                 }
             }
         );
@@ -115,7 +124,12 @@ jQuery(document).ready(function () {
     });
 });
 
+function createOverlay() {
+    let html = '';
+    html += '<div id="sg_overlay" data-open="true"><div class="sg_loader"></div></div>';
 
+    jQuery('body').append(html);
+}
 
 
 

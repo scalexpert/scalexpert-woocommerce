@@ -19,23 +19,24 @@
 		protected $sg_cron_configuration_settings;
 		
 		public function __construct() {
-			$this->sg_cron_configuration_settings = $this->getSgCronConfigurationSettings();
-			
-			if ( ! isset( $this->sg_cron_configuration_settings['activate_cron'] )
-			     && $this->sg_cron_configuration_settings['activate_cron'] != 1 ) {
-				$options = array(
-					"activate_cron" => "",
-					"interval_time" => "",
+			if ( is_admin() && isset( $_REQUEST['page'] ) || ( $_POST["option_page"] == "cron_configuration_settings_group" ) ) {
+				$this->sg_cron_configuration_settings = $this->getSgCronConfigurationSettings();
+				
+				if ( ! isset( $this->sg_cron_configuration_settings['activate_cron'] )
+				     && $this->sg_cron_configuration_settings['activate_cron'] != 1 ) {
+					$options = array(
+						"activate_cron" => "",
+						"interval_time" => "",
+					);
+					update_option( 'sg_cron_configuration_settings', $options );
+				}
+				apply_filters( 'cron_schedules', array(
+						'interval' => 604800,
+						'display'  => __( 'Once Weekly' )
+					)
 				);
-				update_option( 'sg_cron_configuration_settings', $options );
+				add_action( 'admin_init', array( $this, 'sg_scalexpert_configurable_settings_page_init' ) );
 			}
-			apply_filters( 'cron_schedules', array(
-					'interval' => 604800,
-					'display'  => __( 'Once Weekly' )
-				)
-			);
-			add_action( 'admin_init', array( $this, 'sg_scalexpert_configurable_settings_page_init' ) );
-			
 			
 		}
 		

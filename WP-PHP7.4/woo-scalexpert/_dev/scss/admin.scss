@@ -6,15 +6,4 @@
  * @copyright Scalexpert
  */
 
-.sg-account {
-  text-align: center;
-  margin-bottom: 50px;
-
-  &-text {
-    font-weight: 700;
-  }
-}
-
-#sg_newOrder {
-  padding-top: 1em;
-}
+@import "loader";

@@ -20,31 +20,30 @@
 		protected        $eFinancingSolutionActivated;
 		
 		public function __construct() {
-			require_once( PLUGIN_DIR . '/Static/autoload.php' );
-			$this->apiClient = new Client();
-			
-			if ( isset( $_GET['solution'] ) && $_GET['solution'] !== "" ) {
-				if ( get_option( 'sg_scalexpert_design_' . $_GET['solution'] ) ) {
-					$this->sg_scalexpert_options = get_option( 'sg_scalexpert_design_' . $_GET['solution'] );
-				} else {
-					$this->sg_scalexpert_options = array();
-					$options                     = array(
-						"activate" => "",
-					);
-					add_option( 'sg_scalexpert_design_' . $_GET['solution'], $options );
+			if ( is_admin() && isset( $_REQUEST['page'] ) || ( $_POST["option_page"] == "sg_scalexpert_custom_group" ) ) {
+				require_once( PLUGIN_DIR . '/Static/autoload.php' );
+				$this->apiClient = new Client();
+				
+				if ( isset( $_GET['solution'] ) && $_GET['solution'] !== "" ) {
+					if ( get_option( 'sg_scalexpert_design_' . $_GET['solution'] ) ) {
+						$this->sg_scalexpert_options = get_option( 'sg_scalexpert_design_' . $_GET['solution'] );
+					} else {
+						$this->sg_scalexpert_options = array();
+						$options                     = array(
+							"activate" => "",
+						);
+						add_option( 'sg_scalexpert_design_' . $_GET['solution'], $options );
+					}
 				}
-			}
-			
-			//$scalexpertActivated = get_option( 'sg_scalexpert_keys' );
-			
-			try {
-				$this->eFinancingSolutions = $this->apiClient->getFinancialSolutions();
-			} catch ( Exception $e ) {
-				echo 'Exception reçue : ', $e->getMessage(), "\n";
-				$this->eFinancingSolutions = array();
-			}
-			
-			if ( is_admin() && isset( $_GET['solution'] ) && $_GET['solution'] !== "" ) {
+				
+				
+				try {
+					$this->eFinancingSolutions = $this->apiClient->getFinancialSolutions();
+				} catch ( Exception $e ) {
+					echo 'Exception reçue : ', $e->getMessage(), "\n";
+					$this->eFinancingSolutions = array();
+				}
+				
 				$this->eFinancingSolutionActivated = ( get_option( "sg_scalexpert_activated_" . $_GET['solution'] ) ) ? get_option( "sg_scalexpert_activated_" . $_GET['solution'] ) : 0;
 				
 				add_action( 'admin_init', array( $this, 'sg_scalexpert_customisation_init' ) );
@@ -53,7 +52,9 @@
 				add_action( 'admin_init', array( $this, 'sg_scalexpert_customisation_sectionGeneral' ) );
 				
 				$this->sectionName = "sg_scalexpert_design_" . $_GET['solution'];
+				
 			}
+			
 		}
 		
 		/**
