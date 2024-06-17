@@ -16,18 +16,20 @@
 		
 		
 		public function __construct() {
-			
-			add_action( 'admin_init', array( $this, 'sg_scalexpert_debugpage_init' ) );
-			
-			if ( get_option( 'sg_scalexpert_debug' ) ) {
-				$this->sg_scalexpert_options = get_option( 'sg_scalexpert_debug' );
-			} else {
-				$this->sg_scalexpert_options = array();
-				$options                     = array(
-					"mode_debug" => "",
-				);
-				add_option( 'sg_scalexpert_debug', $options );
+			if ( is_admin() && isset( $_REQUEST['page'] ) || ( $_POST["option_page"] == "sg_scalexpert_debug_group" ) ) {
+				
+				if ( get_option( 'sg_scalexpert_debug' ) ) {
+					$this->sg_scalexpert_options = get_option( 'sg_scalexpert_debug' );
+				} else {
+					$this->sg_scalexpert_options = array();
+					$options                     = array(
+						"mode_debug" => "",
+					);
+					add_option( 'sg_scalexpert_debug', $options );
+				}
+				add_action( 'admin_init', array( $this, 'sg_scalexpert_debugpage_init' ) );
 			}
+			
 		}
 		
 		/**

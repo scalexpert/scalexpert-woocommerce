@@ -6,7 +6,7 @@
 	Description: Solutions de financement - SG Scalexpert
 	Text Domain: woo-scalexpert
 	Domain Path: /languages
-	Version: 1.1.0
+	Version: 1.2.0-8.2
 	Author: SOCIETE GENERALE
 	Author URI: https://scalexpert.societegenerale.com
 	*/
@@ -54,8 +54,7 @@
 				
 				try {
 					require_once( PLUGIN_DIR . '/Static/autoload.php' );
-					$this->apiClient     = new Client();
-					$eFinancingSolutions = $this->apiClient->getFinancialSolutions();
+					$this->apiClient = new Client();
 				} catch ( Exception $e ) {
 					echo 'Exception reçue : ', $e->getMessage(), "\n";
 					exit();
@@ -93,7 +92,7 @@
 			}
 			
 			add_action( 'init', 'setCronUpdateUrl' );
-			//add_action( 'add_meta_boxes', array( $this, 'custom_order_meta_box' ) );
+			add_action( 'add_meta_boxes', array( $this, 'custom_order_meta_box' ) );
 			
 			/* Loads the plugin's translated strings. */
 			load_plugin_textdomain( 'woo-scalexpert', FALSE, plugin_basename( PLUGIN_DIR ) . '/languages' );
@@ -125,31 +124,39 @@
 		 */
 		public function custom_order_meta_box_callback( $post ) {
 			
+			setlocale( LC_TIME, "fr_FR" );
 			$order = wc_get_order( $post->ID );
 			
-			if ( $order->get_meta( 'scalexpert_finID' ) ) {
+			if ( $order->get_meta( 'scalexpert_finID' ) && $order->get_meta( 'scalexpert_finID' ) != "ABORTED" ) {
 				// Get the saved value  canceledAmount
-				$reducedAmount      = get_post_meta( $post->ID, 'SG_reducedAmount', TRUE );
-				$financedAmount     = get_post_meta( $post->ID, 'SG_financedAmount', TRUE );
+				$reducedAmount      = esc_attr( get_post_meta( $post->ID, 'SG_reducedAmount', TRUE ) );
+				$financedAmount     = esc_attr( get_post_meta( $post->ID, 'SG_financedAmount', TRUE ) );
 				$labelAmount2Cancel = __( 'Amount to be cancelled:', 'woo-scalexpert' );
 				// Retrocompatibilité
-				$financedState = ( get_post_meta( $post->ID, 'scalexpert_status_bool', TRUE ) != "" ) ? get_post_meta( $post->ID, 'scalexpert_status_bool', TRUE ) : 1;
+				$financedState     = ( get_post_meta( $post->ID, 'scalexpert_status_bool', TRUE ) != "" ) ? get_post_meta( $post->ID, 'scalexpert_status_bool', TRUE ) : 1;
+				$placeHolderAmount = __( 'e.g. 1234.56', 'woo-scalexpert' );
 				
-				echo "<strong>FinID: </strong>" . $order->get_meta( 'scalexpert_finID' ) . "<br>";
+				echo "<strong>" . __( 'Orderdate:', 'woo-scalexpert' ) . "</strong>" . strftime( '%d-%m-%G', strtotime( $order->get_date_created() ) ) . "<br>";
+				echo "<strong>" . __( 'FinID:', 'woo-scalexpert' ) . "</strong>" . $order->get_meta( 'scalexpert_finID' ) . "<br>";
 				echo '<input type="hidden" id="scalexpert_finID" name="scalexpert_finID" value="' . $order->get_meta( 'scalexpert_finID' ) . '" />';
-				echo "<strong>Solution: </strong>" . $order->get_meta( 'scalexpert_solution' ) . "<br>";
+				echo "<strong>" . __( 'Solution:', 'woo-scalexpert' ) . "</strong>" . $order->get_meta( 'scalexpert_solution' ) . "<br>";
 				echo '<input type="hidden" id="scalexpert_solution" name="scalexpert_solution" value="' . $order->get_meta( 'scalexpert_solution' ) . '" />';
-				echo "<strong>Statut: </strong>" . $order->get_meta( 'scalexpert_status' ) . "<br>";
-				if ( $financedAmount ) {
-					echo "<strong>Financed Amount: </strong>" . $financedAmount . "€<br>";
-					$labelAmount2Cancel = __( 'Cancelled amount:', 'woo-scalexpert' );
-				}
-				// Output the input field
-				echo '<p><label for="SGcanceledAmount">' . $labelAmount2Cancel . '</label> ';
-				echo '<input type="text" id="SGcanceledAmount" name="SGcanceledAmount" value="' . esc_attr( $reducedAmount ) . '" /><br><br>';
-				echo '<input type="hidden" id="orderID" name="orderID" value="' . $post->ID . '" />';
-				if ( ! $financedAmount && $financedState != 0 ) {
-					echo '<input class="button cancel_order button-primary" type="button" id="cancelSGButton" name="cancelSGButton" value="' . __( 'Cancel financing', 'woo-scalexpert' ) . '" /></p>';
+				echo "<strong>" . __( 'Status:', 'woo-scalexpert' ) . "</strong>" . $order->get_meta( 'scalexpert_status' ) . "<br>";
+				if ( $financedAmount || $reducedAmount == $order->get_total() ) {
+					echo "<strong>" . __( 'Financed Amount:', 'woo-scalexpert' ) . "</strong>" . $financedAmount . "€<br>";
+					echo "<strong>" . __( 'Cancelled amount:', 'woo-scalexpert' ) . "</strong>" . $reducedAmount . "€<br>";
+				} else {
+					echo "<strong>" . __( 'Financed Amount:', 'woo-scalexpert' ) . "</strong>" . $order->get_total() . "€<br>";
+					
+					if ( ! $reducedAmount && $financedState !== '0' ) {
+						
+						// Output the input field
+						echo '<p><label for="SGcanceledAmount">' . $labelAmount2Cancel . '</label> ';
+						echo '<input type="text" id="SGcanceledAmount" name="SGcanceledAmount" value="" placeholder="' . $placeHolderAmount . '"  /><br><br>';
+						echo '<input type="hidden" id="orderID" name="orderID" value="' . $post->ID . '" />';
+						
+						echo '<input class="button cancel_order button-primary" type="button" id="cancelSGButton" name="cancelSGButton" value="' . __( 'Cancel financing', 'woo-scalexpert' ) . '" /></p>';
+					}
 				}
 			} else {
 				echo __( 'No SG financing for this order', 'woo-scalexpert' );
@@ -225,9 +232,9 @@
 				wp_enqueue_style( 'scalexpert_admin_css', plugins_url( '/assets/admin-style.css', __FILE__ ) );
 				wp_enqueue_script( 'jquery-ui-core', FALSE, array( 'jquery' ) );
 				wp_enqueue_script( 'jquery-ui-dialog', FALSE, array( 'jquery' ) );
-				//wp_enqueue_script( 'scalexpert_admin', plugins_url( '/assets/admin-script.js', __FILE__ ) );
 			}
 			
+            wp_enqueue_style( 'scalexpert_admin_scss', plugins_url( '/assets/css/admin.css', __FILE__ ) );
 			wp_enqueue_script( 'scalexpert_admin', plugins_url( '/assets/admin-script.js', __FILE__ ) );
 			
 		}
@@ -265,7 +272,6 @@
 	 */
 	class SGScalexpert_WC {
 		
-		//protected Client                                            $apiClient;
 		protected \wooScalexpert\Controller\Front\ProductController $productController;
 		
 		/**
@@ -290,9 +296,6 @@
 			
 			wp_enqueue_style( 'scalexpert_front_css', plugins_url( '/assets/css/scalexpert.css', __FILE__ ) );
 			wp_enqueue_script( 'scalexpert_front_js', plugins_url( '/assets/js/scalexpert.js', __FILE__ ) );
-			//wp_enqueue_script( 'scalexpert_front_modal_js', plugins_url( '/_dev/js/components/modal.js', __FILE__ ) );
-			//wp_enqueue_script( 'scalexpert_front_payment_js', plugins_url( '/_dev/js/components/payment.js', __FILE__ ) );
-			
 			wp_localize_script( 'scalexpert_front_js', 'sg_recreateCart_object', array( 'ajaxurl' => admin_url( 'admin-ajax.php' ) ) );
 		}
 		
@@ -390,7 +393,6 @@
 	 */
 	function scalexpert_add_gateway_class( $gateways ) {
 		
-		
 		$sgScalexpertKeys                 = get_option( 'sg_scalexpert_keys' );
 		$sgScalexpertConfigurableSettings = get_option( 'sg_scalexpert_configurable_settings' );
 		if ( $sgScalexpertKeys['activate'] == 1 ) {
@@ -407,6 +409,7 @@
 			);
 			update_option( "woocommerce_scalexpert_settings", $woocommerceScalexpertSettings );
 		}
+		
 		$gateways[] = 'WC_Scalexpert_Gateway'; // your class name is here
 		
 		return $gateways;
@@ -422,13 +425,14 @@
 			 */
 			public function __construct() {
 				
+				require_once( PLUGIN_DIR . '/Helper/Log/Logger.php' );
 				$this->logger = new LoggerHelper();
 				
-				$this->id                 = 'scalexpert'; // payment gateway plugin ID
-				$this->icon               = ''; // URL of the icon that will be displayed on checkout page near your gateway name
-				$this->has_fields         = TRUE; // in case you need a custom credit card form
+				$this->id                 = 'scalexpert';
+				$this->icon               = '';
+				$this->has_fields         = TRUE;
 				$this->method_title       = 'Scalexpert';
-				$this->method_description = 'Paiement en plusieurs fois avec la Société Générale'; // will be displayed on the options page
+				$this->method_description = 'Paiement en plusieurs fois avec la Société Générale';
 				$this->supports           = array(
 					'products'
 				);
@@ -444,7 +448,24 @@
 				add_action( 'wp_enqueue_scripts', array( $this, 'payment_scripts' ) );
 				add_action( 'woocommerce_after_order_notes', array( $this, 'scalexpert_checkout_field' ) );
 				
+				add_filter( 'woocommerce_available_payment_gateways', array( $this, 'conditional_payment_gateways' ), 10, 1 );
+			}
+			
+			
+			/**
+			 * @param $available_gateways
+			 *
+			 * @return mixed
+			 */
+			public function conditional_payment_gateways( $available_gateways ) {
 				
+				global $woocommerce;
+				require_once( plugin_dir_path( __FILE__ ) . '/Static/StaticData.php' );
+				if ( $woocommerce->cart->total < SCALEXPERT_LOWERLIMIT || $woocommerce->cart->total > SCALEXPERT_UPPERLIMIT ) {
+					unset( $available_gateways['scalexpert'] );
+				}
+				
+				return $available_gateways;
 			}
 			
 			
@@ -805,11 +826,6 @@
 				
 				global $woocommerce;
 				
-				//CB de 5017 6791 1038 0400
-				//$commandeData['order_key']
-				//woocommerce_checkout_pay_endpoint
-				//https://societe-generale-wp82-local.datasolution.site/checkout/order-received/92/?key=wc_order_NsYZ4MLhnO1tn
-				
 				$apiClient    = new \wooScalexpert\Helper\API\Client;
 				$commande     = wc_get_order( $order_id );
 				$commandeData = $commande->get_data();
@@ -914,11 +930,6 @@
 					),
 				);
 				
-				/*print "<pre>";
-				print_r( $checkOut );
-				print "</pre>";
-				die();*/
-				
 				/* Phone number is critical */
 				if ( ! $Phone['error'] ) {
 					try {
@@ -963,7 +974,6 @@
 					
 					$order = new WC_Order( $order_id );
 					$order->update_status( $this->getWcStatusByScalexperStatus( 'ABORTED' ), $this->getFinancialStateName( 'ABORTED' ) );
-					//$order->add_order_note( $this->getFinancialStateName( 'ABORTED' ) );
 					$woocommerce->cart->empty_cart();
 					
 					/* If needed we may here store the API Errors */
@@ -1193,7 +1203,7 @@
 			
 			
 			/**
-			 * In case you need a webhook, like PayPal IPN etc
+			 * Not needed yet
 			 */
 			public function webhook() {}
 			

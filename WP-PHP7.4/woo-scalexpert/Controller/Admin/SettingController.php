@@ -19,8 +19,10 @@
 		protected $sg_scalexpert_configurable_settings;
 		
 		public function __construct() {
-			$this->sg_scalexpert_configurable_settings = $this->getScalexpertConfigurableSettings();
-			add_action( 'admin_init', array( $this, 'sg_scalexpert_configurable_settings_page_init' ) );
+			if ( is_admin() && isset( $_REQUEST['page'] ) || ( $_POST["option_page"] == "sg_scalexpert_configurable_settings_group" ) ) {
+				$this->sg_scalexpert_configurable_settings = $this->getScalexpertConfigurableSettings();
+				add_action( 'admin_init', array( $this, 'sg_scalexpert_configurable_settings_page_init' ) );
+			}
 		}
 		
 		/**
