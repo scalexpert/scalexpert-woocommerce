@@ -3,7 +3,8 @@ Version 1.3.0 of plugin woocommerce
 
 ### Added
 
-Retrieve and display financing sub-status for back-office order tracking
+- Retrieve and display financing sub-status for back-office order tracking
+- Administration and personalization of the long credit product free of charge (SCFRLT-TXTS)
 
 [add 1.2.0] - 2024-06-07
 Version 1.2.0 of plugin woocommerce
