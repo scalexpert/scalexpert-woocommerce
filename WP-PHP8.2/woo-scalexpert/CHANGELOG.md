@@ -1,3 +1,9 @@
+[add 1.3.0] - 2024-07-18
+Version 1.3.0 of plugin woocommerce
+
+### Added
+Retrieve and display financing sub-status for back-office order tracking
+
 [add 1.2.0] - 2024-06-07
 Version 1.2.0 of plugin woocommerce
 
@@ -6,7 +12,6 @@ Version 1.2.0 of plugin woocommerce
 - compartmentalisation of API calls to reduce API load and maintain availability
 - added maximum and minimum limit to prevent API calls outside the scope of products or basket
 - added the option of cancelling all or part of financing in woocommerce back office
-
 
 [add 1.1.0] - 2024-04-23
 Version 1.1.0 of plugin woocommerce

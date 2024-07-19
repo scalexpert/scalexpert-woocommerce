@@ -6,6 +6,7 @@
 		'SCFRSP-4XPS' => __( "Paiement 4X frais partagés (SCFRSP-4XPS)", "woo-scalexpert" ),
 		'SCFRLT-TXPS' => __( 'Crédit long frais partagés (SCFRLT-TXPS)', "woo-scalexpert" ),
 		'SCFRLT-TXNO' => __( 'Crédit long (SCFRLT-TXNO)', "woo-scalexpert" ),
+		'SCFRLT-TXTS' => __( 'Crédit long sans frais (SCFRLT-TXTS)', "woo-scalexpert" ),
 		'SCFRSP-3XPS' => __( 'Paiement 3X frais partagés (SCFRSP-3XPS)', "woo-scalexpert" ),
 		'SCFRSP-3XTS' => __( 'Paiement 3X sans frais (SCFRSP-3XTS)', "woo-scalexpert" ),
 		'SCDELT-DXTS' => __( 'Crédit long (sans frais)', "woo-scalexpert" ),

@@ -189,13 +189,30 @@
 				);
 				
 				$this->logger->logError(
-					sprintf( '%s Error %s (environment=%s)', $uniqueId, $endpoint, $this->_type ),
+					sprintf( '%s Error client %s (environment=%s)', $uniqueId, $endpoint, $this->_type ),
 					[
 						'errorCode'    => $errorCode,
 						'errorMessage' => $errorMessage,
 					]
 				);
-			}
+			} catch ( GuzzleHttp\Exception\ServerException $e ) {
+
+                $errorCode    = $e->getCode();
+                $errorMessage = $e->getResponse()->getBody()->getContents();
+
+                $response = array(
+                    'errorCode'    => $errorCode,
+                    'errorMessage' => $errorMessage,
+                );
+
+                $this->logger->logError(
+                    sprintf( '%s Error server %s (environment=%s)', $uniqueId, $endpoint, $this->_type ),
+                    [
+                        'errorCode'    => $errorCode,
+                        'errorMessage' => $errorMessage,
+                    ]
+                );
+            }
 			
 			return $response;
 		}
@@ -444,14 +461,18 @@
 					$resultCode           = $result['code'];
 					$resultContent        = $result['content'];
 					$resultFinancedAmount = $result['contentsDecoded']['financedAmount'];
-					$resultStatus         = $result['contentsDecoded']['status'];
-					$resultStatus         = $this->getFinancialStateName( $resultStatus );
-					
-					if ( $resultCode == 200 && ! isset( $result['errorCode'] ) ) {
+					$resultStatus         = $this->getFinancialStateName( "CANCELLED" );
+
+					if (
+                        $resultCode == 200
+                        && ! isset( $result['errorCode'] )
+                        && $result['contentsDecoded']['status'] === "ACCEPTED"
+                    ) {
 						
 						update_post_meta( $order->get_id(), 'SG_financedAmount', floatval( $resultFinancedAmount ) );
 						update_post_meta( $order->get_id(), 'SG_reducedAmount', floatval( $amount2Cancel ) );
 						update_post_meta( $order->get_id(), 'scalexpert_status', $resultStatus );
+						update_post_meta( $order->get_id(), 'scalexpert_consolidatedSubstatus', __("CANCELED BY CUSTOMER", 'woo-scalexpert') );
 						$order->add_order_note( __( 'New financed amount: ', 'woo-scalexpert' ) . floatval( $resultFinancedAmount ) . "€" );
 						wp_die( json_encode( __( 'Financed amount reduced by: ', 'woo-scalexpert' ) . floatval( $amount2Cancel ) . "€" ) );
 						
