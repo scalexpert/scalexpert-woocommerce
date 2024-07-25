@@ -1,15 +1,15 @@
 <?php
 	
-	/*
-	Plugin Name: Woocommerce Scalexpert
-	Plugin URI: https://docs.scalexpert.societegenerale.com/apidocs/3mLlrPx3sPtekcQvEEUg/developers-docs/readme
-	Description: Solutions de financement - SG Scalexpert
-	Text Domain: woo-scalexpert
-	Domain Path: /languages
-	Version: 1.2.0-8.2
-	Author: SOCIETE GENERALE
-	Author URI: https://scalexpert.societegenerale.com
-	*/
+	/**
+	 * Plugin Name: Woocommerce Scalexpert
+	 * Plugin URI: https://docs.scalexpert.societegenerale.com/apidocs/3mLlrPx3sPtekcQvEEUg/developers-docs/readme
+	 * Description: Solutions de financement - SG Scalexpert
+	 * Text Domain: woo-scalexpert
+	 * Domain Path: /languages
+	 * Version: 1.3.0-8.2
+	 * Author: SOCIETE GENERALE
+	 * Author URI: https://scalexpert.societegenerale.com
+	 */
 	
 	/* If this file is called directly, abort. */
 	
@@ -142,6 +142,7 @@
 				echo "<strong>" . __( 'Solution:', 'woo-scalexpert' ) . "</strong>" . $order->get_meta( 'scalexpert_solution' ) . "<br>";
 				echo '<input type="hidden" id="scalexpert_solution" name="scalexpert_solution" value="' . $order->get_meta( 'scalexpert_solution' ) . '" />';
 				echo "<strong>" . __( 'Status:', 'woo-scalexpert' ) . "</strong>" . $order->get_meta( 'scalexpert_status' ) . "<br>";
+				echo "<strong>" . __( 'Substatus:', 'woo-scalexpert' ) . "</strong>" . $order->get_meta( 'scalexpert_consolidatedSubstatus' ) . "<br>";
 				if ( $financedAmount || $reducedAmount == $order->get_total() ) {
 					echo "<strong>" . __( 'Financed Amount:', 'woo-scalexpert' ) . "</strong>" . $financedAmount . "€<br>";
 					echo "<strong>" . __( 'Cancelled amount:', 'woo-scalexpert' ) . "</strong>" . $reducedAmount . "€<br>";
@@ -234,7 +235,7 @@
 				wp_enqueue_script( 'jquery-ui-dialog', FALSE, array( 'jquery' ) );
 			}
 			
-            wp_enqueue_style( 'scalexpert_admin_scss', plugins_url( '/assets/css/admin.css', __FILE__ ) );
+			wp_enqueue_style( 'scalexpert_admin_scss', plugins_url( '/assets/css/admin.css', __FILE__ ) );
 			wp_enqueue_script( 'scalexpert_admin', plugins_url( '/assets/admin-script.js', __FILE__ ) );
 			
 		}
@@ -501,6 +502,15 @@
 					)
 				);
 				
+				woocommerce_form_field( 'scalexpert_consolidatedSubstatus',
+					array(
+						'type'        => 'hidden',
+						'required'    => 'false',
+						'label'       => "",
+						'placeholder' => ""
+					)
+				);
+				
 			}
 			
 			
@@ -644,6 +654,8 @@
 					return NULL;
 				}
 				
+				$orderSubStatus = $order->get_meta( 'scalexpert_consolidatedSubstatus' );
+				
 				$apiClient = new \wooScalexpert\Helper\API\Client;
 				$endpoint  = SCALEXPERT_ENDPOINT_SUBSCRIPTION . $scalexpertFinID;
 				$result    = $apiClient->sendRequest(
@@ -663,6 +675,13 @@
 					
 					$newTextStatus = $this->getFinancialStateName( $sgFinancialStatus );
 					$order->update_status( $newOrderStatus );
+					
+					if (
+						( $sgFinancialSubStatus = __( $result['contentsDecoded']['consolidatedSubstatus'], 'woo-scalexpert' ) )
+						&& $orderSubStatus !== $sgFinancialSubStatus
+					) {
+						update_post_meta( $order->get_id(), 'scalexpert_consolidatedSubstatus', $sgFinancialSubStatus );
+					}
 					
 					if ( $orderStatus !== $newOrderStatus ) {
 						$order->add_order_note( $newTextStatus );
@@ -782,13 +801,18 @@
 						array(),
 						TRUE );
 					
-					$sgFinancialStatus = $result['contentsDecoded']['consolidatedStatus'];
-					$newOrderStatus    = $this->getWcStatusByScalexperStatus( $sgFinancialStatus );
-					$newTextStatus     = $this->getFinancialStateName( $sgFinancialStatus );
+					$sgFinancialStatus    = $result['contentsDecoded']['consolidatedStatus'];
+					$sgFinancialSubStatus = $result['contentsDecoded']['consolidatedSubstatus'];
+					$newOrderStatus       = $this->getWcStatusByScalexperStatus( $sgFinancialStatus );
+					$newTextStatus        = $this->getFinancialStateName( $sgFinancialStatus );
 					$order->update_status( $newOrderStatus );
 					if ( $orderStatus !== $newOrderStatus ) {
 						$order->add_order_note( $newTextStatus );
 						update_post_meta( $order_id, 'scalexpert_status', $newTextStatus );
+						
+						if ( $sgFinancialSubStatus ) {
+							update_post_meta( $order_id, 'scalexpert_consolidatedSubstatus', __( $sgFinancialSubStatus, 'woo-scalexpert' ) );
+						}
 						
 						if ( $sgFinancialStatus == "ACCEPTED" ) {
 							update_post_meta( $order_id, 'scalexpert_status_bool', 1 );
@@ -966,6 +990,7 @@
 					update_post_meta( $order_id, 'scalexpert_finID', $finID );
 					update_post_meta( $order_id, 'scalexpert_solution', $_POST['solutionCode'] );
 					update_post_meta( $order_id, 'scalexpert_status', __( "Financing request initiated", "woo-scalexpert" ) );
+					update_post_meta( $order_id, 'scalexpert_consolidatedSubstatus', __( "SUBSCRIPTION IN PROGRESS", 'woo-scalexpert' ) );
 					$woocommerce->cart->empty_cart();
 					$result['result'] = 'success';
 					wp_die( json_encode( $result ) );

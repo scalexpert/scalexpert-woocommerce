@@ -86,11 +86,15 @@ function toggleActivate(idfield, labelActif, labelNotActif) {
 }
 
 
+/**
+ *
+ *
+ */
 jQuery(document).ready(function () {
     jQuery("#cancelSGButton").click(function () {
 
-        jQuery("#cancelSGButton").attr('disabled', 'disabled');
 
+        jQuery("#cancelSGButton").attr('disabled', 'disabled');
         createOverlay();
 
         let cancelAmount = jQuery("#SGcanceledAmount").val();

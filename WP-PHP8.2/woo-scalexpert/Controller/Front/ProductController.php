@@ -83,15 +83,15 @@
 			// Paiements groupés / non groupés
 			if ( $groupFinancingSolution['group_financing_solution'] != 1 ) {
 				?>
-				<script>
+                <script>
                     jQuery(document).ready(function () {
                         jQuery("div.payment_method_scalexpert").attr("style", "block");
                     });
                     jQuery("input[name=solutionCode]:radio").click(function () {
                         jQuery("#payment_method_scalexpert").attr('checked', true);
                     });
-				
-				</script>
+
+                </script>
 				<?php
 			}
 			echo '<!-- end ' . plugin_dir_path( __FILE__ ) . '/Views/' . $template . '.php -->';
@@ -172,6 +172,7 @@
 		public function getTitleBySolution( $solution, $output = NULL ) : string {
 			
 			$data = $this->solutionnames;
+			
 			if ( isset( $data[ $solution ] ) && $output == "solutionName" ) {
 				//if ( $output == "solutionName" ) {
 				return $data[ $solution ];

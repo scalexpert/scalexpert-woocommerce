@@ -153,13 +153,12 @@
 					$temporaryOptions
 				);
 				
-				$BaseUrl        = $this->getBaseUrl();
-				$guzzleResponse = $this->guzzleClient->request(
+				$BaseUrl          = $this->getBaseUrl();
+				$guzzleResponse   = $this->guzzleClient->request(
 					$method,
 					$BaseUrl . $endpoint,
 					$options
 				);
-				
 				$responseBody     = $guzzleResponse->getBody();
 				$responseContents = $responseBody->getContents();
 				
@@ -189,7 +188,24 @@
 				);
 				
 				$this->logger->logError(
-					sprintf( '%s Error %s (environment=%s)', $uniqueId, $endpoint, $this->_type ),
+					sprintf( '%s Error client %s (environment=%s)', $uniqueId, $endpoint, $this->_type ),
+					[
+						'errorCode'    => $errorCode,
+						'errorMessage' => $errorMessage,
+					]
+				);
+			} catch ( GuzzleHttp\Exception\ServerException $e ) {
+				
+				$errorCode    = $e->getCode();
+				$errorMessage = $e->getResponse()->getBody()->getContents();
+				
+				$response = array(
+					'errorCode'    => $errorCode,
+					'errorMessage' => $errorMessage,
+				);
+				
+				$this->logger->logError(
+					sprintf( '%s Error server %s (environment=%s)', $uniqueId, $endpoint, $this->_type ),
 					[
 						'errorCode'    => $errorCode,
 						'errorMessage' => $errorMessage,
@@ -224,7 +240,6 @@
 		 *
 		 */
 		public function getFinancialSolutions( $amount = NULL, $country = "" ) : array {
-			
 			$eFinancingAmounts   = ( $amount != NULL ) ? [ $amount ] : [ "500", "1000" ];
 			$eFinancingCountries = [ "FR" ];
 			$financialSolutions  = [];
@@ -414,9 +429,8 @@
 			if ( $scalexpertFinID ) {
 				
 				//https://api.scalexpert.uatc.societegenerale.com/baas/uatc/e-financing/api/v1/subscriptions/{creditSubscriptionId}/_cancel
-				$apiClient = new \wooScalexpert\Helper\API\Client;
-				$endpoint  = SCALEXPERT_ENDPOINT_SUBSCRIPTION . $scalexpertFinID . "/_cancel";
-				
+				$apiClient         = new \wooScalexpert\Helper\API\Client;
+				$endpoint          = SCALEXPERT_ENDPOINT_SUBSCRIPTION . $scalexpertFinID . "/_cancel";
 				$cancelInformation = array(
 					'cancelledAmount'     => floatval( $amount2Cancel ),
 					'cancelledItem'       => "order",
@@ -444,14 +458,18 @@
 					$resultCode           = $result['code'];
 					$resultContent        = $result['content'];
 					$resultFinancedAmount = $result['contentsDecoded']['financedAmount'];
-					$resultStatus         = $result['contentsDecoded']['status'];
-					$resultStatus         = $this->getFinancialStateName( $resultStatus );
+					$resultStatus         = $this->getFinancialStateName( "CANCELLED" );
 					
-					if ( $resultCode == 200 && ! isset( $result['errorCode'] ) ) {
+					if (
+						$resultCode == 200
+						&& ! isset( $result['errorCode'] )
+						&& $result['contentsDecoded']['status'] === "ACCEPTED"
+					) {
 						
 						update_post_meta( $order->get_id(), 'SG_financedAmount', floatval( $resultFinancedAmount ) );
 						update_post_meta( $order->get_id(), 'SG_reducedAmount', floatval( $amount2Cancel ) );
 						update_post_meta( $order->get_id(), 'scalexpert_status', $resultStatus );
+						update_post_meta( $order->get_id(), 'scalexpert_consolidatedSubstatus', __( "CANCELED BY CUSTOMER", 'woo-scalexpert' ) );
 						$order->add_order_note( __( 'New financed amount: ', 'woo-scalexpert' ) . floatval( $resultFinancedAmount ) . "€" );
 						wp_die( json_encode( __( 'Financed amount reduced by: ', 'woo-scalexpert' ) . floatval( $amount2Cancel ) . "€" ) );
 						
