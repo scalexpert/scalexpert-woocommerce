@@ -9,6 +9,7 @@
  */
 namespace PHPUnit\TextUI\CliArguments;
 
+use const DIRECTORY_SEPARATOR;
 use function array_map;
 use function basename;
 use function explode;
@@ -23,6 +24,8 @@ use SebastianBergmann\CliParser\Exception as CliParserException;
 use SebastianBergmann\CliParser\Parser as CliParser;
 
 /**
+ * @no-named-arguments Parameter names are not covered by the backward compatibility promise for PHPUnit
+ *
  * @internal This class is not covered by the backward compatibility promise for PHPUnit
  */
 final class Builder
@@ -55,6 +58,7 @@ final class Builder
         'display-incomplete',
         'display-skipped',
         'display-deprecations',
+        'display-phpunit-deprecations',
         'display-errors',
         'display-notices',
         'display-warnings',
@@ -98,6 +102,7 @@ final class Builder
         'static-backup',
         'stderr',
         'fail-on-deprecation',
+        'fail-on-phpunit-deprecation',
         'fail-on-empty-test-suite',
         'fail-on-incomplete',
         'fail-on-notice',
@@ -185,6 +190,7 @@ final class Builder
         $displayIncomplete                 = null;
         $displaySkipped                    = null;
         $displayDeprecations               = null;
+        $displayPhpunitDeprecations        = null;
         $displayErrors                     = null;
         $displayNotices                    = null;
         $displayWarnings                   = null;
@@ -193,6 +199,7 @@ final class Builder
         $executionOrder                    = null;
         $executionOrderDefects             = null;
         $failOnDeprecation                 = null;
+        $failOnPhpunitDeprecation          = null;
         $failOnEmptyTestSuite              = null;
         $failOnIncomplete                  = null;
         $failOnNotice                      = null;
@@ -566,6 +573,11 @@ final class Builder
 
                     break;
 
+                case '--fail-on-phpunit-deprecation':
+                    $failOnPhpunitDeprecation = true;
+
+                    break;
+
                 case '--fail-on-empty-test-suite':
                     $failOnEmptyTestSuite = true;
 
@@ -756,6 +768,11 @@ final class Builder
 
                     break;
 
+                case '--display-phpunit-deprecations':
+                    $displayPhpunitDeprecations = true;
+
+                    break;
+
                 case '--display-errors':
                     $displayErrors = true;
 
@@ -797,6 +814,8 @@ final class Builder
                     }
 
                     $coverageFilter[] = $option[1];
+
+                    $optionAllowedMultipleTimes = true;
 
                     break;
 
@@ -906,6 +925,7 @@ final class Builder
             $executionOrder,
             $executionOrderDefects,
             $failOnDeprecation,
+            $failOnPhpunitDeprecation,
             $failOnEmptyTestSuite,
             $failOnIncomplete,
             $failOnNotice,
@@ -961,6 +981,7 @@ final class Builder
             $displayIncomplete,
             $displaySkipped,
             $displayDeprecations,
+            $displayPhpunitDeprecations,
             $displayErrors,
             $displayNotices,
             $displayWarnings,

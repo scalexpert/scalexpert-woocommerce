@@ -1,0 +1,146 @@
+/**
+ * Copyright © Scalexpert.
+ * This file is part of Scalexpert plugin for PrestaShop. See COPYING.md for license details.
+ *
+ * @author    Scalexpert (https://scalexpert.societegenerale.com/)
+ * @copyright Scalexpert
+ * @license   https://opensource.org/licenses/osl-3.0.php Open Software License (OSL 3.0)
+ */
+
+.sep-color {
+  color: #E2010B;
+}
+
+.sep-Simulations {
+  font-size: 14px;
+
+  &-solution {
+    display: none;
+
+    &:first-child {
+      display: block;
+    }
+
+    &-price {
+      font-weight: 700;
+      color: #E2010B;
+      margin-bottom: 5px;
+    }
+
+    &-top {
+      display: flex;
+      align-items: center;
+      margin-bottom: 5px;
+      min-height: 24px;
+      &:hover {
+        color: inherit;
+      }
+    }
+
+    &-i {
+      cursor: pointer;
+      margin: 0 4px;
+    }
+
+    &-infoSimulation {
+      display: flex;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+
+    &-listSimulation {
+      display: flex;
+      margin: 0 4px 0 0;
+      padding: 0;
+      flex-wrap: wrap;
+    }
+
+    &-itemSimulation {
+      border: 2px solid black;
+      border-radius: 8px;
+      width: 38px;
+      height: 38px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: black;
+      font-size: 14px;
+      margin: 0 4px 4px 0;
+
+      &[data-current="true"] {
+        background: #E2010B;
+        border-color: #E2010B;
+        color: white;
+        cursor: default;
+      }
+
+      /* SG-64 : fix woocommerce skin */
+      #payment .payment_methods &:last-child:not(.woocommerce-notice) {
+        border: 2px solid black;
+        &[data-current="true"] {
+          border-color: #E2010B;
+        }
+      }
+    }
+
+    &-infoMonthlyPayment {
+      font-weight: 700;
+      margin-bottom: 4px;
+
+      .sep-color {
+        font-weight: 700;
+      }
+    }
+
+    &-visualDescription {
+      color: #545454;
+      font-size: 12px;
+    }
+  }
+
+  &-installments {
+    color: #666;
+    border-top: 1px solid #E6E6E6;
+    padding-top: 8px;
+
+    &-mentions {
+      padding-top: 8px;
+      color: #808080;
+
+      > span {
+        display: inline-block;
+      }
+    }
+  }
+
+  .sep-Simulations-installments {
+    &-item {
+      height: 36px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 1px solid #dcdcdc;
+      padding: 0 16px;
+    }
+
+    &-total {
+      border-bottom-color: #666666;
+      font-weight: 700;
+    }
+
+  }
+}
+
+.sep_financialSolutionContent .scalexpert_important,
+.sep-Simulations-solution .scalexpert_important {
+  font-weight: bold;
+}
+
+.sep-Simulations-solution .scalexpert_important {
+  font-size: 13px;
+}
+
+.sep-Simulations-solution .part_bottom .scalexpert_important {
+  font-size: 15px;
+}

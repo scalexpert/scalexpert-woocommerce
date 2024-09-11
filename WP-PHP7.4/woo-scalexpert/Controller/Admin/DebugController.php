@@ -38,21 +38,21 @@
 		 */
 		public function sg_scalexpert_create_debug_page() {
 			?>
-			
-			<div class="wrap">
-				<img alt="" src="<?= plugins_url( '/woo-scalexpert/assets/img/Scaleexpert_logo.jpg' ); ?>" width="150">
+
+            <div class="wrap">
+                <img alt="" src="<?= plugins_url( '/woo-scalexpert/assets/img/Scaleexpert_logo.jpg' ); ?>" width="150">
 				
 				<?php AdminController::getAdministrationTopMenu( self::PAGE_NAME ); ?>
 				
 				<?php settings_errors(); ?>
-				<form method="post" action="options.php">
+                <form method="post" action="options.php">
 					<?php
 						settings_fields( 'sg_scalexpert_debug_group' );
 						do_settings_sections( 'sg-scalexpert-debug' );
 						submit_button();
 					?>
-				</form>
-			</div>
+                </form>
+            </div>
 			<?php
 		}
 		
@@ -81,6 +81,25 @@
 				'sg-scalexpert-debug', // page
 				'sg_scalexpert_setting_section' // section
 			);
+			
+			if ( URLAPIUAT == 'https://api.scalexpert.hml.societegenerale.com/baas/uat/' ) {
+				add_settings_field(
+					'mode_cache', // id
+					__( "Enable/Disable API Caching", "woo-scalexpert" ), // title
+					array( $this, 'caching_environment_callback' ), // callback
+					'sg-scalexpert-debug', // page
+					'sg_scalexpert_setting_section' // section
+				);
+			}
+			
+			add_settings_field(
+				'cache_life', // id
+				__( "Cache life", "woo-scalexpert" ), // title
+				array( $this, 'cachelife_environment_callback' ), // callback
+				'sg-scalexpert-debug', // page
+				'sg_scalexpert_setting_section' // section
+			);
+			
 		}
 		
 		/**
@@ -96,6 +115,14 @@
 				$sanitary_values['mode_debug'] = $input['mode_debug'];
 			}
 			
+			if ( isset( $input['mode_cache'] ) ) {
+				$sanitary_values['mode_cache'] = $input['mode_cache'];
+			}
+			
+			if ( isset( $input['cache_life'] ) ) {
+				$sanitary_values['cache_life'] = $input['cache_life'];
+			}
+			
 			return $sanitary_values;
 		}
 		
@@ -109,20 +136,53 @@
 		 */
 		public function debug_environment_callback() : void {
 			?>
-			<input type="checkbox" class="wppd-ui-toggle" id="sg_scalexpert_debug" name="sg_scalexpert_debug[mode_debug]" value="1"
-			       onchange="changeLabel('sg_scalexpert_debug','<?= __( "Activated", "woo-scalexpert" ) ?>','<?= __( "Off", "woo-scalexpert" ) ?>');"
+            <input type="checkbox" class="wppd-ui-toggle" id="sg_scalexpert_debug" name="sg_scalexpert_debug[mode_debug]" value="1"
+                   onchange="changeLabel('sg_scalexpert_debug','<?= __( "Activated", "woo-scalexpert" ) ?>','<?= __( "Off", "woo-scalexpert" ) ?>');"
 				<?php echo $this->sg_scalexpert_options['mode_debug'] && $this->sg_scalexpert_options['mode_debug'] === "1" ? 'checked' : ''; ?>
-			>
-			<label for="field-id"
-			       id="sg_scalexpert_debug_label"><?php echo $this->sg_scalexpert_options['mode_debug'] && $this->sg_scalexpert_options['mode_debug'] === "1"
+            >
+            <label for="field-id"
+                   id="sg_scalexpert_debug_label"><?php echo $this->sg_scalexpert_options['mode_debug'] && $this->sg_scalexpert_options['mode_debug'] === "1"
 					? __( "Activated", "woo-scalexpert" )
 					: __( "Off", "woo-scalexpert" );
 				?></label>
-			
-			</br>
-			<em><?= __( "Log files are available in the following folder :", "woo-scalexpert" ) ?></br>
-				/wp-content/plugins/woo-scalexpert/logs
-			</em>
+
+            </br>
+            <em><?= __( "Log files are available in the following folder :", "woo-scalexpert" ) ?></br>
+                /wp-content/plugins/woo-scalexpert/logs
+            </em>
+			<?php
+		}
+		
+		/**
+		 * @return void
+		 */
+		public function caching_environment_callback() : void {
+			if ( URLAPIUAT == 'https://api.scalexpert.hml.societegenerale.com/baas/uat/' ) {
+				?>
+                <input type="checkbox" class="wppd-ui-toggle" id="sg_scalexpert_cache" name="sg_scalexpert_debug[mode_cache]" value="1"
+                       onchange="changeLabel('sg_scalexpert_cache','<?= __( "Activated", "woo-scalexpert" ) ?>','<?= __( "Off", "woo-scalexpert" ) ?>');"
+					<?php echo $this->sg_scalexpert_options['mode_cache'] && $this->sg_scalexpert_options['mode_cache'] === "1" ? 'checked' : ''; ?>
+                >
+                <label for="field-id"
+                       id="sg_scalexpert_debug_label"><?php echo $this->sg_scalexpert_options['mode_cache'] && $this->sg_scalexpert_options['mode_cache'] === "1"
+						? __( "Activated", "woo-scalexpert" )
+						: __( "Off", "woo-scalexpert" );
+					?></label>
+				
+				<?php
+			}
+		}
+		
+		/**
+		 * @return void
+		 */
+		public function cachelife_environment_callback() : void {
+			$text = ( $this->sg_scalexpert_options['cache_life'] ) ? $this->sg_scalexpert_options['cache_life'] : 3600;
+			?>
+            <input type="text" id="sg_scalexpert_cache_life" name="sg_scalexpert_debug[cache_life]" placeholder="<?= __( "Cache duration", "woo-scalexpert" ) ?>"
+                   value="<?= $text ?>">
+            </br>
+            <em><?= __( "Cache duration in seconds p.e. 24h = 86400", "woo-scalexpert" ) ?></em>
 			<?php
 		}
 		

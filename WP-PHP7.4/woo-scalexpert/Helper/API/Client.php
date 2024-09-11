@@ -19,8 +19,10 @@
 	 */
 	class Client {
 		
-		protected GuzzleHttp\Client $guzzleClient;
-		protected LoggerHelper      $logger;
+		protected GuzzleHttp\Client   $guzzleClient;
+		protected LoggerHelper        $logger;
+		protected SimulationFormatter $formatter;
+		
 		const scope_financing = 'e-financing:rw';
 		const scope_insurance = 'insurance:rw';
 		protected array $scalexpertOptions;
@@ -37,6 +39,7 @@
 		 */
 		public function __construct() {
 			
+			require_once( PLUGIN_DIR . '/Helper/API/SimulationFormatter.php' );
 			require_once( PLUGIN_DIR . '/Helper/Log/Logger.php' );
 			require( PLUGIN_DIR . '/Static/StaticData.php' );
 			
@@ -49,6 +52,7 @@
 			$this->_appKey           = $this->openSslDeCrypt( get_option( 'sg_scalexpert_keys' )[ $apiSecretField ] );
 			$this->guzzleClient      = new GuzzleHttp\Client();
 			$this->logger            = new LoggerHelper();
+			$this->formatter         = new SimulationFormatter();
 			$this->getBearer( self::scope_financing );
 			
 			add_action( "wp_ajax_sg_checkKey", array( $this, "sg_checkKey" ) );
@@ -239,7 +243,8 @@
 		 * @return array
 		 *
 		 */
-		public function getFinancialSolutions( $amount = NULL, $country = "" ) : array {
+		public function getFinancialSolutions( $amount = NULL, $country = "", $format = "front" ) : array {
+			
 			$eFinancingAmounts   = ( $amount != NULL ) ? [ $amount ] : [ "500", "1000" ];
 			$eFinancingCountries = [ "FR" ];
 			$financialSolutions  = [];
@@ -257,20 +262,77 @@
 							'buyerBillingCountry' => $eFinancingCountry,
 						]
 					);
+					/**
+					 * We need the raw data for the simulator purpose
+					 */
+					if ( $format == "raw" ) {
+						return $response;
+					}
 					
-					if ( ! empty( $response['contentsDecoded']['solutions'] ) ) {
-						foreach ( $response['contentsDecoded']['solutions'] as $solution ) {
-							$financialSolutions[ $solution['solutionCode'] ] = $this->formatSolution(
-								$solution,
-								$eFinancingCountry,
-								'financial'
-							);
+					/**
+					 * Formated Data for the SolutionCTAs in product
+					 * and cart
+					 */
+					if ( $format == "front" ) {
+						if ( ! empty( $response['contentsDecoded']['solutions'] ) ) {
+							foreach ( $response['contentsDecoded']['solutions'] as $solution ) {
+								$financialSolutions[ $solution['solutionCode'] ] = $this->formatSolution(
+									$solution,
+									$eFinancingCountry,
+									'financial'
+								);
+							}
 						}
 					}
 				}
 			}
 			
 			return $financialSolutions;
+		}
+		
+		
+		/**
+		 * @param $response
+		 * @param $catID
+		 * @param $solutionCode
+		 *
+		 * @return array
+		 */
+		public function getEligibleSimulationsForFront( $response = array(), $catID = "", $solutionCode = "", $isProduct = FALSE ) : array {
+			
+			$eligibleSimulations = [];
+			if ( empty( $response['hasError'] ) ) {
+				foreach ( $response['contentsDecoded']['solutionSimulations'] as $solution ) {
+					$eligibleSimulations[ $solution['solutionCode'] ] = $solution;
+				}
+			}
+			
+			if ( $eligibleSimulations ) {
+				foreach ( $eligibleSimulations as $key => $eligibleSimulation ) {
+					$activated = get_option( 'sg_scalexpert_activated_' . $eligibleSimulation['solutionCode'] );
+					if ( ! isset( $activated['activate'] ) ) {
+						unset( $eligibleSimulations[ $key ] );
+					}
+					if ( $isProduct ) { // we are on a product page
+						$design = get_option( 'sg_scalexpert_design_' . $eligibleSimulation['solutionCode'] );
+						if ( empty( $design['activate'] ) ) {
+							unset( $eligibleSimulations[ $key ] );
+						}
+					}
+					if ( $solutionCode == "" ) { // we are in checkout
+						$excluded = get_option( 'sg_scalexpert_design_' . $eligibleSimulation['solutionCode'] );
+						$excluded = ( ! empty( $excluded['exclude_cats'] ) ) ? explode( ",", $excluded['exclude_cats'] ) : [];
+						if ( in_array( $catID, $excluded ) ) {
+							unset( $eligibleSimulations[ $key ] );
+						}
+					}
+					if ( $solutionCode != "" && $eligibleSimulation['solutionCode'] != $solutionCode ) { // we are in checkout
+						unset( $eligibleSimulations[ $key ] );
+					}
+				}
+			}
+			
+			return $eligibleSimulations;
 		}
 		
 		
@@ -297,6 +359,110 @@
 				'countryFlag'                 => sprintf( '/img/flags/%s.jpg', strtolower( $buyerBillingCountry ) ),
 				'type'                        => $solutionType,
 			];
+		}
+		
+		
+		/**
+		 * @param $eFinancingAmount
+		 * @param $eFinancingCountry
+		 * @param $categoryID
+		 *
+		 * @return array
+		 */
+		public function getSimulateFinancing4Product( $eFinancingAmount = NULL, $eFinancingCountry = "FR", $categoryID ) {
+			
+			$transient         = NULL;
+			$normalize         = array();
+			$simulateFinancing = array(
+				'buyerBillingCountry' => $eFinancingCountry,
+				"financedAmount"      => floatval( $eFinancingAmount ),
+				"solutionCodes"       => array()
+			);
+			/**
+			 * Caching of API Response
+			 */
+			$response = ( SCALEXPERT_APICACHE ) ? get_transient( "scalexpertSimulation_" . $eFinancingAmount . "_" . $eFinancingCountry ) : NULL;
+			if ( empty( $response ) ) {
+				try {
+					$response = $this->sendRequest( 'POST', SCALEXPERT_ENDPOINT_SIMULATION, array(), array(), array(), $simulateFinancing, TRUE );
+				} catch ( \Exception $e ) {
+					print_r( $e->getMessage() );
+				}
+				if ( $response['code'] == 200 ) {
+					$transient = ( SCALEXPERT_APICACHE ) ? Set_transient( "scalexpertSimulation_" . $eFinancingAmount . "_" . $eFinancingCountry, $response, SCALEXPERT_TRANSIENTS ) : NULL;
+				}
+			}
+			/**
+			 * We alert some people if necessary
+			 */
+			if ( empty( $response['code'] ) && $transient === NULL ) {
+				$this->alertAPIstate( $response );
+			}
+			/** @var
+			 * $customizeProduct : We now format the API response if there is some
+			 */
+			$eligibleSolutions = ( SCALEXPERT_APICACHE ) ? get_transient( "scalexpertSolutions_" . $eFinancingAmount . "_" . $eFinancingCountry ) : NULL;
+			if ( ! $eligibleSolutions ) {
+				$eligibleSolutions = $this->getFinancialSolutions( $eFinancingAmount, $eFinancingCountry, "raw" );
+				$transient         = ( SCALEXPERT_APICACHE ) ? Set_transient( "scalexpertSolutions_" . $eFinancingAmount . "_" . $eFinancingCountry, $eligibleSolutions, SCALEXPERT_TRANSIENTS ) : NULL;
+			}
+			$eligibleSimulations = $this->getEligibleSimulationsForFront( $response, $categoryID, "", TRUE );
+			$designData          = $this->formatter->buildDesignData( $eligibleSimulations, $eligibleSolutions, FALSE );
+			$normalize           = $this->formatter->normalizeSimulations( $response, $designData['designSolutions'], FALSE, TRUE );
+			
+			return $normalize;
+		}
+		
+		
+		/**
+		 * @param $eFinancingAmount
+		 * @param $eFinancingCountry
+		 * @param $solution
+		 *
+		 * @return array
+		 */
+		public function getSimulateFinancing4Checkout( $eFinancingAmount = NULL, $eFinancingCountry = "FR", $solution = "" ) {
+			
+			$simulateFinancing = array(
+				'buyerBillingCountry' => $eFinancingCountry,
+				"financedAmount"      => floatval( $eFinancingAmount ),
+				"solutionCodes"       => array( $solution )
+			);
+			/**
+			 * Caching of API Response
+			 */
+			$response = ( SCALEXPERT_APICACHE ) ? get_transient( "scalexpertCheckOutSimulation_" . $eFinancingAmount . "_" . $solution . "_" . $eFinancingCountry ) : NULL;
+			if ( ! $response ) {
+				try {
+					$response = $this->sendRequest( 'POST', SCALEXPERT_ENDPOINT_SIMULATION, array(), array(), array(), $simulateFinancing, TRUE );
+				} catch ( \Exception $e ) {
+					print_r( $e->getMessage() );
+				}
+				if ( $response['code'] == 200 && SCALEXPERT_APICACHE ) {
+					Set_transient( "scalexpertCheckOutSimulation_" . $eFinancingAmount . "_" . $solution . "_" . $eFinancingCountry, $response, SCALEXPERT_TRANSIENTS );
+				}
+			}
+			/**
+			 * We alert some people if necessary
+			 */
+			if ( ! empty( $response['errorCode'] ) ) {
+				$this->alertAPIstate( $response['errorCode'] );
+			}
+			/** @var
+			 * $customizeProduct : We now format the API response if there is some
+			 */
+			$eligibleSolutions = ( SCALEXPERT_APICACHE ) ? get_transient( "scalexpertSolutions_" . $eFinancingAmount . "_" . $eFinancingCountry ) : NULL;
+			if ( ! $eligibleSolutions ) {
+				$eligibleSolutions = $this->getFinancialSolutions( $eFinancingAmount, $eFinancingCountry, "raw" );
+				if ( SCALEXPERT_APICACHE ) {
+					Set_transient( "scalexpertSolutions_" . $eFinancingAmount . "_" . $eFinancingCountry, $eligibleSolutions, SCALEXPERT_TRANSIENTS );
+				}
+			}
+			$eligibleSimulations = $this->getEligibleSimulationsForFront( $response, "", $solution );
+			$designData          = $this->formatter->buildDesignData( $eligibleSimulations, $eligibleSolutions, TRUE );
+			
+			return $this->formatter->normalizeSimulations( $response, $designData['designSolutions'], FALSE, TRUE );
+			
 		}
 		
 		
@@ -653,6 +819,16 @@
 			}
 			
 			return $statusName;
+		}
+		
+		public function alertAPIstate( $error ) {
+			/**
+			 * Only for monitoring on UAT DS
+			 */
+			if ( URLAPIUAT == 'https://api.scalexpert.hml.societegenerale.com/baas/uat/' ) {
+				print $msg = print_r( $response, 1 );
+				mail( "omure@datasolution", "API SG Down", $response['errorMessage'] . $msg );
+			}
 		}
 		
 		

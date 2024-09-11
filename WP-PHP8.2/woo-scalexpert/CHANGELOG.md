@@ -1,7 +1,16 @@
+[add 1.4.0] - 2024-09-04
+Version 1.4.0 of plugin woocommerce
+
+### Added
+
+- Display simulation interface on product page and payment page
+- Add new lib and process to validate and reformat phone number
+
 [add 1.3.0] - 2024-07-18
 Version 1.3.0 of plugin woocommerce
 
 ### Added
+
 - Retrieve and display financing sub-status for back-office order tracking
 - Administration and personalization of the long credit product free of charge (SCFRLT-TXTS)
 
