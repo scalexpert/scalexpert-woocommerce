@@ -4,6 +4,7 @@ Version 1.5.30 of plugin woocommerce
 ### Added
 
 - Display simulation interface on cart page
+- Fixing code quality issues
 
 [add 1.4.0] - 2024-09-04
 Version 1.4.0 of plugin woocommerce
