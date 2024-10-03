@@ -44,7 +44,7 @@
 			?>
 			
 			<div class="wrap">
-				<img src="<?= plugins_url( '/woo-scalexpert/assets/img/Scaleexpert_logo.jpg' ); ?>" width="150">
+				<img alt="Scaleexpert logo" src="<?= plugins_url( '/woo-scalexpert/assets/img/Scaleexpert_logo.jpg' ); ?>" width="150">
 				<?php AdminController::getAdministrationTopMenu(); ?>
 				<?php settings_errors(); ?>
 				<p>

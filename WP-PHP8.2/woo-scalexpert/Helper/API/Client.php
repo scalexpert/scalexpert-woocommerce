@@ -369,7 +369,7 @@
 		 *
 		 * @return array
 		 */
-		public function getSimulateFinancing4Product( $eFinancingAmount = NULL, $eFinancingCountry = "FR", $categoryID ) {
+		public function getSimulateFinancing4Product( $eFinancingAmount = NULL, $eFinancingCountry = "FR", $categoryID, bool $isCart = FALSE ) {
 			
 			$transient         = NULL;
 			$normalize         = array();
@@ -398,6 +398,9 @@
 			if ( empty( $response['code'] ) && $transient === NULL ) {
 				$this->alertAPIstate( $response );
 			}
+            if ( $isCart ) {
+                return $response;
+            }
 			/** @var
 			 * $customizeProduct : We now format the API response if there is some
 			 */
@@ -421,7 +424,7 @@
 		 *
 		 * @return array
 		 */
-		public function getSimulateFinancing4Checkout( $eFinancingAmount = NULL, $eFinancingCountry = "FR", $solution = "" ) {
+		public function getSimulateFinancing4Checkout( $eFinancingAmount = NULL, $eFinancingCountry = "FR", $solution = "", $isCart = FALSE ) {
 			
 			$simulateFinancing = array(
 				'buyerBillingCountry' => $eFinancingCountry,
@@ -448,6 +451,9 @@
 			if ( ! empty( $response['errorCode'] ) ) {
 				$this->alertAPIstate( $response['errorCode'] );
 			}
+            if ( $isCart ) {
+                return $response;
+            }
 			/** @var
 			 * $customizeProduct : We now format the API response if there is some
 			 */
@@ -464,6 +470,43 @@
 			return $this->formatter->normalizeSimulations( $response, $designData['designSolutions'], FALSE, TRUE );
 			
 		}
+
+        /**
+         * @param float $eFinancingAmount
+         * @param string $eFinancingCountry
+         * @param array $solution
+         * @return array|null
+         */
+        public function getSimulateFinancing4Cart(float $eFinancingAmount, string $eFinancingCountry = "FR", array $solution = []): ?array
+        {
+
+            $simulateFinancing = array(
+                'buyerBillingCountry' => $eFinancingCountry,
+                "financedAmount" => $eFinancingAmount,
+                "solutionCodes" => $solution
+            );
+            /**
+             * Caching of API Response
+             */
+            $response = ( SCALEXPERT_APICACHE ) ? get_transient( "scalexpertCartSimulation_" . $eFinancingAmount . "_" . implode("_", $solution) . "_" . $eFinancingCountry ) : NULL;
+            if ( !$response ) {
+                try {
+                    $response = $this->sendRequest( 'POST', SCALEXPERT_ENDPOINT_SIMULATION, array(), array(), array(), $simulateFinancing, TRUE );
+                } catch ( \Exception $e ) {
+                    print_r( $e->getMessage() );
+                }
+                if ( $response[ 'code' ] == 200 && SCALEXPERT_APICACHE ) {
+                    Set_transient( "scalexpertCartSimulation_" . $eFinancingAmount . "_" . implode("_", $solution) . "_" . $eFinancingCountry, $response, SCALEXPERT_TRANSIENTS );
+                }
+            }
+            /**
+             * We alert some people if necessary
+             */
+            if ( !empty( $response[ 'errorCode' ] ) ) {
+                $this->alertAPIstate( $response[ 'errorCode' ] );
+            }
+            return $response;
+        }
 		
 		
 		/**

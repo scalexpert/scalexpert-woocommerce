@@ -19,6 +19,9 @@
 
     &:first-child {
       display: block;
+      .sep-Simulations-Cart & {
+        margin: 0;
+      }
     }
 
     &-price {

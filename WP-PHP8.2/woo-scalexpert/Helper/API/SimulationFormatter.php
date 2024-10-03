@@ -24,7 +24,6 @@ class SimulationFormatter
      */
     public static function normalizeSimulations($simulateResponse, $designSolution = array(), $groupSolutions = FALSE, $sortBySolutionCode = FALSE): array
     {
-
         $simulationsFullData = array();
         $solutionSimulations = $simulateResponse['contentsDecoded']['solutionSimulations'];
         if (empty($solutionSimulations)) {
@@ -93,7 +92,6 @@ class SimulationFormatter
         } else {
 
             foreach ($solutionSimulations as $key => $solutionSimulation) {
-
                 $solutionCode = $solutionSimulation['solutionCode'];
                 if (!empty($designSolution[$solutionCode])) {
                     $nbDurations = count($solutionSimulation['simulations']);
@@ -181,13 +179,12 @@ class SimulationFormatter
     /**
      * @param $eligibleSimulations
      * @param $eligibleSolutions
-     * @param $isPayment
-     *
+     * @param false $isPayment
+     * @param bool $isCart
      * @return array
      *
-     *
      */
-    public function buildDesignData($eligibleSimulations, $eligibleSolutions, $isPayment = FALSE)
+    public function buildDesignData($eligibleSimulations, $eligibleSolutions, bool $isPayment = FALSE, bool $isCart = FALSE): array
     {
 
         $solutionCodes = [];
@@ -206,9 +203,8 @@ class SimulationFormatter
                 $solutionCodes[] = $solutionCode;
                 // Prepare design config variables for front
                 $designSolutions[$solutionCode] = $solutionsFullData[$solutionCode]['communicationKit'];
-
+                $designBO = get_option('sg_scalexpert_design_' . $solutionCode);
                 if ($isPayment) {
-                    $designBO = get_option('sg_scalexpert_design_' . $solutionCode);
                     $designSolutions[$solutionCode]['displayLogo'] = (!empty($designBO['showlogo_cart'])) ? "TRUE" : FALSE;
                     if (!empty($solutionsFullData[$solutionCode]['title_payment'])) {
                         $designSolutions[$solutionCode]['visualTitle'] = $solutionsFullData[$solutionCode]['title_payment'];
@@ -216,8 +212,15 @@ class SimulationFormatter
                     if (!empty($designBO['payment_title'])) {
                         $designSolutions[$solutionCode]['visualTitle'] = '<div class="scalexpert_title">' . $designBO['payment_title'] . '</div>';
                     }
+                } elseif ($isCart) {
+                    $designSolutions[ $solutionCode ][ 'displayLogo' ] = ( !empty( $designBO[ 'showlogo_cart_cart' ] ) ) ? "TRUE" : FALSE;
+                    if ( !empty( $solutionsFullData[ $solutionCode ][ 'title_cart' ] ) ) {
+                        $designSolutions[ $solutionCode ][ 'visualTitle' ] = $solutionsFullData[ $solutionCode ][ 'title_cart' ];
+                    }
+                    if ( !empty( $designBO[ 'cart_title' ] ) ) {
+                        $designSolutions[ $solutionCode ][ 'visualTitle' ] = '<div class="scalexpert_title">' . $designBO[ 'cart_title' ] . '</div>';;
+                    }
                 } else {
-                    $designBO = get_option('sg_scalexpert_design_' . $solutionCode);
                     $designSolutions[$solutionCode]['displayLogo'] = (!empty($designBO['showlogo'])) ? "TRUE" : FALSE;
                     if (!empty($solutionsFullData[$solutionCode]['title'])) {
                         $designSolutions[$solutionCode]['visualTitle'] = $solutionsFullData[$solutionCode]['title'];

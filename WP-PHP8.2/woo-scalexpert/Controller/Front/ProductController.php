@@ -13,6 +13,7 @@ namespace wooScalexpert\Controller\Front;
 
 use GuzzleHttp\Exception\GuzzleException;
 use wooScalexpert\Helper\API\Client;
+use wooScalexpert\Helper\API\SimulationFormatter;
 
 
 class ProductController
@@ -108,11 +109,11 @@ class ProductController
 
     /**
      * @param $price
-     * @param $locale
+     * @param string $locale
      *
      * @return void
      */
-    public function showSimulation4Product($price = NULL, $locale = "FR")
+    public function showSimulation4Product($price = NULL, string $locale = "FR"): void
     {
         global $product;
         global $post;
@@ -145,9 +146,47 @@ class ProductController
         $simulations = (SCALEXPERT_APICACHE) ? get_transient("scalexpertProductSimulation_" . $product->get_id() . "_" . $locale) : $simulations;
 
         echo '<!-- begin /Views/productFinancialSimulationContent.php -->';
-        include(plugin_dir_path(__FILE__) . '../../Views/productFinancialSimulationContent.php');
+        include_once(plugin_dir_path(__FILE__) . '../../Views/productFinancialSimulationContent.php');
         echo '<!-- end /Views/productFinancialSimulationContent.php -->';
 
+    }
+
+    /**
+     * @param $price
+     * @return void
+     */
+    public function showSimulation4Cart( $price = NULL ): void
+    {
+        $this->apiclient = new Client();
+        $formatter = new SimulationFormatter();
+        $solutions       = ( SCALEXPERT_APICACHE ) ? get_transient( "scalexpertCart_" . $price ) : NULL;
+        if ( empty( $solutions ) ) {
+            $solutions = $this->apiclient->getFinancialSolutions( floatval( $price ), "", "raw" );
+            if (SCALEXPERT_APICACHE) {
+                Set_transient("scalexpertCart_" . $price, $solutions, SCALEXPERT_TRANSIENTS);
+            }
+        }
+        $solutions = $this->eligibleSolutions4Cart( $solutions[ 'contentsDecoded' ] );
+
+        $eligibleSimulations = array();
+        $solutionCodes = [];
+        foreach ( $solutions[ "contentsDecoded" ][ "solutions" ] as $key => $solution ) {
+            $solutionCodes[] = $solution[ 'solutionCode' ];
+        }
+        $simulationCart = $this->apiclient->getSimulateFinancing4Cart( floatval( $price ), "FR", $solutionCodes );
+        foreach ($simulationCart['contentsDecoded']['solutionSimulations'] as $simulation) {
+            $eligibleSimulations[$simulation['solutionCode']] = $simulation;
+        }
+        $designData  = $formatter->buildDesignData( $eligibleSimulations, $solutions, FALSE, TRUE );
+        $simulations = $formatter->normalizeSimulations( $simulationCart, $designData[ 'designSolutions' ], FALSE, TRUE );
+
+        asort( $simulations );
+
+        $isSimulation = "cart";
+        $cartTotal    = $price;
+        echo '<!-- begin /Views/productFinancialSimulationContent.php -->';
+        include_once( plugin_dir_path( __FILE__ ) . '../../Views/cartFinancialSimulationContent.php' );
+        echo '<!-- end /Views/productFinancialSimulationContent.php -->';
     }
 
 
@@ -223,6 +262,40 @@ class ProductController
         return $this->apiclient->getFinancialSolutions($price);
     }
 
+    /**
+     * @param array $solutions
+     * @return false|mixed
+     */
+    public function eligibleSolutions4Cart(array $solutions = array() ): mixed
+    {
+
+        $eligible = array();
+        unset( $solutions[ 'content' ] );
+
+        $checkOutProdCats = array();
+        foreach ( WC()->cart->get_cart() as $cart_item ) {
+            $terms = get_the_terms( $cart_item[ 'product_id' ], 'product_cat' );
+            foreach ( $terms as $term ) {
+                $checkOutProdCats[] = $term->term_id;
+            }
+        }
+
+        foreach ( $solutions [ 'solutions' ] as $key => $solution ) {
+            $actif = get_option( 'sg_scalexpert_activated_' . $solution[ 'solutionCode' ] );
+            if ( empty( $actif[ 'activate' ] ) ) {
+                unset( $solutions [ 'solutions' ] [ $key ] );
+            }
+            $excluded = get_option( 'sg_scalexpert_design_' . $solution[ 'solutionCode' ] );
+            $excluded = ( !empty( $excluded[ 'exclude_cats' ] ) ) ? explode( ",", $excluded[ 'exclude_cats' ] ) : [];
+            $result   = array_intersect( $checkOutProdCats, $excluded );
+            if ( $result ) {
+                unset( $solutions [ 'solutions' ] [ $key ] );
+            }
+        }
+
+        $eligible[ 'contentsDecoded' ] = $solutions;
+        return $eligible;
+    }
 
     /**
      * @param $solutions

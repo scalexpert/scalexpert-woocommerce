@@ -30,7 +30,7 @@
 			
 			if ( is_admin() && isset( $_REQUEST['page'] ) || ( $_POST["option_page"] == "sg_scalexpert_finances_group" ) ) {
 				require_once( PLUGIN_DIR . '/Static/autoload.php' );
-				require( PLUGIN_DIR . '/Static/StaticData.php' );
+                require( PLUGIN_DIR . '/Static/StaticData.php' );
 				$this->apiClient = new Client();
 				try {
 					$this->eFinancingSolutions = $this->apiClient->getFinancialSolutions();
@@ -84,7 +84,7 @@
 			?>
 			
 			<div class="wrap">
-				<img src="<?= plugins_url( '/woo-scalexpert/assets/img/Scaleexpert_logo.jpg' ); ?>" width="150">
+				<img alt="Scaleexpert logo" src="<?= plugins_url( '/woo-scalexpert/assets/img/Scaleexpert_logo.jpg' ); ?>" width="150">
 				
 				<?php AdminController::getAdministrationTopMenu( self::PAGE_NAME ); ?>
 				

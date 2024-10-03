@@ -17,7 +17,11 @@ document.addEventListener("DOMContentLoaded", function () {
     // For modal in checkout, load js after updated page checkout with ajax
     $('body').on('updated_checkout', function () {
         initModal();
-    })
+    });
+    // For modal in cart, load js after updated page checkout with ajax
+    $('body').on('updated_wc_div', function () {
+        initModal(); 
+    });
 });
 
 function initModal() {

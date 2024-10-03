@@ -15,8 +15,8 @@
 			$md5GroupSolution = md5( 'all' . sizeof( $solutions ) . rand( 0, 100 ) );
 			$isSimulation     = "product";
 			
-			include( plugin_dir_path( __FILE__ ) . 'solution.php' );
-			include( plugin_dir_path( __FILE__ ) . 'modalSimulation.php' );
+			include_once( plugin_dir_path( __FILE__ ) . 'solution.php' );
+			include_once( plugin_dir_path( __FILE__ ) . 'modalSimulation.php' );
 		}
 	?>
 </div>

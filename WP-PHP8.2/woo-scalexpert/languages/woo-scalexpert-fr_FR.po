@@ -3,8 +3,8 @@ msgstr ""
 "Project-Id-Version: Woocommerce Scalexpert\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2024-01-19 16:50+0000\n"
-"PO-Revision-Date: 2024-08-30 09:55+0000\n"
-"Last-Translator: WordPress DATASOLUTION\n"
+"PO-Revision-Date: 2024-09-17 12:39+0000\n"
+"Last-Translator: Thomas LACHEHEB\n"
 "Language-Team: Français\n"
 "Language: fr_FR\n"
 "Plural-Forms: nplurals=2; plural=n > 1;\n"
@@ -12,14 +12,14 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "X-Generator: Loco https://localise.biz/\n"
-"X-Loco-Version: 2.6.11; wp-6.6.1\n"
+"X-Loco-Version: 2.6.10; wp-6.5.5\n"
 "X-Domain: woo-scalexpert"
 
-#: Helper/API/Client.php:576
+#: Helper/API/Client.php:582
 msgid " API credentials are correct !"
 msgstr " Les informations d'identification de l'API sont correctes !"
 
-#: Helper/API/Client.php:578
+#: Helper/API/Client.php:584
 msgid " API credentials are invalid !"
 msgstr " Les informations d'identification de l'API ne sont pas valides !"
 
@@ -27,7 +27,7 @@ msgstr " Les informations d'identification de l'API ne sont pas valides !"
 msgid " Order again "
 msgstr "Commander à nouveau"
 
-#: woo-scalexpert.php:745 woo-scalexpert.php:774 Helper/API/Client.php:817
+#: woo-scalexpert.php:746 woo-scalexpert.php:775 Helper/API/Client.php:823
 msgid "A technical error occurred during process, please retry."
 msgstr ""
 "Une erreur technique est survenue pendant le processus, veuillez réessayer."
@@ -51,22 +51,24 @@ msgstr "Activer Scalexpert pour Woocommerce"
 msgid "Activate/deactivate financing options"
 msgstr "Activer/désactiver les options de financement"
 
+#: Controller/Admin/DesignController.php:344
+#: Controller/Admin/DesignController.php:349
+#: Controller/Admin/DesignController.php:393
+#: Controller/Admin/DesignController.php:398
+#: Controller/Admin/DesignController.php:421
+#: Controller/Admin/DesignController.php:426
+#: Controller/Admin/DesignController.php:453
+#: Controller/Admin/DesignController.php:458
 #: Controller/Admin/CronConfigurationController.php:159
 #: Controller/Admin/CronConfigurationController.php:164
-#: Controller/Admin/DesignController.php:294
-#: Controller/Admin/DesignController.php:299
-#: Controller/Admin/DesignController.php:340
-#: Controller/Admin/DesignController.php:345
-#: Controller/Admin/DesignController.php:370
-#: Controller/Admin/DesignController.php:375
-#: Controller/Admin/DebugController.php:140
-#: Controller/Admin/DebugController.php:145
-#: Controller/Admin/DebugController.php:163
-#: Controller/Admin/DebugController.php:168
 #: Controller/Admin/FinancingController.php:267
 #: Controller/Admin/FinancingController.php:272
 #: Controller/Admin/FinancingController.php:321
 #: Controller/Admin/FinancingController.php:326
+#: Controller/Admin/DebugController.php:140
+#: Controller/Admin/DebugController.php:145
+#: Controller/Admin/DebugController.php:163
+#: Controller/Admin/DebugController.php:168
 msgid "Activated"
 msgstr "Activé"
 
@@ -95,7 +97,11 @@ msgstr "Montant de l'annulation : "
 msgid "API keys"
 msgstr "Clés API"
 
-#: Controller/Admin/DesignController.php:283
+#: Controller/Admin/DesignController.php:332
+msgid "At the top basket block"
+msgstr "En haut du bloc panier"
+
+#: Controller/Admin/DesignController.php:320
 msgid "At the top of the add to basket block"
 msgstr "En haut du bloc d'ajout au panier"
 
@@ -124,7 +130,7 @@ msgstr "Durée de vie du cache"
 msgid "Cancel financing"
 msgstr "Annuler le financement"
 
-#: Helper/API/Client.php:638
+#: Helper/API/Client.php:644
 msgid "CANCELED BY CUSTOMER"
 msgstr "Annulation demandée par le client"
 
@@ -132,11 +138,16 @@ msgstr "Annulation demandée par le client"
 msgid "Cancelled amount:"
 msgstr "Montant de l'annulation : "
 
-#: Helper/API/Client.php:715
+#: Helper/API/Client.php:721
 msgid "cancelledAmount should be strictly positive"
 msgstr "Le montant annulé doit être strictement positif"
 
-#: Controller/Front/ProductController.php:72
+#. id
+#: Controller/Admin/DesignController.php:211
+msgid "Cart page"
+msgstr "Page panier"
+
+#: Controller/Front/ProductController.php:73
 msgid "Cart value or product not eligible for Scalexpert financing !"
 msgstr "Valeur du panier ou produit non éligible au financement Scalexpert !"
 
@@ -162,8 +173,8 @@ msgid "Configure my keys"
 msgstr "Configurer mes clés"
 
 #. page_title
-#: Controller/Admin/CronConfigurationController.php:72
 #: Controller/Admin/AdminController.php:105
+#: Controller/Admin/CronConfigurationController.php:72
 msgid "Cron settings"
 msgstr "Paramètres de la tâche planifiée"
 
@@ -189,21 +200,22 @@ msgstr "Crédit long sans frais (SCFRLT-TXTS)"
 
 #. id
 #. page_title
-#: Controller/Admin/DesignController.php:136
+#: Controller/Admin/DesignController.php:137
 #: Controller/Admin/AdminController.php:87
 msgid "Customise"
 msgstr "Personnaliser"
 
 #. id
-#: Controller/Admin/DesignController.php:210
+#: Controller/Admin/DesignController.php:218
+#: Controller/Admin/DesignController.php:244
 msgid "Customise payment"
 msgstr "Titre"
 
 #. id
-#: Controller/Admin/DesignController.php:168
-#: Controller/Admin/DesignController.php:391
-#: Controller/Admin/DesignController.php:401
-#: Controller/Admin/DesignController.php:413
+#: Controller/Admin/DesignController.php:169
+#: Controller/Admin/DesignController.php:474
+#: Controller/Admin/DesignController.php:484
+#: Controller/Admin/DesignController.php:496
 msgid "Customise the block"
 msgstr "Titre"
 
@@ -218,7 +230,7 @@ msgid "Description Scalexpert"
 msgstr "Description Scalexpert"
 
 #. id
-#: Controller/Admin/DesignController.php:160
+#: Controller/Admin/DesignController.php:161
 msgid "Display on product sheets"
 msgstr "Affichage sur les fiches produits"
 
@@ -227,7 +239,7 @@ msgid "Display settings"
 msgstr "Paramètres d'affichage"
 
 #. id
-#: Controller/Admin/DesignController.php:176
+#: Controller/Admin/DesignController.php:177
 msgid "Display the logo"
 msgstr "Afficher le logo"
 
@@ -240,7 +252,7 @@ msgstr "Désactivé"
 msgid "e.g. 1234.56"
 msgstr "1234.56"
 
-#: Controller/Admin/DesignController.php:319
+#: Controller/Admin/DesignController.php:370
 msgid "Enable / Disable"
 msgstr "Activer / Désactiver"
 
@@ -300,8 +312,8 @@ msgid "Every two weeks"
 msgstr "Toutes les deux semaines"
 
 #. id
-#: Controller/Admin/DesignController.php:238
-#: Controller/Admin/DesignController.php:422
+#: Controller/Admin/DesignController.php:273
+#: Controller/Admin/DesignController.php:505
 msgid "Exclusion of categories"
 msgstr "Exclusion de catégories"
 
@@ -310,14 +322,14 @@ msgid "Execute update status order with following link :"
 msgstr ""
 "Exécutez la mise à jour des status des commandes via le lien suivant : "
 
-#: Helper/API/Client.php:709
+#: Helper/API/Client.php:715
 msgid "Final Amount is less than minimum authorized amount"
 msgstr ""
 "L'annulation du financement peut être totale ou partielle. Dans le cas d'une "
 "annulation partielle, le montant du financement restant après annulation ne "
 "doit pas être inférieur à 100€."
 
-#: Helper/API/Client.php:640
+#: Helper/API/Client.php:646
 msgid "Financed amount reduced by: "
 msgstr "Montant financé réduit de : "
 
@@ -339,35 +351,35 @@ msgstr ""
 "<br>\n"
 "Vous pouvez recréer la commande en cliquant sur le bouton ci-dessous."
 
-#: woo-scalexpert.php:742 Helper/API/Client.php:814
+#: woo-scalexpert.php:743 Helper/API/Client.php:820
 msgid "Financing request aborted"
 msgstr ""
 "Demande de financement abandonnée par le client ou suite à un incident "
 "technique"
 
-#: woo-scalexpert.php:733 Helper/API/Client.php:805
+#: woo-scalexpert.php:734 Helper/API/Client.php:811
 msgid "Financing request accepted"
 msgstr "Demande de financement acceptée"
 
-#: woo-scalexpert.php:739 Helper/API/Client.php:811
+#: woo-scalexpert.php:740 Helper/API/Client.php:817
 msgid "Financing request cancelled"
 msgstr "Demande de financement annulée"
 
-#: woo-scalexpert.php:727 Helper/API/Client.php:799
+#: woo-scalexpert.php:728 Helper/API/Client.php:805
 msgid "Financing request in progress"
 msgstr "Demande de financement initiée"
 
-#: woo-scalexpert.php:1005 woo-scalexpert.php:1008
+#: woo-scalexpert.php:1006 woo-scalexpert.php:1009
 msgid "Financing request initiated"
 msgstr "Appel de Scalexpert pour une demande de financement"
 
-#: woo-scalexpert.php:730 Helper/API/Client.php:802
+#: woo-scalexpert.php:731 Helper/API/Client.php:808
 msgid "Financing request pre-accepted"
 msgstr ""
 "Demande de financement transmise à l’organisme prêteur et en attente de "
 "décision"
 
-#: woo-scalexpert.php:736 Helper/API/Client.php:808
+#: woo-scalexpert.php:737 Helper/API/Client.php:814
 msgid "Financing request rejected"
 msgstr "Demande de financement refusée"
 
@@ -376,9 +388,9 @@ msgid "Financing SG"
 msgstr "Financement SG"
 
 #. id
-#: Controller/Admin/DesignController.php:184
+#: Controller/Admin/DesignController.php:185
 msgid "Financing Simulator"
-msgstr "Personnalisation de l’encart de financement sur la page produit"
+msgstr "Personnalisation de l’encart de financement"
 
 #: Controller/Admin/ConfigController.php:208
 #: Controller/Admin/ConfigController.php:218
@@ -390,7 +402,7 @@ msgid "FinID:"
 msgstr "Identifiant de souscription : "
 
 #. id
-#: Controller/Admin/DesignController.php:228
+#: Controller/Admin/DesignController.php:263
 msgid "General Configuration"
 msgstr "Configuration Générale"
 
@@ -462,7 +474,7 @@ msgstr "Nom Attribut Marque"
 msgid "Name Attribute Model"
 msgstr "Nom Attribut Modèle"
 
-#: Helper/API/Client.php:639
+#: Helper/API/Client.php:645
 msgid "New financed amount: "
 msgstr "Nouveau montant financé : "
 
@@ -470,7 +482,7 @@ msgstr "Nouveau montant financé : "
 msgid "New order creation failed !"
 msgstr "La création d'une nouvelle commande a échoué !"
 
-#: woo-scalexpert.php:644
+#: woo-scalexpert.php:645
 msgid "No orders to update"
 msgstr "Aucunes commandes à mettre à jour"
 
@@ -478,23 +490,25 @@ msgstr "Aucunes commandes à mettre à jour"
 msgid "No SG financing for this order"
 msgstr "Pas de financement SG pour cette commande"
 
+#: Controller/Admin/DesignController.php:345
+#: Controller/Admin/DesignController.php:349
+#: Controller/Admin/DesignController.php:394
+#: Controller/Admin/DesignController.php:398
+#: Controller/Admin/DesignController.php:422
+#: Controller/Admin/DesignController.php:426
+#: Controller/Admin/DesignController.php:454
+#: Controller/Admin/DesignController.php:458
 #: Controller/Admin/CronConfigurationController.php:159
 #: Controller/Admin/CronConfigurationController.php:165
-#: Controller/Admin/DesignController.php:295
-#: Controller/Admin/DesignController.php:299
-#: Controller/Admin/DesignController.php:341
-#: Controller/Admin/DesignController.php:345
-#: Controller/Admin/DesignController.php:371
-#: Controller/Admin/DesignController.php:375
-#: Controller/Admin/DebugController.php:140
-#: Controller/Admin/DebugController.php:146
-#: Controller/Admin/DebugController.php:163
-#: Controller/Admin/DebugController.php:169
 #: Controller/Admin/FinancingController.php:267
 #: Controller/Admin/FinancingController.php:273
 #: Controller/Admin/FinancingController.php:286
 #: Controller/Admin/FinancingController.php:321
 #: Controller/Admin/FinancingController.php:327
+#: Controller/Admin/DebugController.php:140
+#: Controller/Admin/DebugController.php:146
+#: Controller/Admin/DebugController.php:163
+#: Controller/Admin/DebugController.php:169
 msgid "Off"
 msgstr "Désactivé"
 
@@ -514,7 +528,7 @@ msgstr "Oups ! Scalexpert n'est pas encore activé !"
 msgid "Orderdate:"
 msgstr "Date de souscription : "
 
-#: woo-scalexpert.php:646
+#: woo-scalexpert.php:647
 msgid "Orders updated"
 msgstr "Commandes mises à jour"
 
@@ -534,13 +548,13 @@ msgstr "Paiement 4X frais partagés (SCFRSP-4XPS)"
 msgid "Paiement 4X sans frais (SCFRSP-4XTS)"
 msgstr "Paiement 4X sans frais (SCFRSP-4XTS)"
 
-#: Views/payment-buttons.php:48 Views/payment-simulation-buttons.php:66
+#: Views/payment-simulation-buttons.php:66 Views/payment-buttons.php:48
 msgid "Pay"
 msgstr "Payer"
 
 #. id
-#: Controller/Admin/DesignController.php:203
-#: Controller/Admin/DesignController.php:390
+#: Controller/Admin/DesignController.php:237
+#: Controller/Admin/DesignController.php:473
 msgid "Payment page"
 msgstr "Page de paiement"
 
@@ -557,15 +571,15 @@ msgid "Please enter your API keys for the different environments here."
 msgstr "Veuillez saisir ici vos clés API pour les différents environnements."
 
 #. id
-#: Controller/Admin/DesignController.php:153
-#: Controller/Admin/DesignController.php:412
+#: Controller/Admin/DesignController.php:154
+#: Controller/Admin/DesignController.php:495
 msgid "Product page"
 msgstr "Page produit"
 
-#: Controller/Admin/CronConfigurationController.php:81
-#: Controller/Admin/DesignController.php:99
+#: Controller/Admin/DesignController.php:100
 #: Controller/Admin/ConfigController.php:59
 #: Controller/Admin/SettingController.php:68
+#: Controller/Admin/CronConfigurationController.php:81
 #: Controller/Admin/FinancingController.php:96
 msgid "Save changes"
 msgstr "Enregistrer les modifications"
@@ -579,7 +593,7 @@ msgstr "Enregistrez la configuration pour vous assurer qu'elle soit appliquée."
 msgid "Scalexpert title Basket"
 msgstr "Titre Panier Scalexpert"
 
-#: Controller/Admin/DesignController.php:107
+#: Controller/Admin/DesignController.php:108
 msgid "Select a solution"
 msgstr "Choisir une solution"
 
@@ -605,9 +619,14 @@ msgid "SG Scalexpert"
 msgstr "SG Scalexpert"
 
 #. id
-#: Controller/Admin/DesignController.php:218
+#: Controller/Admin/DesignController.php:252
 msgid "Show logo for basket"
 msgstr "Afficher le logo"
+
+#. id
+#: Controller/Admin/DesignController.php:226
+msgid "Show logo for cart"
+msgstr "Afficher le logo sur le panier"
 
 #. Author of the plugin
 msgid "SOCIETE GENERALE"
@@ -621,7 +640,7 @@ msgstr "Solution : "
 msgid "Solutions de financement - SG Scalexpert"
 msgstr "Solutions de financement - SG Scalexpert"
 
-#: woo-scalexpert.php:618
+#: woo-scalexpert.php:619
 msgid "Starting orders update"
 msgstr "Début de la mise à jour des commandes"
 
@@ -633,7 +652,7 @@ msgstr "Statut : "
 msgid "Subscribe to this offer."
 msgstr "Souscrire à cette offre."
 
-#: woo-scalexpert.php:1009
+#: woo-scalexpert.php:1010
 msgid "SUBSCRIPTION IN PROGRESS"
 msgstr "Souscription en cours par le client"
 
@@ -641,7 +660,7 @@ msgstr "Souscription en cours par le client"
 msgid "Substatus:"
 msgstr "Sous-statut : "
 
-#: Helper/API/Client.php:718
+#: Helper/API/Client.php:724
 msgid ""
 "The cancelledAmount is greater than the financedAmount. You can only request "
 "cancellation with cancelledAmount equal or lower than the financedAmount."
@@ -650,7 +669,7 @@ msgstr ""
 "une annulation que si le montant annulé est égal ou inférieur au montant "
 "financé."
 
-#: Helper/API/Client.php:712
+#: Helper/API/Client.php:718
 msgid "The credit subscription is already cancelled."
 msgstr "La souscription crédit est déjà annulé."
 
@@ -658,11 +677,11 @@ msgstr "La souscription crédit est déjà annulé."
 msgid "This description is displayed in the Woocommerce configuration"
 msgstr "Cette description est affichée dans la configuration de Woocommerce"
 
-#: Controller/Admin/DesignController.php:316
+#: Controller/Admin/DesignController.php:367
 msgid "This option is disabled on your site"
 msgstr "Cette option est désactivée sur votre site"
 
-#: Controller/Admin/DesignController.php:313
+#: Controller/Admin/DesignController.php:364
 msgid "This option is enabled on your site"
 msgstr "Cette option est activée sur votre site"
 
@@ -674,8 +693,9 @@ msgstr "Cette option n'est pas disponible dans votre contrat."
 msgid "This title is used to display the payment method in the checkout."
 msgstr "Ce titre est utilisé pour afficher le mode de paiement au checkout."
 
-#: Controller/Admin/DesignController.php:329
-#: Controller/Admin/DesignController.php:359
+#: Controller/Admin/DesignController.php:381
+#: Controller/Admin/DesignController.php:409
+#: Controller/Admin/DesignController.php:441
 msgid "Title"
 msgstr "Titre"
 
@@ -683,14 +703,23 @@ msgstr "Titre"
 msgid "Twice a Day"
 msgstr "Deux fois par jour"
 
-#: Controller/Admin/DesignController.php:281
+#: Controller/Admin/DesignController.php:318
 msgid "Under the add to basket blocks"
 msgstr "Sous les blocs d'ajout au panier"
 
+#: Controller/Admin/DesignController.php:330
+msgid "Under the basket block"
+msgstr "Sous le bloc panier"
+
 #. id
-#: Controller/Admin/DesignController.php:191
+#: Controller/Admin/DesignController.php:200
+msgid "Unique position on cart page"
+msgstr "Position sur la page panier"
+
+#. id
+#: Controller/Admin/DesignController.php:192
 msgid "Unique position on product pages"
-msgstr "Position"
+msgstr "Position sur la page produit"
 
 #. page_title
 #: Controller/Admin/AdminController.php:96
@@ -701,8 +730,6 @@ msgstr "WooCommerce"
 msgid "Woocommerce Scalexpert"
 msgstr "Woocommerce Scalexpert"
 
-#: woo-scalexpert.php:996
+#: woo-scalexpert.php:997
 msgid "Your phone number is not correct !"
-msgstr ""
-"Veuillez renseigner un numéro de téléphone mobile ou fixe valide pour "
-"sélectionner ce moyen de paiement."
+msgstr "Votre numéro de téléphone n'est pas correct !"

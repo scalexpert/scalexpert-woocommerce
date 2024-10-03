@@ -11,7 +11,7 @@
 	<?php
 		
 		
-		include( plugin_dir_path( __FILE__ ) . 'simulation/product.php' );
+		include_once( plugin_dir_path( __FILE__ ) . 'simulation/product.php' );
 	
 	?>
 </div>
