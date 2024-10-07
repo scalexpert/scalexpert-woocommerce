@@ -25,6 +25,7 @@ class LoggerHelper
 	{
         $this->logger            = new \Monolog\Logger('log');
         $this->logger->pushHandler(new Monolog\Handler\StreamHandler(PLUGIN_DIR . '/logs/'.date('Ymd').'.log', Monolog\Logger::INFO));
+        $this->logger->pushHandler(new Monolog\Handler\StreamHandler(PLUGIN_DIR . '/logs/'.date('Ymd').'_errors.log', Monolog\Logger::ERROR));
 
         $this->activeLog = is_array(get_option('sg_scalexpert_debug')) ? (int) get_option('sg_scalexpert_debug')['mode_debug'] : 0;
 	}

@@ -23,6 +23,8 @@ use PHPUnit\Util\Color;
 use SebastianBergmann\Environment\Console;
 
 /**
+ * @no-named-arguments Parameter names are not covered by the backward compatibility promise for PHPUnit
+ *
  * @internal This class is not covered by the backward compatibility promise for PHPUnit
  */
 final class Help
@@ -210,6 +212,7 @@ final class Help
                 ['arg'    => '--fail-on-warning', 'desc' => 'Signal failure using shell exit code when a warning was triggered'],
                 ['arg'    => '--fail-on-risky', 'desc' => 'Signal failure using shell exit code when a test was considered risky'],
                 ['arg'    => '--fail-on-deprecation', 'desc' => 'Signal failure using shell exit code when a deprecation was triggered'],
+                ['arg'    => '--fail-on-phpunit-deprecation', 'desc' => 'Signal failure using shell exit code when a PHPUnit deprecation was triggered'],
                 ['arg'    => '--fail-on-notice', 'desc' => 'Signal failure using shell exit code when a notice was triggered'],
                 ['arg'    => '--fail-on-skipped', 'desc' => 'Signal failure using shell exit code when a test was skipped'],
                 ['arg'    => '--fail-on-incomplete', 'desc' => 'Signal failure using shell exit code when a test was marked incomplete'],
@@ -238,6 +241,7 @@ final class Help
                 ['arg'    => '--display-incomplete', 'desc' => 'Display details for incomplete tests'],
                 ['arg'    => '--display-skipped', 'desc' => 'Display details for skipped tests'],
                 ['arg'    => '--display-deprecations', 'desc' => 'Display details for deprecations triggered by tests'],
+                ['arg'    => '--display-phpunit-deprecations', 'desc' => 'Display details for PHPUnit deprecations'],
                 ['arg'    => '--display-errors', 'desc' => 'Display details for errors triggered by tests'],
                 ['arg'    => '--display-notices', 'desc' => 'Display details for notices triggered by tests'],
                 ['arg'    => '--display-warnings', 'desc' => 'Display details for warnings triggered by tests'],

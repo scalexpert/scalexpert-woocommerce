@@ -86,15 +86,11 @@ function toggleActivate(idfield, labelActif, labelNotActif) {
 }
 
 
-/**
- *
- *
- */
 jQuery(document).ready(function () {
     jQuery("#cancelSGButton").click(function () {
 
-
         jQuery("#cancelSGButton").attr('disabled', 'disabled');
+
         createOverlay();
 
         let cancelAmount = jQuery("#SGcanceledAmount").val();
@@ -128,9 +124,6 @@ jQuery(document).ready(function () {
     });
 });
 
-/**
- *
- */
 function createOverlay() {
     let html = '';
     html += '<div id="sg_overlay" data-open="true"><div class="sg_loader"></div></div>';

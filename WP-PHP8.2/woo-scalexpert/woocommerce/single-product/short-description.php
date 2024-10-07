@@ -33,5 +33,23 @@
 </div>
 
 <!--  SG Paiement en plusieurs fois -->
-<?= $productController->showActifSolutions( 'product-buttons', 'over', $product->get_category_ids(), $product->get_price() ) ?>
+<?php
+	if ( SCALEXPERT_SHOWSOLUTIONS ) {
+		$blocposition = get_option( "sg_scalexpert_design" );
+		if ( ! empty( $blocposition ) && $blocposition['blocposition'] === 'over' ) {
+			echo $productController->showActifSolutions( 'product-buttons', 'over', $product->get_category_ids(), $product->get_price() );
+		}
+	}
+?>
 <!--  SG Paiement en plusieurs fois -->
+
+<!--  SG Paiement Simulation -->
+<?php
+	if ( SCALEXPERT_SHOWSIMULATION ) {
+		$blocposition = get_option( "sg_scalexpert_design" );
+		if ( ! empty( $blocposition ) && $blocposition['blocposition'] === 'over' ) {
+			echo $productController->showSimulation4Product( $product->get_price(), get_locale() );
+		}
+	}
+?>
+<!--  SG Paiement Simulation -->

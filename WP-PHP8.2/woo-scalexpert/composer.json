@@ -2,7 +2,8 @@
   "require": {
     "guzzlehttp/guzzle": "^7.8",
     "monolog/monolog": "^3.5",
-    "phpunit/phpunit": "^10.5"
+    "phpunit/phpunit": "^10.5",
+    "giggsey/libphonenumber-for-php": "^8.13"
   },
   "config": {
     "platform": {

@@ -1,5 +1,11 @@
 <?php
-	
+	/**
+	 * Copyright © Scalexpert.
+	 * This file is part of Scalexpert plugin for WordPress.
+	 *
+	 * @author    Société Générale
+	 * @copyright Scalexpert
+	 */
 	
 	/**
 	 * DesignController
@@ -18,10 +24,10 @@
 ?>
 
 <div class="sep_main_productsButtons">
-	<a class="sep_main_productsButtons-content"
-	   data-modal="sep_openModal"
-	   href="#<?= $md5 ?>"
-	   data-idmodal="#<?= $md5 ?>">
+    <a class="sep_main_productsButtons-content"
+       data-modal="sep_openModal"
+       href="#<?= $md5 ?>"
+       data-idmodal="#<?= $md5 ?>">
             <span class="sep_main_productsButtons-title">
                  <?= $visualTitle ?>
                 <img class="sep_main_productsButtons-i"
@@ -31,12 +37,12 @@
                      height="16">
             </span>
 		<?php if ( $DesignSolution['showlogo'] == 1 ) { ?>
-			<img class="sep_main_productsButtons-logo"
-			     src="<?= $CommunicationKit['visualLogo'] ?>"
-			     alt="<?= $DesignSolution['bloc_title'] ?>"
-			>
+            <img class="sep_main_productsButtons-logo"
+                 src="<?= $CommunicationKit['visualLogo'] ?>"
+                 alt="<?= $DesignSolution['bloc_title'] ?>"
+            >
 		<?php } ?>
-	</a>
+    </a>
 </div>
 
 <div id="<?= $md5 ?>"
@@ -44,22 +50,22 @@
      role="dialog"
      aria-hidden="true"
 >
-	<div class="modal-dialog" role="document">
-		<div class="modal-content">
-			<div class="modal-header">
-				<div class="h2 modal-header-title">
-					<img src="<?= plugin_dir_url( __DIR__ ) ?>/assets/img/borrow.svg" alt="Emprunter">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="h2 modal-header-title">
+                    <img src="<?= plugin_dir_url( __DIR__ ) ?>/assets/img/borrow.svg" alt="Emprunter">
 					<?= $visualTitle ?>
-				</div>
-				<button type="button" class="close" data-dismiss="modal" aria-label="Fermer">
-					<span aria-hidden="true">×</span>
-				</button>
-			</div>
-			<div class="modal-body">
+                </div>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Fermer">
+                    <span aria-hidden="true">×</span>
+                </button>
+            </div>
+            <div class="modal-body">
 				<?= $CommunicationKit['visualAdditionalInformation'] ?>
 				<?= $CommunicationKit['visualLegalText'] ?>
-			</div>
-		</div>
-	</div>
+            </div>
+        </div>
+    </div>
 </div>
 

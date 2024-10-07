@@ -5,11 +5,10 @@
  * @author    Société Générale
  * @copyright Scalexpert
  */
-
 .modal {
   display: none;
   position: fixed;
-  z-index: 10;
+  z-index: 9999;
   left: 0;
   top: 0;
   width: 100%;
@@ -136,10 +135,6 @@
         left: auto;
         right: auto;
       };
-    }
-
-    &.verify-phone-modal .modal-header .modal-header-title {
-      color: red;
     }
   }
 

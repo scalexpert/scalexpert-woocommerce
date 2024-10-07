@@ -6,7 +6,7 @@
 	 * Description: Solutions de financement - SG Scalexpert
 	 * Text Domain: woo-scalexpert
 	 * Domain Path: /languages
-	 * Version: 1.3.0-8.2
+	 * Version: 1.5.3-8.2
 	 * Author: SOCIETE GENERALE
 	 * Author URI: https://scalexpert.societegenerale.com
 	 */
@@ -59,6 +59,7 @@
 					echo 'Exception reçue : ', $e->getMessage(), "\n";
 					exit();
 				}
+				$this->checkAPIcache();
 			}
 			
 			add_filter( 'cron_schedules', array( $this, 'sgcron_add_intervals' ) );
@@ -96,6 +97,18 @@
 			
 			/* Loads the plugin's translated strings. */
 			load_plugin_textdomain( 'woo-scalexpert', FALSE, plugin_basename( PLUGIN_DIR ) . '/languages' );
+		}
+		
+		
+		/**
+		 * @return void
+		 *
+		 */
+		public function checkAPIcache() {
+			
+			$apiDebug = get_option( 'sg_scalexpert_debug' );
+			
+			
 		}
 		
 		
@@ -284,9 +297,8 @@
 			require_once( plugin_dir_path( __FILE__ ) . 'Controller/Front/ProductController.php' );
 			$this->productController = new wooScalexpert\Controller\Front\ProductController();
 			$this->add_scalexpert_front_filters();
-			$this->load_scalexpert_front_scripts();
-			
-			add_action( 'init', array( $this, 'load_scalexpert_front_scripts' ) );
+			//$this->load_scalexpert_front_scripts();
+			add_action( 'wp_enqueue_scripts', array( $this, 'load_scalexpert_front_scripts' ) );
 			
 		}
 		
@@ -450,6 +462,10 @@
 				add_action( 'woocommerce_after_order_notes', array( $this, 'scalexpert_checkout_field' ) );
 				
 				add_filter( 'woocommerce_available_payment_gateways', array( $this, 'conditional_payment_gateways' ), 10, 1 );
+
+                if ($_GET['phoneNumberError']) {
+                    wc_add_notice(__( 'Your phone number is not correct !', 'woo-scalexpert' ), "error");
+                }
 			}
 			
 			
@@ -577,7 +593,12 @@
 					echo '<input type="hidden" name="solutionCode">';
 				}
 				echo '<ul class="list-group list-group-flush">';
-				$productController->showActifSolutions( 'payment-buttons', "", "", $totalOrder );
+				if ( SCALEXPERT_SHOWSOLUTIONS ) {
+					$productController->showActifSolutions( 'payment-buttons', "", "", $totalOrder );
+				}
+				if ( SCALEXPERT_SHOWSIMULATION ) {
+					$productController->showActifSolutions( 'payment-simulation-buttons', "", "", $totalOrder );
+				}
 				echo '</ul>';
 				include_once( plugin_dir_path( __FILE__ ) . 'Views/verify-phone-modal.php' );
 				do_action( 'woocommerce_credit_card_form_end', $this->id );
@@ -857,12 +878,12 @@
 				$endpoint     = SCALEXPERT_ENDPOINT_SUBSCRIPTION;
 				$redirectURL  = $this->get_return_url( $commande );
 				$finID        = NULL;
-				$Phone        = $this->formatPhoneNumber( $commandeData['billing']['phone'], "" );
-				
-				$genderDefault                = "MR";
-				$billingPhone                 = $Phone['number'];
-				$shippingCountry              = ( $commandeData['shipping']['country'] != "" ) ? $commandeData['shipping']['country'] : $commandeData['billing']['country'];
-				$shippingPhone                = ( $commandeData['shipping']['phone'] != "" ) ? $this->formatPhoneNumber( $commandeData['shipping']['phone'], $shippingCountry ) : $billingPhone;
+                $Phone        = $this->formatPhoneNumber( $commandeData['billing']['phone'], $commandeData['shipping']['country'] ?: $commandeData['billing']['country'] );
+
+                $genderDefault                = "MR";
+                $billingPhone                 = $Phone['number'];
+                $shippingCountry              = ( $commandeData['shipping']['country'] != "" ) ? $commandeData['shipping']['country'] : $commandeData['billing']['country'];
+                $shippingPhone                = ( $commandeData['shipping']['phone'] != "" ) ? $this->formatPhoneNumber( $commandeData['shipping']['phone'], $shippingCountry ) : $billingPhone;
 				$shippingStreetName           = ( $commandeData['shipping']['address_1'] != "" ) ? $commandeData['shipping']['address_1'] : $commandeData['billing']['address_1'];
 				$shippingStreetNameComplement = ( $commandeData['shipping']['address_2'] != "" ) ? $commandeData['shipping']['address_2'] : $commandeData['billing']['address_2'];
 				$shippingZipCode              = ( $commandeData['shipping']['postcode'] != "" ) ? $commandeData['shipping']['postcode'] : $commandeData['billing']['postcode'];
@@ -977,10 +998,15 @@
 					$redirectURL        = $result['contentsDecoded']['redirect']['value'];
 					$result['redirect'] = $redirectURL;
 				} else {
-					$message           = __( 'Your phone number is not correct !', 'woo-scalexpert' );
-					$result['message'] = $message;
-					$result['result']  = 'failure';
-					wp_die( json_encode( $result ) );
+                    $message           = __( 'Your phone number is not correct !', 'woo-scalexpert' );
+                    $this->logger->logError($message, $Phone);
+                    $result['message'] = $message;
+                    $result['result']  = 'success';
+
+                    $newUrl = esc_url( wc_get_checkout_url() . "?phoneNumberError=true" );
+                    $result['redirect'] = $newUrl;
+
+                    wp_die( json_encode( $result ) );
 				}
 				
 				if ( $redirectURL && $finID ) {
@@ -996,6 +1022,11 @@
 					wp_die( json_encode( $result ) );
 					
 				} elseif ( $result['errorCode'] != "" ) {
+					
+					if ( defined( WP_DEBUG_SGAPI ) && WP_DEBUG_SGAPI == TRUE ) {
+						$this->scalexpert_debug( $result );
+					}
+					
 					
 					$order = new WC_Order( $order_id );
 					$order->update_status( $this->getWcStatusByScalexperStatus( 'ABORTED' ), $this->getFinancialStateName( 'ABORTED' ) );
@@ -1059,69 +1090,40 @@
 				
 				return $basketItems;
 			}
-			
-			
-			/**
-			 * @param $phoneNumber
-			 * @param $country
-			 * On ne controle pas au bout comme demandé #145132
-			 *
-			 * @return array
-			 */
-			private function formatPhoneNumber( $phoneNumber, $country ) {
-				
-				$phoneNumber    = trim( $phoneNumber );
-				$phoneNumberLen = strlen( $phoneNumber );
-				$subStrPhone    = substr( $phoneNumber, 0, 4 );
-				
-				/*
-				 * We check length before going any further
-				 * The JS Regex is too permissive
-				 */
-				if ( ( $phoneNumberLen > 14 ) || ( $phoneNumberLen < 6 ) ) {
-					
-					/* obviously erratic number but we do nothing as in Presta & Magento */
-					$phone["number"] = $phoneNumber;
-					$phone["error"]  = TRUE;
-					/**/
-					
-				}
-				
-				/*
-				 * Lets format the number for DE & FR
-				 */
-				if ( ! empty( $phoneNumber ) && strpos( $phoneNumber, '+' ) === FALSE ) {
-					
-					switch ( strtolower( $country ) ) {
-						case "de" :
-							$call_prefix = "+49";
-							break;
-						default :
-							$call_prefix = "+33";
-							$country     = "fr";
-							break;
-					}
-					$phoneNumber = sprintf( '%s%s', $call_prefix, substr( $phoneNumber, 1 ) );
-				}
-				
-				/*
-				 * Let's check for DE & FR before API Call
-				 */
-				switch ( $country ) {
-					case "de":
-						$subStrPhone     = substr( $phoneNumber, 0, 3 );
-						$phone["number"] = $phoneNumber;
-						$phone["error"]  = ( $subStrPhone != "+49" ) ? TRUE : FALSE;
-						break;
-					default :
-						$subStrPhone     = substr( $phoneNumber, 0, 3 );
-						$phone["number"] = $phoneNumber;
-						$phone["error"]  = ( $subStrPhone != "+33" ) ? TRUE : FALSE;
-						break;
-				}
-				
-				return $phone;
-				
+
+
+            /**
+             * @param $phoneNumber
+             * @param $country
+             * On ne controle pas au bout comme demandé #145132
+             *
+             * @return array
+             */
+			private function formatPhoneNumber( $phoneNumber, $country ): array
+            {
+                $phoneUtil = \libphonenumber\PhoneNumberUtil::getInstance();
+
+                try {
+                    $phoneNumber = $phoneUtil->parse($phoneNumber, $country);
+                } catch (\libphonenumber\NumberParseException $e) {
+                    $this->logger->logError($e->getMessage(), ['phoneNumber' => $phoneNumber]);
+                    return [
+                        'error' => true,
+                        'number' => $phoneNumber,
+                    ];
+                }
+
+                if (!$phoneUtil->isValidNumber($phoneNumber)) {
+                    return [
+                        'error' => true,
+                        'number' => $phoneNumber,
+                    ];
+                }
+
+                return [
+                    'error' => false,
+                    'number' => str_replace(" ", "", $phoneUtil->format($phoneNumber, \libphonenumber\PhoneNumberFormat::INTERNATIONAL)),
+                ];
 			}
 			
 			
@@ -1232,6 +1234,16 @@
 			 */
 			public function webhook() {}
 			
+			
+			public function scalexpert_debug( $var ) {
+				/**
+				 * TODO : More consistent Debug Output
+				 */
+				print "<pre>\n";
+				print_r( $var );
+				print "</pre>\n";
+				die();
+			}
 			
 		}
 		

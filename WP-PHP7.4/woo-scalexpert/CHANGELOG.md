@@ -1,3 +1,19 @@
+[add 1.5.3] - 2024-10-03
+Version 1.5.30 of plugin woocommerce
+
+### Added
+
+- Display simulation interface on cart page
+- Fixing code quality issues
+
+[add 1.4.0] - 2024-09-04
+Version 1.4.0 of plugin woocommerce
+
+### Added
+
+- Display simulation interface on product page and payment page
+- Add new lib and process to validate and reformat phone number
+
 [add 1.3.0] - 2024-07-18
 Version 1.3.0 of plugin woocommerce
 

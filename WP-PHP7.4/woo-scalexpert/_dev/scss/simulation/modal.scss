@@ -1,0 +1,147 @@
+/**
+ * Copyright © Scalexpert.
+ * This file is part of Scalexpert plugin for PrestaShop. See COPYING.md for license details.
+ *
+ * @author    Scalexpert (https://scalexpert.societegenerale.com/)
+ * @copyright Scalexpert
+ * @license   https://opensource.org/licenses/osl-3.0.php Open Software License (OSL 3.0)
+ */
+
+.sep-SimulationsModal {
+  button.close {
+    opacity: 1;
+    color: #E2010B;
+
+    * {
+      color: #E2010B;
+    }
+  }
+
+  &.sep_contentModal .modal-dialog {
+    max-width: 872px;
+  }
+
+  .modal-body {
+    padding: 0 32px 32px;
+  }
+
+  .modal-header {
+    padding: 32px;
+
+    &-title {
+      text-transform: none;
+    }
+  }
+
+  &-mainContent {
+    display: flex;
+
+    @media (max-width: 800px) {
+      flex-wrap: wrap;
+      flex-direction: column-reverse;
+    }
+
+    &-left {
+      width: 100%;
+      min-width: calc(100% - 425px);
+      max-width: 385px;
+      margin-right: 48px;
+    }
+
+    &-left {
+      width: 100%;
+      min-width: calc(100% - 425px);
+      max-width: 385px;
+      margin-right: 48px;
+
+      @media (max-width: 800px) {
+        min-width: 100%;
+        width: 100%;
+        margin: 0;
+      }
+
+      ol {
+        list-style: none;
+        counter-reset: i;
+        padding: 0;
+        margin: 0;
+
+        > li {
+          position: relative;
+          counter-increment: i;
+          padding-left: 40px;
+          line-height: 24px;
+          margin-top: 24px;
+          list-style: none;
+
+          #order_review .modal.sep_contentModal &,
+          .modal.sep_contentModal & {
+            list-style: none;
+          }
+
+          &:before {
+            content: counter(i);
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 24px;
+            height: 24px;
+            font-size: 14px;
+            line-height: 24px;
+            font-weight: 700;
+            text-align: center;
+            color: #FFF;
+            background: #E60028;
+            border-radius: 50%;
+          }
+        }
+      }
+    }
+
+    &-right {
+      width: 375px;
+
+      @media (max-width: 800px) {
+        min-width: 100%;
+        width: 100%;
+        margin: 0 0 24px;
+      }
+
+      &-content {
+        border: 1px solid #E6E6E6;
+        border-radius: 4px;
+        padding: 12px 16px;
+      }
+
+      &-top {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        font-weight: 700;
+        margin-bottom: 8px;
+        min-height: 24px;
+      }
+
+      .sep-Simulations-solution-listSimulation {
+        margin: 0 0 4px;
+      }
+
+      .sep-Simulations-solution-infoMonthlyPayment {
+        margin-bottom: 8px;
+        font-weight: 400;
+      }
+    }
+
+  }
+
+  .part_bottom {
+    padding-top: 24px;
+
+    .scalexpert_subtitle {
+      margin: 0;
+      font-size: inherit;
+      font-weight: 400;
+      text-transform: uppercase;
+    }
+  }
+}

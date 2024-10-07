@@ -7,8 +7,6 @@
  */
 
 let $;
-const regexPhone = new RegExp("^\\+?(?:[0-9] ?){6,14}[0-9]$");
-
 
 document.addEventListener("DOMContentLoaded", function () {
     $ = jQuery;
@@ -51,7 +49,8 @@ function changeRadio($radio) {
 }
 
 function checkboxCGV() {
-    let $checkboxCGV = $('form.woocommerce-checkout input[type="checkbox"]#terms, form#order_review input[type="checkbox"]#terms')
+    let $checkboxCGV = $('form.woocommerce-checkout input[type="checkbox"]#terms, form#order_review input[type="checkbox"]#terms');
+
     if($checkboxCGV.length) {
         $checkboxCGV.on('change', function (elm) {
             changeCheckboxCGV(elm.target);
@@ -61,7 +60,8 @@ function checkboxCGV() {
 
 function changeCheckboxCGV(checkboxCGV) {
     let $checkboxCGV = $(checkboxCGV);
-    let $paymentButtons = $('.payment_method_scalexpert .sep_financialSolution > button');
+    let $paymentButtons = $('.payment_method_scalexpert .sep_financialSolution .sep_financialSolution-buttonPay');
+
     if($paymentButtons.length) {
         $paymentButtons.attr('disabled', '').removeAttr('disabled').removeClass('disabled');
         if(!$checkboxCGV.prop('checked')) {
@@ -71,31 +71,13 @@ function changeCheckboxCGV(checkboxCGV) {
 }
 
 function addEventPaymentButton() {
-    let $paymentButtons = $('.payment_method_scalexpert .sep_financialSolution > button');
+    let $paymentButtons = $('.payment_method_scalexpert .sep_financialSolution .sep_financialSolution-buttonPay');
     let $inputSolutionCode = $('.payment_method_scalexpert input[name="solutionCode"]');
 
     if($paymentButtons.length && $inputSolutionCode.length) {
         $paymentButtons.off().on('click', function() {
-            if(verifyPhone()) {
-                $inputSolutionCode.val($(this).attr('data-solutioncode')); // add solution code in input for next step
-                $('#place_order').submit(); // Submit form commande if valid phone number
-            }
-            else {
-                openModal($('#verify-phone-modal')); // phone number not valid display modal with errors
-            }
+            $inputSolutionCode.val($(this).attr('data-solutioncode')); // add solution code in input for next step
+            $('#place_order').submit(); // Submit form commande if valid phone number
         })
-    }
-}
-
-function verifyPhone() {
-    if($('#billing_phone').length) {
-        let $phone = $('#billing_phone').val();
-        if (typeof $phone !== 'undefined' && $phone.length && regexPhone.test($phone)) {
-            return true;
-        }
-        return false;
-    }
-    else {
-        return true
     }
 }

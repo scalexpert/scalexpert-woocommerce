@@ -18,9 +18,6 @@
   }
 }
 .sep_financialSolution {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
   margin-bottom: .5rem;
   padding-bottom: .5rem;
   border-bottom: 1px solid $color_mercury;
@@ -29,17 +26,42 @@
     padding-bottom: 0;
     border-bottom: 0 none;
   }
+
+  &-content {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    &-wrapper {
+      width: calc(100% - 100px);
+    }
+
+    &-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: .5rem;
+    }
+
+    &-logo {
+      margin-right: 0.625rem;
+    }
+  }
+
   > img {
     max-width: 40px;
   }
 
   &-title {
-    width: 45%;
+    padding-right: 0.625rem;
     line-height: 1.25em;
-
   }
 
   &-i {
     cursor: pointer;
+  }
+
+  .sep-Simulations-solution-infoMonthlyPayment {
+    line-height: 1.25em;
   }
 }
