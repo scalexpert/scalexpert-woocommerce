@@ -6,7 +6,7 @@
  * Description: Solutions de financement - SG Scalexpert
  * Text Domain: woo-scalexpert
  * Domain Path: /languages
- * Version: 1.5.3-7.4
+ * Version: 1.5.4-7.4
  * Author: SOCIETE GENERALE
  * Author URI: https://scalexpert.societegenerale.com
  */
@@ -1239,3 +1239,60 @@ function scalexpert_init_gateway_class(){
     }
 
 }
+
+function showSimulationBeforeAddToCartButton() {
+    $blockPosition = get_option( "sg_scalexpert_design" );
+    if ( !empty( $blockPosition ) && $blockPosition[ 'blocposition' ] === 'over' ) {
+        global $product;
+        global $productController;
+
+        echo '<!--  SG Paiement Simulation -->';
+        $productController->showSimulation4Product( $product->get_price(), get_locale() );
+        echo "<br>";
+        echo '<!--  SG Paiement Simulation -->';
+    }
+}
+add_action('woocommerce_before_add_to_cart_button', 'showSimulationBeforeAddToCartButton', 999);
+
+function showSimulationAfterAddToCartButton() {
+    $blockPosition = get_option( "sg_scalexpert_design" );
+    if ( !empty( $blockPosition ) && $blockPosition[ 'blocposition' ] === 'under' ) {
+        global $product;
+        global $productController;
+
+        echo '<!--  SG Paiement Simulation -->';
+        $productController->showSimulation4Product( $product->get_price(), get_locale() );
+        echo '<!--  SG Paiement Simulation -->';
+    }
+}
+add_action('woocommerce_after_add_to_cart_button', 'showSimulationAfterAddToCartButton', 999);
+
+function showSimulationBeforeCartTable() {
+    $blockPosition = get_option( "sg_scalexpert_design" );
+    if ( !empty( $blockPosition ) && $blockPosition[ 'blocposition_cart' ] === 'over' ) {
+        global $woocommerce;
+        global $productController;
+
+        echo '<!--  SG Paiement Simulation -->';
+        echo '<div class="sep-Simulations-Cart">';
+        $productController->showSimulation4Cart($woocommerce->cart->total);
+        echo '</div>';
+        echo '<!--  SG Paiement Simulation -->';
+    }
+}
+add_action('woocommerce_before_cart_table', 'showSimulationBeforeCartTable', 999);
+
+function showSimulationAfterCartTable() {
+    $blockPosition = get_option( "sg_scalexpert_design" );
+    if ( !empty( $blockPosition ) && $blockPosition[ 'blocposition_cart' ] === 'under' ) {
+        global $woocommerce;
+        global $productController;
+
+        echo '<!--  SG Paiement Simulation -->';
+        echo '<div class="sep-Simulations-Cart">';
+        $productController->showSimulation4Cart($woocommerce->cart->total);
+        echo '</div>';
+        echo '<!--  SG Paiement Simulation -->';
+    }
+}
+add_action('woocommerce_after_cart_table', 'showSimulationAfterCartTable', 999);
