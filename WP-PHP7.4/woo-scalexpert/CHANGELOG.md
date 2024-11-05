@@ -1,5 +1,12 @@
+[add 1.5.4] - 2024-10-23
+Version 1.5.4 of plugin woocommerce
+
+### Added
+
+- Use native action from Woocommerce to display simulation interface in cart and product pages instead of overriding templates  
+
 [add 1.5.3] - 2024-10-03
-Version 1.5.30 of plugin woocommerce
+Version 1.5.3 of plugin woocommerce
 
 ### Added
 
@@ -103,4 +110,3 @@ Content : e-financing solutions split payment & long term credit.
 [1.0.0] - 2024-02-12
 Version 1.0.0 of plugin woocommerce
 Content : e-financing solutions split payment & long term credit.
-
