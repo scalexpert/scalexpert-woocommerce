@@ -6,7 +6,7 @@
 	 * Description: Solutions de financement - SG Scalexpert
 	 * Text Domain: woo-scalexpert
 	 * Domain Path: /languages
-	 * Version: 1.5.4-8.2
+	 * Version: 1.5.5-8.2
 	 * Author: SOCIETE GENERALE
 	 * Author URI: https://scalexpert.societegenerale.com
 	 */
@@ -126,7 +126,50 @@
 				'side',
 				'core'
 			);
+
+//            add_meta_box(
+//                'custom-delivery-information',
+//                __( 'Delivery informations', 'woo-scalexpert' ),
+//                array( $this, 'custom_delivery_information_callback' ),
+//                'shop_order',
+//                'side',
+//                'core'
+//            );
 		}
+
+        public function custom_delivery_information_callback( $post ) {
+            // Get the saved value
+            $order = wc_get_order( $post->ID );
+            $creditSubscriptionId = $order->get_meta('scalexpert_finID');
+            $operator = $order->get_meta('scalexpert_operator');
+            if (!in_array($order->get_meta( 'scalexpert_solution' ), ["SCFRLT-TXNO", "SCFRLT-TXPS", "SCDELT-DXCO", "SCDELT-DXTS"])) {
+                echo '<p>' . __( 'Confirm delivery not available', 'woo-scalexpert' ) . '</p>';
+            } else {
+                echo '<p><label for="trackingNumber">' . __( 'Tracking number', 'woo-scalexpert' ) . ' : </label><br>';
+                echo '<input type="text" id="scalexpert_tracking_number" name="scalexpert_tracking_number" value="' . $order->get_meta('scalexpert_tracking_number') . '" /></p>';
+
+                echo '<p><label for="operator">' . __( 'Operator', 'woo-scalexpert' ) . ' :</label><br>';
+                echo '<select id="scalexpert_operator_selected" name="scalexpert_operator_selected">
+                      <option value="">' . __( '--Please choose an operator--', 'woo-scalexpert' ) . '</option>
+                      <option value="UPS" ' . ($operator === "UPS" ? "selected" : "") . '>' . __( 'UPS', 'woo-scalexpert' ) . '</option>
+                      <option value="DHL" ' . ($operator === "DHL" ? "selected" : "") . '>' . __( 'DHL', 'woo-scalexpert' ) . '</option>
+                      <option value="CHRONOPOST" ' . ($operator === "CHRONOPOST" ? "selected" : "") . '>' . __( 'CHRONOPOST', 'woo-scalexpert' ) . '</option>
+                      <option value="LA_POSTE" ' . ($operator === "LA_POSTE" ? "selected" : "") . '>' . __( 'LA_POSTE', 'woo-scalexpert' ) . '</option>
+                      <option value="DPD" ' . ($operator === "DPD" ? "selected" : "") . '>' . __( 'DPD', 'woo-scalexpert' ) . '</option>
+                      <option value="RELAIS_COLIS" ' . ($operator === "RELAIS_COLIS" ? "selected" : "") . '>' . __( 'RELAIS_COLIS', 'woo-scalexpert' ) . '</option>
+                      <option value="MONDIAL_RELAY" ' . ($operator === "MONDIAL_RELAY" ? "selected" : "") . '>' . __( 'MONDIAL_RELAY', 'woo-scalexpert' ) . '</option>
+                      <option value="FEDEX" ' . ($operator === "FEDEX" ? "selected" : "") . '>' . __( 'FEDEX', 'woo-scalexpert' ) . '</option>
+                      <option value="GLS" ' . ($operator === "GLS" ? "selected" : "") . '>' . __( 'GLS', 'woo-scalexpert' ) . '</option>
+                      <option value="UNKNOW" ' . ($operator === "UNKNOW" ? "selected" : "") . '>' . __( 'UNKNOWN', 'woo-scalexpert' ) . '</option>
+                    </select>
+                ';
+
+                echo '<input type="hidden" id="orderId" name="orderId" value="' . $post->ID . '" />';
+                echo '<input type="text" id="scalexpert_creditSubscriptionId" name="scalexpert_creditSubscriptionId" value="' . $creditSubscriptionId . '" hidden/></p>';
+
+                echo '<input class="button cancel_order button-primary" type="button" id="scalexpert_deliveryConfirmButton" value="' . __( 'Confirm delivery', 'woo-scalexpert' ) . '" /></p>';
+            }
+        }
 		
 		/**
 		 * Callback function for custom meta box.
@@ -475,10 +518,22 @@
 			 * @return mixed
 			 */
 			public function conditional_payment_gateways( $available_gateways ) {
-				
+                $solutions = explode(',', get_option('sg_scalexpert_solutions')['solutions']);
+                $disable = true;
+                foreach ($solutions as $solution){
+                    $activate = get_option('sg_scalexpert_activated_'.$solution)['activate'];
+                    if ($activate) {
+                        $disable = false;
+                    }
+                }
+                if ( $disable ) {
+                    unset( $available_gateways[ 'scalexpert' ] );
+                    return $available_gateways;
+                }
+
 				global $woocommerce;
 				require_once( plugin_dir_path( __FILE__ ) . '/Static/StaticData.php' );
-				if ( $woocommerce->cart->total < SCALEXPERT_LOWERLIMIT || $woocommerce->cart->total > SCALEXPERT_UPPERLIMIT ) {
+                if ( $woocommerce->cart && ($woocommerce->cart->get_total(null) < SCALEXPERT_LOWERLIMIT || $woocommerce->cart->get_total(null) > SCALEXPERT_UPPERLIMIT )) {
 					unset( $available_gateways['scalexpert'] );
 				}
 				
@@ -583,8 +638,8 @@
 					$total    = $order->get_total();
 				}
 				$order_id = WC()->session->get( 'order_awaiting_payment' );
-				
-				$totalOrder             = ( $woocommerce->cart->get_cart_contents_total() != 0 ) ? $woocommerce->cart->get_cart_contents_total() : $total;
+
+                $totalOrder             = ( $woocommerce->cart->get_cart_contents_total() != 0 ) ? $woocommerce->cart->get_total(null) : $total;
 				$groupFinancingSolution = get_option( "sg_scalexpert_group_financing_solution" );
 				
 				// Paiements groupés / non groupés
@@ -627,7 +682,7 @@
 						'status'   => [
 							'wc-on-hold',
 							'wc-pending',
-							'wc-processing',
+							'wc-processing'
 						],
 					]
 				);
@@ -701,7 +756,7 @@
 						( $sgFinancialSubStatus = __( $result['contentsDecoded']['consolidatedSubstatus'], 'woo-scalexpert' ) )
 						&& $orderSubStatus !== $sgFinancialSubStatus
 					) {
-						update_post_meta( $order->get_id(), 'scalexpert_consolidatedSubstatus', $sgFinancialSubStatus );
+						update_post_meta( $order->get_id(), 'scalexpert_consolidatedSubstatus', __($sgFinancialSubStatus, 'woo-scalexpert') );
 					}
 					
 					if ( $orderStatus !== $newOrderStatus ) {
@@ -1251,8 +1306,9 @@
 
 function showSimulationBeforeAddToCartButton(): void
 {
+    $activate = get_option('sg_scalexpert_keys')['activate'];
     $blockPosition = get_option( "sg_scalexpert_design" );
-    if ( !empty( $blockPosition ) && $blockPosition[ 'blocposition' ] === 'over' ) {
+    if ($activate && !empty( $blockPosition ) && $blockPosition[ 'blocposition' ] === 'over') {
         global $product;
         global $productController;
 
@@ -1266,8 +1322,9 @@ add_action('woocommerce_before_add_to_cart_button', 'showSimulationBeforeAddToCa
 
 function showSimulationAfterAddToCartButton(): void
 {
+    $activate = get_option('sg_scalexpert_keys')['activate'];
     $blockPosition = get_option( "sg_scalexpert_design" );
-    if ( !empty( $blockPosition ) && $blockPosition[ 'blocposition' ] === 'under' ) {
+    if ($activate && !empty( $blockPosition ) && $blockPosition[ 'blocposition' ] === 'under') {
         global $product;
         global $productController;
 
@@ -1280,8 +1337,9 @@ add_action('woocommerce_after_add_to_cart_button', 'showSimulationAfterAddToCart
 
 function showSimulationBeforeCartTable(): void
 {
+    $activate = get_option('sg_scalexpert_keys')['activate'];
     $blockPosition = get_option( "sg_scalexpert_design" );
-    if ( !empty( $blockPosition ) && $blockPosition[ 'blocposition_cart' ] === 'over' ) {
+    if ($activate && !empty( $blockPosition ) && $blockPosition[ 'blocposition_cart' ] === 'over') {
         global $woocommerce;
         global $productController;
 
@@ -1296,8 +1354,9 @@ add_action('woocommerce_before_cart_table', 'showSimulationBeforeCartTable', 999
 
 function showSimulationAfterCartTable(): void
 {
+    $activate = get_option('sg_scalexpert_keys')['activate'];
     $blockPosition = get_option( "sg_scalexpert_design" );
-    if ( !empty( $blockPosition ) && $blockPosition[ 'blocposition_cart' ] === 'under' ) {
+    if ($activate && !empty( $blockPosition ) && $blockPosition[ 'blocposition_cart' ] === 'under') {
         global $woocommerce;
         global $productController;
 

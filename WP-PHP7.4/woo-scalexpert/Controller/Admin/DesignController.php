@@ -213,6 +213,14 @@
             );
 
             add_settings_field(
+                'activateCart', // id
+                __( "Display on cart", "woo-scalexpert" ), // title
+                array( $this, 'activateCart_callback' ), // callback
+                'sg-scalexpert-design-' . $_GET['solution'], // page
+                'sg_scalexpert_setting_sectionCart' // section
+            );
+
+            add_settings_field(
                 'cart_title', // id
                 __( "Customise payment", "woo-scalexpert" ), // title
                 array( $this, 'cart_title_callback' ), // callback
@@ -350,6 +358,25 @@
             <label id="label_sg_scalexpert_design_activate" for="sg_scalexpert_design_activate"><?= $activated ?></label>
 			<?php
 		}
+
+        /**
+         * @return void
+         */
+        public function activateCart_callback(): void
+        {
+            $checked   = ( get_option( $this->sectionName ) ) ? $this->sg_scalexpert_options['activateCart'] : 0;
+            $activated = ( $checked )
+                ? __( "Activated", "woo-scalexpert" )
+                : __( "Off", "woo-scalexpert" );
+            ?>
+            <input type="checkbox" class="wppd-ui-toggle" id="sg_scalexpert_design_activateCart" name="<?= $this->sectionName ?>[activateCart]"
+                   value="<?= $checked ?>"
+                   onchange="toggleActivate('sg_scalexpert_design_activateCart','<?= __( "Activated", "woo-scalexpert" ) ?>','<?= __( "Off", "woo-scalexpert" ) ?>');"
+                <?php echo $checked === "1" ? 'checked' : ''; ?>
+            >
+            <label id="label_sg_scalexpert_design_activateCart" for="sg_scalexpert_design_activateCart"><?= $activated ?></label>
+            <?php
+        }
 		
 		
 		/**

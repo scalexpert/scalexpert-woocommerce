@@ -1,3 +1,14 @@
+[add 1.5.5] - 2024-11-29
+Version 1.5.5 of plugin woocommerce
+
+### Added
+
+- Add option to disable simulation in cart
+- Fix display of simulation when plugin is disabled
+- Fix display of simulation in checkout
+- Fix how simulation is calculated in checkout
+- Add missing translations
+
 [add 1.5.4] - 2024-10-23
 Version 1.5.4 of plugin woocommerce
 
