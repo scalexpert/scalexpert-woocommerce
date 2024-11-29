@@ -88,7 +88,6 @@ function toggleActivate(idfield, labelActif, labelNotActif) {
 
 jQuery(document).ready(function () {
     jQuery("#cancelSGButton").click(function () {
-
         jQuery("#cancelSGButton").attr('disabled', 'disabled');
 
         createOverlay();
@@ -119,8 +118,32 @@ jQuery(document).ready(function () {
                 }
             }
         );
+    });
 
+    jQuery("#scalexpert_deliveryConfirmButton").click(function () {
+        jQuery.post(
+            ajaxurl,
+            {
+                'method': 'POST',
+                'action': 'scalexpert_confirmDelivery',
+                dataType: "json",
+                'creditSubscriptionId': jQuery("#scalexpert_creditSubscriptionId").val(),
+                'trackingNumber': jQuery("#scalexpert_tracking_number").val(),
+                'operator': jQuery("#scalexpert_operator_selected").find(':selected').val(),
+                'orderId': jQuery("#orderId").val()
+            },
+            function (response) {
+                response = JSON.parse(response);
 
+                if (response.status === 204) {
+                    alert("Confirmation de livraison effectué");
+                } else {
+                    alert("Impossible de confirmer la livraison");
+                }
+
+                window.location.reload();
+            }
+        );
     });
 });
 

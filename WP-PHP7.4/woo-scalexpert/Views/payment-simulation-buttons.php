@@ -50,7 +50,7 @@
 			<?php
 				if ( empty( $solution['isLongFinancingSolution'] ) ) {
 					$isModal = FALSE;
-					include_once( plugin_dir_path( __FILE__ ) . 'simulation/infoMonthlyPayment.php' );
+					include( plugin_dir_path( __FILE__ ) . 'simulation/infoMonthlyPayment.php' );
 				}
 			?>
         </div>

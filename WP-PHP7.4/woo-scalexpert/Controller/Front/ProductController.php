@@ -319,6 +319,9 @@
                     unset( $solutions [ 'solutions' ] [ $key ] );
                 }
                 $excluded = get_option( 'sg_scalexpert_design_' . $solution[ 'solutionCode' ] );
+                if ( empty( $excluded[ 'activateCart' ] ) ) {
+                    unset( $solutions [ 'solutions' ] [ $key ] );
+                }
                 $excluded = ( !empty( $excluded[ 'exclude_cats' ] ) ) ? explode( ",", $excluded[ 'exclude_cats' ] ) : [];
                 $result   = array_intersect( $checkOutProdCats, $excluded );
                 if ( $result ) {

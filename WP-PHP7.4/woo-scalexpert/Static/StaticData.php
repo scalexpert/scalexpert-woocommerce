@@ -102,6 +102,7 @@
 	defined( 'SCALEXPERT_ENDPOINT_ELIGIBLE_SOLUTIONS' ) or define( "SCALEXPERT_ENDPOINT_ELIGIBLE_SOLUTIONS", "e-financing/api/v1/eligible-solutions" );
 	defined( 'SCALEXPERT_ENDPOINT_SUBSCRIPTION' ) or define( "SCALEXPERT_ENDPOINT_SUBSCRIPTION", "e-financing/api/v1/subscriptions/" );
 	defined( 'SCALEXPERT_ENDPOINT_SIMULATION' ) or define( "SCALEXPERT_ENDPOINT_SIMULATION", "e-financing/api/v1/_simulate-solutions" );
+	defined( 'SCALEXPERT_ENDPOINT_CONFIRM_DELIVERY' ) or define( "SCALEXPERT_ENDPOINT_CONFIRM_DELIVERY", "e-financing/api/v1/subscriptions/{creditSubscriptionId}/_confirmDelivery" );
 	defined( 'SCALEXPERT_LOWERLIMIT' ) or define( "SCALEXPERT_LOWERLIMIT", 100 );
 	defined( 'SCALEXPERT_UPPERLIMIT' ) or define( "SCALEXPERT_UPPERLIMIT", 30000 );
 	

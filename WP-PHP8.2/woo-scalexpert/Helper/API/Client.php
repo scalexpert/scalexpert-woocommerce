@@ -58,8 +58,10 @@
 			add_action( "wp_ajax_sg_checkKey", array( $this, "sg_checkKey" ) );
 			add_action( "wp_ajax_nopriv_sg_checkKey", array( $this, "sg_checkKey" ) );
 			
+            add_action( "wp_ajax_scalexpert_confirmDelivery", array( $this, "scalexpert_confirmDelivery" ) );
+
 			add_action( "wp_ajax_sg_cancelFinancing", array( $this, "sg_cancelFinancing" ) );
-			add_action( "wp_ajax_nopriv_sg_cancelFinancing", array( $this, "sg_cancelFinancing" ) );
+            add_action( "wp_ajax_nopriv_sg_cancelFinancing", array( $this, "sg_cancelFinancing" ) );
 			
 			add_action( "wp_ajax_sg_recreateCart", array( $this, "sg_recreateCart" ) );
 			add_action( "wp_ajax_nopriv_sg_recreateCart", array( $this, "sg_recreateCart" ) );
@@ -234,7 +236,58 @@
 		public function setAppBearer( ?string $appBearer ) : void {
 			$this->_appBearer = $appBearer;
 		}
-		
+
+        /**
+         * @return void
+         */
+        public function scalexpert_confirmDelivery()
+        {
+            $creditSubscriptionId = $_POST['creditSubscriptionId'];
+            $operator = $_POST['operator'];
+            $trackingNumber = $_POST['trackingNumber'];
+            $orderId = $_POST['orderId'];
+            $order = wc_get_order( $orderId );
+
+            update_post_meta($order->get_id(), 'scalexpert_operator', $operator);
+            update_post_meta($order->get_id(), 'scalexpert_tracking_number', $trackingNumber);
+
+            $endpoint = str_replace("{creditSubscriptionId}", $creditSubscriptionId, SCALEXPERT_ENDPOINT_CONFIRM_DELIVERY);
+
+            $response = $this->sendRequest(
+                'POST',
+                $endpoint,
+                [],
+                [],
+                [],
+                [
+                    "isDelivered" => true,
+                    "trackingNumber" => $trackingNumber,
+                    "operator" => $operator
+                ]
+            );
+
+            if (isset($response['errorMessage'])) {
+                $return = [
+                    'status' => $response['errorCode'],
+                    'message' => json_decode($response['errorMessage']),
+                ];
+                $this->logger->logError("Error confirmDelivery - return response : " . $response['errorMessage']);
+            } elseif (isset($response['error'])) {
+                $return = [
+                    'status' => $response['error'],
+                    'message' => json_decode($response['message']),
+                ];
+                $this->logger->logError("Error confirmDelivery - return response : " . $response['message']);
+            } else {
+                $return = [
+                    'status' => $response['code'],
+                    'message' => json_decode($response['content']),
+                ];
+                $this->logger->logInfo(print_r($return, true));
+            }
+
+            wp_die(json_encode($return));
+        }
 		
 		/**
 		 * @param $amount
@@ -680,6 +733,7 @@
 						update_post_meta( $order->get_id(), 'scalexpert_status', $resultStatus );
 						update_post_meta( $order->get_id(), 'scalexpert_consolidatedSubstatus', __( "CANCELED BY CUSTOMER", 'woo-scalexpert' ) );
 						$order->add_order_note( __( 'New financed amount: ', 'woo-scalexpert' ) . floatval( $resultFinancedAmount ) . "€" );
+                        $order->update_status( 'cancelled' );
 						wp_die( json_encode( __( 'Financed amount reduced by: ', 'woo-scalexpert' ) . floatval( $amount2Cancel ) . "€" ) );
 						
 					} else {
