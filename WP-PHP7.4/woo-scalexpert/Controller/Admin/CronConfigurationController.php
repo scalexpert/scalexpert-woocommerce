@@ -19,8 +19,13 @@
 		protected $sg_cron_configuration_settings;
 		
 		public function __construct() {
-			if ( is_admin() && isset( $_REQUEST['page'] ) || ( $_POST["option_page"] == "cron_configuration_settings_group" ) ) {
-				$this->sg_cron_configuration_settings = $this->getSgCronConfigurationSettings();
+            if ( is_admin() && isset( $_REQUEST['page'] )
+                || (
+                    array_key_exists('option_page', $_POST)
+                    && $_POST['option_page'] == 'cron_configuration_settings_group'
+                )
+            ) {
+                $this->sg_cron_configuration_settings = $this->getSgCronConfigurationSettings();
 				
 				if ( ! isset( $this->sg_cron_configuration_settings['activate_cron'] )
 				     && $this->sg_cron_configuration_settings['activate_cron'] != 1 ) {

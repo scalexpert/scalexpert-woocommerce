@@ -26,7 +26,12 @@
 		 *
 		 */
 		public function __construct() {
-			if ( is_admin() && isset( $_REQUEST['page'] ) || ( $_POST["option_page"] == "sg_scalexpert_option_group" ) ) {
+            if ( is_admin() && isset( $_REQUEST['page'] )
+                || (
+                    array_key_exists('option_page', $_POST)
+                    && $_POST['option_page'] == 'sg_scalexpert_option_group'
+                )
+            ) {
 				require_once( PLUGIN_DIR . '/Static/autoload.php' );
 				$this->apiClient             = new Client();
 				$this->sg_scalexpert_options = get_option( 'sg_scalexpert_keys' );

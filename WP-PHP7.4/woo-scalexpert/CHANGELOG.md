@@ -1,3 +1,12 @@
+[add 1.6.0] - 2024-12-17
+Version 1.6.0 of plugin woocommerce
+
+### Added
+
+- Delivery confirmation
+- Variable product support
+- Change some translation
+
 [add 1.5.5] - 2024-11-29
 Version 1.5.5 of plugin woocommerce
 

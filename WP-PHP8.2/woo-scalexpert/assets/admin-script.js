@@ -33,7 +33,7 @@ function checkKey() {
     let apiSecret = jQuery(secretField).val();
 
     if (!apiKey || !apiSecret) {
-        alert(environment + '  API credentials are invalid !');
+        alert('Veuillez compléter les informations manquantes concernant votre clé d\'API de ' + environment.toLowerCase());
         return false;
     }
 
@@ -49,9 +49,9 @@ function checkKey() {
         function (response) {
             response = JSON.parse(response);
             if (response) {
-                alert(environment + response)
+                alert('Votre clé d\'API de ' + environment.toLowerCase() + ' est valide');
             } else {
-                alert(environment + " API connection error !")
+                alert('Votre clé d\'API de ' + environment.toLowerCase() + ' est invalide');
             }
         }
     );
@@ -121,6 +121,14 @@ jQuery(document).ready(function () {
     });
 
     jQuery("#scalexpert_deliveryConfirmButton").click(function () {
+        let trackingNumber = jQuery("#scalexpert_tracking_number").val();
+        let operator = jQuery("#scalexpert_operator_selected").find(':selected').val();
+
+        if (!trackingNumber || !operator) {
+            alert('Veuillez compléter les informations manquantes avant de confirmer la livraison');
+            return false;
+        }
+
         jQuery.post(
             ajaxurl,
             {
@@ -128,8 +136,8 @@ jQuery(document).ready(function () {
                 'action': 'scalexpert_confirmDelivery',
                 dataType: "json",
                 'creditSubscriptionId': jQuery("#scalexpert_creditSubscriptionId").val(),
-                'trackingNumber': jQuery("#scalexpert_tracking_number").val(),
-                'operator': jQuery("#scalexpert_operator_selected").find(':selected').val(),
+                'trackingNumber': trackingNumber,
+                'operator': operator,
                 'orderId': jQuery("#orderId").val()
             },
             function (response) {

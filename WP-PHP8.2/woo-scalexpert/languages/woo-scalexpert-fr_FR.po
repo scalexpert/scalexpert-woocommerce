@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: Woocommerce Scalexpert\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2024-01-19 16:50+0000\n"
-"PO-Revision-Date: 2024-11-25 13:53+0000\n"
+"PO-Revision-Date: 2024-12-02 08:49+0000\n"
 "Last-Translator: Thomas LACHEHEB\n"
 "Language-Team: Français\n"
 "Language: fr_FR\n"
@@ -14,14 +14,6 @@ msgstr ""
 "X-Generator: Loco https://localise.biz/\n"
 "X-Loco-Version: 2.6.14; wp-6.7.1\n"
 "X-Domain: woo-scalexpert"
-
-#: Helper/API/Client.php:672
-msgid " API credentials are correct !"
-msgstr " Les informations d'identification de l'API sont correctes !"
-
-#: Helper/API/Client.php:674
-msgid " API credentials are invalid !"
-msgstr " Les informations d'identification de l'API ne sont pas valides !"
 
 #: woocommerce/order/order-details.php:147
 msgid " Order again "

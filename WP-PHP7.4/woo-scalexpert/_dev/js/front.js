@@ -9,3 +9,4 @@
 import './components/modal';
 import './components/payment';
 import './components/account';
+import './components/product';

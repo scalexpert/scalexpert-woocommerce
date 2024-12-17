@@ -113,25 +113,35 @@ class ProductController
      *
      * @return void
      */
-    public function showSimulation4Product($price = NULL, string $locale = "FR"): void
+    public function showSimulation4Product($price = NULL, string $locale = "FR", $prodID = NULL): void
     {
         global $product;
         global $post;
-
-        $terms = get_the_terms($post->ID, 'product_cat');
-        foreach ($terms as $term) {
-            $product_cat_id = $term->term_id;
-            break;
+        if ( $prodID !== NULL ) {
+            $post    = get_post( $prodID );
+            $product = wc_get_product( $prodID );
+            $data    = $product->get_data();
+            $price   = wc_get_price_including_tax($product);
+        }
+        $product_cat_id = '';
+        if ($terms = get_the_terms($post->ID, 'product_cat')) {
+            foreach ($terms as $term) {
+                $product_cat_id = $term->term_id;
+                break;
+            }
         }
 
         $locale = explode('_', $locale);
         $locale = strtoupper($locale[0]);
-        $simulations = (SCALEXPERT_APICACHE) ? get_transient("scalexpertProductSimulation_" . $product->get_id() . "_" . $locale) : NULL;
-
+        if ( $prodID !== NULL ) {
+            $simulations = ( SCALEXPERT_APICACHE ) ? get_transient( "scalexpertProductSimulation_" . $prodID . "_" . $locale ) : NULL;
+        } else {
+            $simulations = ( SCALEXPERT_APICACHE ) ? get_transient( "scalexpertProductSimulation_" . $product->get_id() . "_" . $locale ) : NULL;
+        }
         if (empty($simulations)) {
             $this->apiclient = new Client();
             try {
-                $price = ($price != NULL) ? $price : $product->get_price();
+                $price       = ( $price != NULL ) ? $price : wc_get_price_including_tax($product);
                 $simulations = $this->apiclient->getSimulateFinancing4Product($price, $locale, $product_cat_id);
             } catch (Exception $e) {
                 echo 'Exception reçue : ', $e->getMessage(), "\n";
