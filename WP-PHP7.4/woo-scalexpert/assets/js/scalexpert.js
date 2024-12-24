@@ -84,8 +84,13 @@ function successAjax() {
 /*!********************************!*\
   !*** ./js/components/modal.js ***!
   \********************************/
-/***/ (() => {
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   initModal: () => (/* binding */ initModal)
+/* harmony export */ });
 let $;
 document.addEventListener("DOMContentLoaded", function() {
   $ = jQuery;
@@ -117,7 +122,7 @@ function initModal() {
     });
   }
 }
-openModal = function openModal2($modal) {
+const openModal = function openModal2($modal) {
   if (typeof $modal !== "undefined" && $modal.length) {
     $modal.show();
     eventCloseModal($modal);
@@ -228,6 +233,69 @@ function addEventPaymentButton() {
 }
 
 
+/***/ }),
+
+/***/ "./js/components/product.js":
+/*!**********************************!*\
+  !*** ./js/components/product.js ***!
+  \**********************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _modal__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./modal */ "./js/components/modal.js");
+
+let $;
+document.addEventListener("DOMContentLoaded", function() {
+  $ = jQuery;
+  $("body").on("update_variation_values", function(event) {
+    const variation = getSelectedVariation(event);
+    if (variation)
+      updateViews(variation);
+  });
+});
+const getSelectedVariation = (event) => {
+  const productForm = event.target.closest("form");
+  const variations = JSON.parse(productForm.getAttribute("data-product_variations"));
+  const selectedAttributes = {};
+  $(productForm).find('select[name^="attribute_"]').each(function() {
+    const attributeName = $(this).data("attribute_name");
+    selectedAttributes[attributeName] = $(this).val();
+  });
+  return variations.find(function(variation) {
+    return Object.keys(selectedAttributes).every(function(attributeName) {
+      return variation.attributes[attributeName] === selectedAttributes[attributeName];
+    });
+  });
+};
+function updateViews(variation) {
+  if (!variation.display_price || !variation.variation_id)
+    return;
+  $.ajax({
+    method: "POST",
+    url: "/wp-admin/admin-ajax.php",
+    data: {
+      action: "sg_solutionView",
+      price: variation.display_price,
+      productId: variation.variation_id
+    }
+  }).done(function(response) {
+    if (response)
+      updateHtmlContent(response);
+  }).fail(function(xhr, status, error) {
+  });
+}
+function updateHtmlContent(newHtml) {
+  const elements = document.querySelectorAll(".sep-Simulations-Product");
+  if (elements.length > 0) {
+    elements.forEach((element) => {
+      element.innerHTML = newHtml;
+      (0,_modal__WEBPACK_IMPORTED_MODULE_0__.initModal)();
+    });
+  }
+}
+
+
 /***/ })
 
 /******/ 	});
@@ -308,11 +376,12 @@ var __webpack_exports__ = {};
   \*********************/
 __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _components_modal__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./components/modal */ "./js/components/modal.js");
-/* harmony import */ var _components_modal__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_components_modal__WEBPACK_IMPORTED_MODULE_0__);
 /* harmony import */ var _components_payment__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./components/payment */ "./js/components/payment.js");
 /* harmony import */ var _components_payment__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(_components_payment__WEBPACK_IMPORTED_MODULE_1__);
 /* harmony import */ var _components_account__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./components/account */ "./js/components/account.js");
 /* harmony import */ var _components_account__WEBPACK_IMPORTED_MODULE_2___default = /*#__PURE__*/__webpack_require__.n(_components_account__WEBPACK_IMPORTED_MODULE_2__);
+/* harmony import */ var _components_product__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./components/product */ "./js/components/product.js");
+
 
 
 

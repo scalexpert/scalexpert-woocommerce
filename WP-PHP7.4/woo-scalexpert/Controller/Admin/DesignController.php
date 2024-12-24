@@ -18,10 +18,16 @@
 		protected        $eFinancingSolutions = [];
 		protected        $sg_scalexpert_options;
 		protected        $eFinancingSolutionActivated;
+        protected string $sectionName;
 		
 		public function __construct() {
-			if ( is_admin() && isset( $_REQUEST['page'] ) || ( $_POST["option_page"] == "sg_scalexpert_custom_group" ) ) {
-				require_once( PLUGIN_DIR . '/Static/autoload.php' );
+            if ( is_admin() && isset( $_REQUEST['page'] )
+                || (
+                    array_key_exists('option_page', $_POST)
+                    && $_POST['option_page'] == 'sg_scalexpert_custom_group'
+                )
+            ) {
+                require_once( PLUGIN_DIR . '/Static/autoload.php' );
 				$this->apiClient = new Client();
 				
 				if ( isset( $_GET['solution'] ) && $_GET['solution'] !== "" ) {
@@ -43,17 +49,18 @@
 					echo 'Exception reçue : ', $e->getMessage(), "\n";
 					$this->eFinancingSolutions = array();
 				}
-				
-				$this->eFinancingSolutionActivated = ( get_option( "sg_scalexpert_activated_" . $_GET['solution'] ) ) ? get_option( "sg_scalexpert_activated_" . $_GET['solution'] ) : 0;
+
+                $this->eFinancingSolutionActivated = ( array_key_exists('solution', $_GET) && get_option( "sg_scalexpert_activated_" . $_GET['solution'] ) ) ? get_option( "sg_scalexpert_activated_" . $_GET['solution'] ) : 0;
 				
 				add_action( 'admin_init', array( $this, 'sg_scalexpert_customisation_init' ) );
 				add_action( 'admin_init', array( $this, 'sg_scalexpert_customisation_sectionProduct' ) );
 				add_action( 'admin_init', array( $this, 'sg_scalexpert_customisation_sectionCart' ) );
 				add_action( 'admin_init', array( $this, 'sg_scalexpert_customisation_sectionPaiement' ) );
 				add_action( 'admin_init', array( $this, 'sg_scalexpert_customisation_sectionGeneral' ) );
-				
-				$this->sectionName = "sg_scalexpert_design_" . $_GET['solution'];
-				
+
+                if (array_key_exists('solution', $_GET)) {
+                    $this->sectionName = "sg_scalexpert_design_" . $_GET['solution'];
+                }
 			}
 			
 		}
@@ -117,68 +124,72 @@
 		 * @return void
 		 *
 		 */
-		public function sg_scalexpert_customisation_init() {
-			register_setting(
-				'sg_scalexpert_custom_group', // option_group
-				'sg_scalexpert_design_' . $_GET['solution'], // option_name
-				array( $this, 'sg_scalexpert_sanitize' ) // sanitize_callback
-			);
-			
-			
-			register_setting(
-				'sg_scalexpert_custom_group', // option_group
-				'sg_scalexpert_design', // option_name
-				array( $this, 'sg_scalexpert_sanitize' ) // sanitize_callback
-			);
-			
-			
-			add_settings_section(
-				'sg_scalexpert_setting_sectionTop', // id
-				__( "Customise", "woo-scalexpert" ), // title
-				array( $this, 'sg_scalexpert_section_info' ), // callback
-				'sg-scalexpert-design-' . $_GET['solution'] // page
-			);
-			
-			add_settings_field(
-				'checkactivate', // id
-				"", // title
-				array( $this, 'checkactivate_callback' ), // callback
-				'sg-scalexpert-design-' . $_GET['solution'], // page
-				'sg_scalexpert_setting_sectionTop' // section
-			);
-		}
+        public function sg_scalexpert_customisation_init() {
+            if (array_key_exists('solution', $_GET)) {
+                register_setting(
+                    'sg_scalexpert_custom_group', // option_group
+                    'sg_scalexpert_design_' . $_GET['solution'], // option_name
+                    array( $this, 'sg_scalexpert_sanitize' ) // sanitize_callback
+                );
+            }
+
+            register_setting(
+                'sg_scalexpert_custom_group', // option_group
+                'sg_scalexpert_design', // option_name
+                array( $this, 'sg_scalexpert_sanitize' ) // sanitize_callback
+            );
+
+            if (array_key_exists('solution', $_GET)) {
+                add_settings_section(
+                    'sg_scalexpert_setting_sectionTop', // id
+                    __( "Customise", "woo-scalexpert" ), // title
+                    array( $this, 'sg_scalexpert_section_info' ), // callback
+                    'sg-scalexpert-design-' . $_GET['solution'] // page
+                );
+
+                add_settings_field(
+                    'checkactivate', // id
+                    "", // title
+                    array( $this, 'checkactivate_callback' ), // callback
+                    'sg-scalexpert-design-' . $_GET['solution'], // page
+                    'sg_scalexpert_setting_sectionTop' // section
+                );
+            }
+        }
 		
 		public function sg_scalexpert_customisation_sectionProduct() {
-			add_settings_section(
-				'sg_scalexpert_setting_sectionProduct', // id
-				__( "Product page", "woo-scalexpert" ), // title
-				array( $this, 'sg_scalexpert_section_info' ), // callback
-				'sg-scalexpert-design-' . $_GET['solution'] // page
-			);
-			
-			add_settings_field(
-				'activate', // id
-				__( "Display on product sheets", "woo-scalexpert" ), // title
-				array( $this, 'activate_callback' ), // callback
-				'sg-scalexpert-design-' . $_GET['solution'], // page
-				'sg_scalexpert_setting_sectionProduct' // section
-			);
-			
-			add_settings_field(
-				'bloc_title', // id
-				__( "Customise the block", "woo-scalexpert" ), // title
-				array( $this, 'bloc_title_callback' ), // callback
-				'sg-scalexpert-design-' . $_GET['solution'], // page
-				'sg_scalexpert_setting_sectionProduct' // section
-			);
-			
-			add_settings_field(
-				'showlogo', // id
-				__( "Display the logo", "woo-scalexpert" ), // title
-				array( $this, 'showlogo_callback' ), // callback
-				'sg-scalexpert-design-' . $_GET['solution'], // page
-				'sg_scalexpert_setting_sectionProduct' // section
-			);
+            if (array_key_exists('solution', $_GET)) {
+                add_settings_section(
+                    'sg_scalexpert_setting_sectionProduct', // id
+                    __("Product page", "woo-scalexpert"), // title
+                    array($this, 'sg_scalexpert_section_info'), // callback
+                    'sg-scalexpert-design-' . $_GET['solution'] // page
+                );
+
+                add_settings_field(
+                    'activate', // id
+                    __("Display on product sheets", "woo-scalexpert"), // title
+                    array($this, 'activate_callback'), // callback
+                    'sg-scalexpert-design-' . $_GET['solution'], // page
+                    'sg_scalexpert_setting_sectionProduct' // section
+                );
+
+                add_settings_field(
+                    'bloc_title', // id
+                    __("Customise the block", "woo-scalexpert"), // title
+                    array($this, 'bloc_title_callback'), // callback
+                    'sg-scalexpert-design-' . $_GET['solution'], // page
+                    'sg_scalexpert_setting_sectionProduct' // section
+                );
+
+                add_settings_field(
+                    'showlogo', // id
+                    __("Display the logo", "woo-scalexpert"), // title
+                    array($this, 'showlogo_callback'), // callback
+                    'sg-scalexpert-design-' . $_GET['solution'], // page
+                    'sg_scalexpert_setting_sectionProduct' // section
+                );
+            }
 			
 			add_settings_section(
 				'sg_scalexpert_setting_sectionProduct', // id
@@ -205,83 +216,87 @@
 		}
 
         public function sg_scalexpert_customisation_sectionCart() {
-            add_settings_section(
-                'sg_scalexpert_setting_sectionCart', // id
-                __( "Cart page", "woo-scalexpert" ), // title
-                array( $this, 'sg_scalexpert_section_info' ), // callback
-                'sg-scalexpert-design-' . $_GET['solution'] // page
-            );
+            if (array_key_exists('solution', $_GET)) {
+                add_settings_section(
+                    'sg_scalexpert_setting_sectionCart', // id
+                    __("Cart page", "woo-scalexpert"), // title
+                    array($this, 'sg_scalexpert_section_info'), // callback
+                    'sg-scalexpert-design-' . $_GET['solution'] // page
+                );
 
-            add_settings_field(
-                'activateCart', // id
-                __( "Display on cart", "woo-scalexpert" ), // title
-                array( $this, 'activateCart_callback' ), // callback
-                'sg-scalexpert-design-' . $_GET['solution'], // page
-                'sg_scalexpert_setting_sectionCart' // section
-            );
+                add_settings_field(
+                    'activateCart', // id
+                    __("Display on cart", "woo-scalexpert"), // title
+                    array($this, 'activateCart_callback'), // callback
+                    'sg-scalexpert-design-' . $_GET['solution'], // page
+                    'sg_scalexpert_setting_sectionCart' // section
+                );
 
-            add_settings_field(
-                'cart_title', // id
-                __( "Customise payment", "woo-scalexpert" ), // title
-                array( $this, 'cart_title_callback' ), // callback
-                'sg-scalexpert-design-' . $_GET['solution'], // page
-                'sg_scalexpert_setting_sectionCart' // section
-            );
+                add_settings_field(
+                    'cart_title', // id
+                    __("Customise payment", "woo-scalexpert"), // title
+                    array($this, 'cart_title_callback'), // callback
+                    'sg-scalexpert-design-' . $_GET['solution'], // page
+                    'sg_scalexpert_setting_sectionCart' // section
+                );
 
-            add_settings_field(
-                'showlogo_cart_cart', // id
-                __( "Show logo for cart", "woo-scalexpert" ), // title
-                array( $this, 'showlogo_cart_cart_callback' ), // callback
-                'sg-scalexpert-design-' . $_GET['solution'], // page
-                'sg_scalexpert_setting_sectionCart' // section
-            );
-
-
+                add_settings_field(
+                    'showlogo_cart_cart', // id
+                    __("Show logo for cart", "woo-scalexpert"), // title
+                    array($this, 'showlogo_cart_cart_callback'), // callback
+                    'sg-scalexpert-design-' . $_GET['solution'], // page
+                    'sg_scalexpert_setting_sectionCart' // section
+                );
+            }
         }
 		
 		public function sg_scalexpert_customisation_sectionPaiement() {
-			add_settings_section(
-				'sg_scalexpert_setting_sectionPaiement', // id
-				__( "Payment page", "woo-scalexpert" ), // title
-				array( $this, 'sg_scalexpert_section_info' ), // callback
-				'sg-scalexpert-design-' . $_GET['solution'] // page
-			);
-			
-			add_settings_field(
-				'payment_title', // id
-				__( "Customise payment", "woo-scalexpert" ), // title
-				array( $this, 'payment_title_callback' ), // callback
-				'sg-scalexpert-design-' . $_GET['solution'], // page
-				'sg_scalexpert_setting_sectionPaiement' // section
-			);
-			
-			add_settings_field(
-				'showlogo_cart', // id
-				__( "Show logo for basket", "woo-scalexpert" ), // title
-				array( $this, 'showlogo_cart_callback' ), // callback
-				'sg-scalexpert-design-' . $_GET['solution'], // page
-				'sg_scalexpert_setting_sectionPaiement' // section
-			);
+            if (array_key_exists('solution', $_GET)) {
+                add_settings_section(
+                    'sg_scalexpert_setting_sectionPaiement', // id
+                    __("Payment page", "woo-scalexpert"), // title
+                    array($this, 'sg_scalexpert_section_info'), // callback
+                    'sg-scalexpert-design-' . $_GET['solution'] // page
+                );
+
+                add_settings_field(
+                    'payment_title', // id
+                    __("Customise payment", "woo-scalexpert"), // title
+                    array($this, 'payment_title_callback'), // callback
+                    'sg-scalexpert-design-' . $_GET['solution'], // page
+                    'sg_scalexpert_setting_sectionPaiement' // section
+                );
+
+                add_settings_field(
+                    'showlogo_cart', // id
+                    __("Show logo for basket", "woo-scalexpert"), // title
+                    array($this, 'showlogo_cart_callback'), // callback
+                    'sg-scalexpert-design-' . $_GET['solution'], // page
+                    'sg_scalexpert_setting_sectionPaiement' // section
+                );
+            }
 		}
 		
 		public function sg_scalexpert_customisation_sectionGeneral() {
-			add_settings_section(
-				'sg_scalexpert_setting_sectionGeneral', // id
-				__( "General Configuration", "woo-scalexpert" ), // title
-				array( $this, 'sg_scalexpert_section_info' ), // callback
-				'sg-scalexpert-design-' . $_GET['solution'], // page
-				array(
-					'after_section' => __( "En sélectionnant des catégories, l'encart ne sera pas affiché pour les produits de ces catégories." ) . '<br>' . __( "Pour sélectionner plusieurs catégories, maintenez la touche CTRL et cliquer avec la souris sur les options souhaitées." )
-				)
-			);
-			
-			add_settings_field(
-				'exclude_cats', // id
-				__( "Exclusion of categories", "woo-scalexpert" ), // title
-				array( $this, 'exclude_cats_callback' ), // callback
-				'sg-scalexpert-design-' . $_GET['solution'], // page
-				'sg_scalexpert_setting_sectionGeneral' // section
-			);
+            if (array_key_exists('solution', $_GET)) {
+                add_settings_section(
+                    'sg_scalexpert_setting_sectionGeneral', // id
+                    __("General Configuration", "woo-scalexpert"), // title
+                    array($this, 'sg_scalexpert_section_info'), // callback
+                    'sg-scalexpert-design-' . $_GET['solution'], // page
+                    array(
+                        'after_section' => __("En sélectionnant des catégories, l'encart ne sera pas affiché pour les produits de ces catégories.") . '<br>' . __("Pour sélectionner plusieurs catégories, maintenez la touche CTRL et cliquer avec la souris sur les options souhaitées.")
+                    )
+                );
+
+                add_settings_field(
+                    'exclude_cats', // id
+                    __("Exclusion of categories", "woo-scalexpert"), // title
+                    array($this, 'exclude_cats_callback'), // callback
+                    'sg-scalexpert-design-' . $_GET['solution'], // page
+                    'sg_scalexpert_setting_sectionGeneral' // section
+                );
+            }
 		}
 		
 		/**

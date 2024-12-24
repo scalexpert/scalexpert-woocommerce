@@ -6,7 +6,7 @@
  * Description: Solutions de financement - SG Scalexpert
  * Text Domain: woo-scalexpert
  * Domain Path: /languages
- * Version: 1.5.5-7.4
+ * Version: 1.6.0-7.4
  * Author: SOCIETE GENERALE
  * Author URI: https://scalexpert.societegenerale.com
  */
@@ -35,6 +35,7 @@ class ScalexpertPlugin {
     protected ConfigController $configController;
     protected AdminController  $adminController;
     protected LoggerHelper     $logger;
+    protected Client           $apiClient;
 
     /**
      *
@@ -99,15 +100,12 @@ class ScalexpertPlugin {
         load_plugin_textdomain( 'woo-scalexpert', FALSE, plugin_basename( PLUGIN_DIR ) . '/languages' );
     }
 
-
     /**
      * @return void
      *
      */
     public function checkAPIcache(){
-
         $apiDebug = get_option( 'sg_scalexpert_debug' );
-
     }
 
     /**
@@ -125,14 +123,14 @@ class ScalexpertPlugin {
             'core'
         );
 
-//        add_meta_box(
-//            'custom-delivery-information',
-//            __( 'Delivery informations', 'woo-scalexpert' ),
-//            array( $this, 'custom_delivery_information_callback' ),
-//            'shop_order',
-//            'side',
-//            'core'
-//        );
+            add_meta_box(
+            'custom-delivery-information',
+            __( 'Delivery informations', 'woo-scalexpert' ),
+            array( $this, 'custom_delivery_information_callback' ),
+            'shop_order',
+            'side',
+            'core'
+        );
     }
 
     public function custom_delivery_information_callback( $post ) {
@@ -140,32 +138,68 @@ class ScalexpertPlugin {
         $order = wc_get_order( $post->ID );
         $creditSubscriptionId = $order->get_meta('scalexpert_finID');
         $operator = $order->get_meta('scalexpert_operator');
-        if (!in_array($order->get_meta( 'scalexpert_solution' ), ["SCFRLT-TXNO", "SCFRLT-TXPS", "SCDELT-DXCO", "SCDELT-DXTS"])) {
+        $isDelivered = $order->get_meta('scalexpert_isDelivered');
+        $scalexpert_consolidatedStatus = $order->get_meta('scalexpert_consolidatedStatus');
+        $scalexpert_consolidatedSubstatus = $order->get_meta('scalexpert_consolidatedSubstatus');
+        if (!in_array($order->get_meta( 'scalexpert_solution' ), [
+            "SCFRLT-TXPS",
+            "SCFRLT-TXNO",
+            "SCFRLT-TXTS",
+            "SCDELT-DXTS",
+            "SCDELT-DXCO",
+        ])) {
             echo '<p>' . __( 'Confirm delivery not available', 'woo-scalexpert' ) . '</p>';
         } else {
             echo '<p><label for="trackingNumber">' . __( 'Tracking number', 'woo-scalexpert' ) . ' : </label><br>';
-            echo '<input type="text" id="scalexpert_tracking_number" name="scalexpert_tracking_number" value="' . $order->get_meta('scalexpert_tracking_number') . '" /></p>';
+            if ($isDelivered) {
+                echo '<input type="text" id="scalexpert_tracking_number" name="scalexpert_tracking_number" value="' . $order->get_meta('scalexpert_tracking_number') . '" disabled /></p>';
+            } else {
+                echo '<input type="text" id="scalexpert_tracking_number" name="scalexpert_tracking_number" value="' . $order->get_meta('scalexpert_tracking_number') . '" /></p>';
+            }
 
             echo '<p><label for="operator">' . __( 'Operator', 'woo-scalexpert' ) . ' :</label><br>';
-            echo '<select id="scalexpert_operator_selected" name="scalexpert_operator_selected">
-                  <option value="">' . __( '--Please choose an operator--', 'woo-scalexpert' ) . '</option>
-                  <option value="UPS" ' . ($operator === "UPS" ? "selected" : "") . '>' . __( 'UPS', 'woo-scalexpert' ) . '</option>
-                  <option value="DHL" ' . ($operator === "DHL" ? "selected" : "") . '>' . __( 'DHL', 'woo-scalexpert' ) . '</option>
-                  <option value="CHRONOPOST" ' . ($operator === "CHRONOPOST" ? "selected" : "") . '>' . __( 'CHRONOPOST', 'woo-scalexpert' ) . '</option>
-                  <option value="LA_POSTE" ' . ($operator === "LA_POSTE" ? "selected" : "") . '>' . __( 'LA_POSTE', 'woo-scalexpert' ) . '</option>
-                  <option value="DPD" ' . ($operator === "DPD" ? "selected" : "") . '>' . __( 'DPD', 'woo-scalexpert' ) . '</option>
-                  <option value="RELAIS_COLIS" ' . ($operator === "RELAIS_COLIS" ? "selected" : "") . '>' . __( 'RELAIS_COLIS', 'woo-scalexpert' ) . '</option>
-                  <option value="MONDIAL_RELAY" ' . ($operator === "MONDIAL_RELAY" ? "selected" : "") . '>' . __( 'MONDIAL_RELAY', 'woo-scalexpert' ) . '</option>
-                  <option value="FEDEX" ' . ($operator === "FEDEX" ? "selected" : "") . '>' . __( 'FEDEX', 'woo-scalexpert' ) . '</option>
-                  <option value="GLS" ' . ($operator === "GLS" ? "selected" : "") . '>' . __( 'GLS', 'woo-scalexpert' ) . '</option>
-                  <option value="UNKNOW" ' . ($operator === "UNKNOW" ? "selected" : "") . '>' . __( 'UNKNOWN', 'woo-scalexpert' ) . '</option>
-                </select>
-            ';
+            if ($isDelivered) {
+                echo '<select id="scalexpert_operator_selected" name="scalexpert_operator_selected" disabled>
+                          <option value="">' . __( '--Please choose an operator--', 'woo-scalexpert' ) . '</option>
+                          <option value="UPS" ' . ($operator === "UPS" ? "selected" : "") . '>' . __( 'UPS', 'woo-scalexpert' ) . '</option>
+                          <option value="DHL" ' . ($operator === "DHL" ? "selected" : "") . '>' . __( 'DHL', 'woo-scalexpert' ) . '</option>
+                          <option value="CHRONOPOST" ' . ($operator === "CHRONOPOST" ? "selected" : "") . '>' . __( 'CHRONOPOST', 'woo-scalexpert' ) . '</option>
+                          <option value="LA_POSTE" ' . ($operator === "LA_POSTE" ? "selected" : "") . '>' . __( 'LA_POSTE', 'woo-scalexpert' ) . '</option>
+                          <option value="DPD" ' . ($operator === "DPD" ? "selected" : "") . '>' . __( 'DPD', 'woo-scalexpert' ) . '</option>
+                          <option value="RELAIS_COLIS" ' . ($operator === "RELAIS_COLIS" ? "selected" : "") . '>' . __( 'RELAIS_COLIS', 'woo-scalexpert' ) . '</option>
+                          <option value="MONDIAL_RELAY" ' . ($operator === "MONDIAL_RELAY" ? "selected" : "") . '>' . __( 'MONDIAL_RELAY', 'woo-scalexpert' ) . '</option>
+                          <option value="FEDEX" ' . ($operator === "FEDEX" ? "selected" : "") . '>' . __( 'FEDEX', 'woo-scalexpert' ) . '</option>
+                          <option value="GLS" ' . ($operator === "GLS" ? "selected" : "") . '>' . __( 'GLS', 'woo-scalexpert' ) . '</option>
+                          <option value="UNKNOW" ' . ($operator === "UNKNOW" ? "selected" : "") . '>' . __( 'UNKNOWN', 'woo-scalexpert' ) . '</option>
+                        </select>
+                ';
+            } else {
+                echo '<select id="scalexpert_operator_selected" name="scalexpert_operator_selected">
+                          <option value="">' . __( '--Please choose an operator--', 'woo-scalexpert' ) . '</option>
+                          <option value="UPS" ' . ($operator === "UPS" ? "selected" : "") . '>' . __( 'UPS', 'woo-scalexpert' ) . '</option>
+                          <option value="DHL" ' . ($operator === "DHL" ? "selected" : "") . '>' . __( 'DHL', 'woo-scalexpert' ) . '</option>
+                          <option value="CHRONOPOST" ' . ($operator === "CHRONOPOST" ? "selected" : "") . '>' . __( 'CHRONOPOST', 'woo-scalexpert' ) . '</option>
+                          <option value="LA_POSTE" ' . ($operator === "LA_POSTE" ? "selected" : "") . '>' . __( 'LA_POSTE', 'woo-scalexpert' ) . '</option>
+                          <option value="DPD" ' . ($operator === "DPD" ? "selected" : "") . '>' . __( 'DPD', 'woo-scalexpert' ) . '</option>
+                          <option value="RELAIS_COLIS" ' . ($operator === "RELAIS_COLIS" ? "selected" : "") . '>' . __( 'RELAIS_COLIS', 'woo-scalexpert' ) . '</option>
+                          <option value="MONDIAL_RELAY" ' . ($operator === "MONDIAL_RELAY" ? "selected" : "") . '>' . __( 'MONDIAL_RELAY', 'woo-scalexpert' ) . '</option>
+                          <option value="FEDEX" ' . ($operator === "FEDEX" ? "selected" : "") . '>' . __( 'FEDEX', 'woo-scalexpert' ) . '</option>
+                          <option value="GLS" ' . ($operator === "GLS" ? "selected" : "") . '>' . __( 'GLS', 'woo-scalexpert' ) . '</option>
+                          <option value="UNKNOW" ' . ($operator === "UNKNOW" ? "selected" : "") . '>' . __( 'UNKNOWN', 'woo-scalexpert' ) . '</option>
+                        </select>
+                ';
+            }
             
             echo '<input type="hidden" id="orderId" name="orderId" value="' . $post->ID . '" />';
             echo '<input type="text" id="scalexpert_creditSubscriptionId" name="scalexpert_creditSubscriptionId" value="' . $creditSubscriptionId . '" hidden/></p>';
 
-            echo '<input class="button cancel_order button-primary" type="button" id="scalexpert_deliveryConfirmButton" value="' . __( 'Confirm delivery', 'woo-scalexpert' ) . '" /></p>';
+            if (
+                !$isDelivered
+                && $scalexpert_consolidatedStatus === "ACCEPTED"
+                && $scalexpert_consolidatedSubstatus === "WAITING FOR THE DELIVERY CONFIRMATION"
+            ) {
+                echo '<input class="button cancel_order button-primary" type="button" id="scalexpert_deliveryConfirmButton" value="' . __( 'Confirm delivery', 'woo-scalexpert' ) . '" /></p>';
+            }
         }
     }
 
@@ -177,7 +211,6 @@ class ScalexpertPlugin {
      * @return void
      */
     public function custom_order_meta_box_callback( $post ){
-        global $post;
 
         setlocale( LC_TIME, "fr_FR" );
         $order = wc_get_order( $post->ID );
@@ -190,14 +223,15 @@ class ScalexpertPlugin {
             // Retrocompatibilité
             $financedState     = ( get_post_meta( $post->ID, 'scalexpert_status_bool', TRUE ) != "" ) ? get_post_meta( $post->ID, 'scalexpert_status_bool', TRUE ) : 1;
             $placeHolderAmount = __( 'e.g. 1234.56', 'woo-scalexpert' );
+            $status = $this->getFinancialStateName($order->get_meta('scalexpert_consolidatedStatus'));
 
             echo "<strong>" . __( 'Orderdate:', 'woo-scalexpert' ) . "</strong>" . strftime( '%d-%m-%G', strtotime( $order->get_date_created() ) ) . "<br>";
             echo "<strong>" . __( 'FinID:', 'woo-scalexpert' ) . "</strong>" . $order->get_meta( 'scalexpert_finID' ) . "<br>";
             echo '<input type="hidden" id="scalexpert_finID" name="scalexpert_finID" value="' . $order->get_meta( 'scalexpert_finID' ) . '" />';
             echo "<strong>" . __( 'Solution:', 'woo-scalexpert' ) . "</strong>" . $order->get_meta( 'scalexpert_solution' ) . "<br>";
             echo '<input type="hidden" id="scalexpert_solution" name="scalexpert_solution" value="' . $order->get_meta( 'scalexpert_solution' ) . '" />';
-            echo "<strong>" . __( 'Status:', 'woo-scalexpert' ) . "</strong>" . $order->get_meta( 'scalexpert_status' ) . "<br>";
-            echo "<strong>" . __( 'Substatus:', 'woo-scalexpert' ) . "</strong>" . $order->get_meta( 'scalexpert_consolidatedSubstatus' ) . "<br>";
+            echo "<strong>" . __( 'Status:', 'woo-scalexpert' ) . "</strong>" . $status . "<br>";
+            echo "<strong>" . __( 'Substatus:', 'woo-scalexpert' ) . "</strong>" . __($order->get_meta('scalexpert_consolidatedSubstatus'), 'woo-scalexpert') . "<br>";
             if ( $financedAmount || $reducedAmount == $order->get_total() ) {
                 echo "<strong>" . __( 'Financed Amount:', 'woo-scalexpert' ) . "</strong>" . $financedAmount . "€<br>";
                 echo "<strong>" . __( 'Cancelled amount:', 'woo-scalexpert' ) . "</strong>" . $reducedAmount . "€<br>";
@@ -317,6 +351,38 @@ class ScalexpertPlugin {
 
     public function orderConfirmation_shortcode_fn( $attributes ){ }
 
+    /**
+     * @param $sgFinancialStatus
+     *
+     * @return string|null
+     */
+    private function getFinancialStateName($sgFinancialStatus) : ?string{
+        switch ($sgFinancialStatus) {
+            case 'INITIALIZED':
+                $statusName = __( 'Financing request in progress', 'woo-scalexpert' );
+                break;
+            case 'PRE_ACCEPTED':
+                $statusName = __( 'Financing request pre-accepted', 'woo-scalexpert' );
+                break;
+            case 'ACCEPTED':
+                $statusName = __( 'Financing request accepted', 'woo-scalexpert' );
+                break;
+            case 'REJECTED':
+                $statusName = __( 'Financing request rejected', 'woo-scalexpert' );
+                break;
+            case 'CANCELLED':
+                $statusName = __( 'Financing request cancelled', 'woo-scalexpert' );
+                break;
+            case 'ABORTED':
+                $statusName = __( 'Financing request aborted', 'woo-scalexpert' );
+                break;
+            default:
+                $statusName = __( 'A technical error occurred during process, please retry.', 'woo-scalexpert' );
+                break;
+        }
+
+        return $statusName;
+    }
 }
 
 $ScalexpertPlugin = new ScalexpertPlugin();
@@ -469,7 +535,10 @@ function scalexpert_add_gateway_class( $gateways ){
 function scalexpert_init_gateway_class(){
 
     class WC_Scalexpert_Gateway extends WC_Payment_Gateway {
-
+        protected LoggerHelper  $logger;
+        protected string        $testmode;
+        protected string        $private_key;
+        protected string        $publishable_key;
 
         /**
          * Class constructor, more about it in Step 3
@@ -501,8 +570,11 @@ function scalexpert_init_gateway_class(){
 
             add_filter( 'woocommerce_available_payment_gateways', array( $this, 'conditional_payment_gateways' ), 10, 1 );
 
-            if ( $_GET[ 'phoneNumberError' ] ) {
-                wc_add_notice( __( 'Your phone number is not correct !', 'woo-scalexpert' ), "error" );
+            if (
+                array_key_exists('phoneNumberError', $_GET)
+                && $_GET['phoneNumberError']
+            ) {
+                wc_add_notice(__( 'Your phone number is not correct !', 'woo-scalexpert' ), "error");
             }
         }
 
@@ -514,9 +586,12 @@ function scalexpert_init_gateway_class(){
         public function conditional_payment_gateways( $available_gateways ){
             $solutions = explode(',', get_option('sg_scalexpert_solutions')['solutions']);
             $disable = true;
-            foreach ($solutions as $solution){
-                $activate = get_option('sg_scalexpert_activated_'.$solution)['activate'];
-                if ($activate) {
+            foreach ($solutions as $solution) {
+                $sgScalexpertActivated = get_option('sg_scalexpert_activated_' . $solution);
+                if (
+                    array_key_exists('activate', $sgScalexpertActivated)
+                    && $sgScalexpertActivated['activate']
+                ) {
                     $disable = false;
                 }
             }
@@ -558,7 +633,7 @@ function scalexpert_init_gateway_class(){
                 )
             );
 
-            woocommerce_form_field( 'scalexpert_status',
+            woocommerce_form_field( 'scalexpert_consolidatedStatus',
                 array(
                     'type' => 'hidden',
                     'required' => 'false',
@@ -568,6 +643,33 @@ function scalexpert_init_gateway_class(){
             );
 
             woocommerce_form_field( 'scalexpert_consolidatedSubstatus',
+                array(
+                    'type' => 'hidden',
+                    'required' => 'false',
+                    'label' => "",
+                    'placeholder' => ""
+                )
+            );
+
+            woocommerce_form_field( 'scalexpert_isDelivered',
+                array(
+                    'type' => 'hidden',
+                    'required' => 'false',
+                    'label' => "",
+                    'placeholder' => ""
+                )
+            );
+
+            woocommerce_form_field( 'scalexpert_operator',
+                array(
+                    'type' => 'hidden',
+                    'required' => 'false',
+                    'label' => "",
+                    'placeholder' => ""
+                )
+            );
+
+            woocommerce_form_field( 'scalexpert_tracking_number',
                 array(
                     'type' => 'hidden',
                     'required' => 'false',
@@ -743,18 +845,19 @@ function scalexpert_init_gateway_class(){
                 $newOrderStatus = $this->getWcStatusByScalexperStatus( $sgFinancialStatus );
                 $newTextStatus = $this->getFinancialStateName( $sgFinancialStatus );
 
-                $order->update_status( $newOrderStatus );
+                $order->update_status($newOrderStatus);
 
                 if (
-                    ( $sgFinancialSubStatus = __( $result[ 'contentsDecoded' ][ 'consolidatedSubstatus' ], 'woo-scalexpert' ) )
+                    ( $sgFinancialSubStatus = $result[ 'contentsDecoded' ][ 'consolidatedSubstatus' ] )
                     && $orderSubStatus !== $sgFinancialSubStatus
                 ) {
-                    update_post_meta( $order->get_id(), 'scalexpert_consolidatedSubstatus', __($sgFinancialSubStatus, 'woo-scalexpert') );
+                    update_post_meta($order->get_id(), 'scalexpert_consolidatedSubstatus', $result[ 'contentsDecoded' ][ 'consolidatedSubstatus' ]);
                 }
+
+                update_post_meta($order->get_id(), 'scalexpert_consolidatedStatus', $result[ 'contentsDecoded' ][ 'consolidatedStatus' ]);
 
                 if ( $orderStatus !== $newOrderStatus ) {
                     $order->add_order_note( $newTextStatus );
-                    update_post_meta( $order->get_id(), 'scalexpert_status', $newTextStatus );
 
                     if ( $sgFinancialStatus == "ACCEPTED" ) {
                         update_post_meta( $order->get_id(), 'scalexpert_status_bool', 1 );
@@ -774,8 +877,8 @@ function scalexpert_init_gateway_class(){
          *
          * @return string|null
          */
-        private function getFinancialStateName( $sgFinancialStatus ) : ?string{
-            switch ( $sgFinancialStatus ) {
+        private function getFinancialStateName($sgFinancialStatus) : ?string{
+            switch ($sgFinancialStatus) {
                 case 'INITIALIZED':
                     $statusName = __( 'Financing request in progress', 'woo-scalexpert' );
                     break;
@@ -871,16 +974,16 @@ function scalexpert_init_gateway_class(){
                     TRUE );
 
                 $sgFinancialStatus    = $result[ 'contentsDecoded' ][ 'consolidatedStatus' ];
-                $sgFinancialSubStatus = $result[ 'contentsDecoded' ][ 'consolidatedSubstatus' ];
                 $newOrderStatus       = $this->getWcStatusByScalexperStatus( $sgFinancialStatus );
                 $newTextStatus        = $this->getFinancialStateName( $sgFinancialStatus );
                 $order->update_status( $newOrderStatus );
-                if ( $orderStatus !== $newOrderStatus ) {
-                    $order->add_order_note( $newTextStatus );
-                    update_post_meta( $order_id, 'scalexpert_status', $newTextStatus );
 
-                    if ( $sgFinancialSubStatus ) {
-                        update_post_meta( $order_id, 'scalexpert_consolidatedSubstatus', __( $sgFinancialSubStatus, 'woo-scalexpert' ) );
+                if ( $sgFinancialStatus !== $order->get_meta('scalexpert_consolidatedStatus') ) {
+                    $order->add_order_note( $newTextStatus );
+                    update_post_meta( $order_id, 'scalexpert_consolidatedStatus', $sgFinancialStatus );
+
+                    if ( $sgFinancialSubStatus = $result[ 'contentsDecoded' ][ 'consolidatedSubstatus' ] ) {
+                        update_post_meta( $order_id, 'scalexpert_consolidatedSubstatus',  $sgFinancialSubStatus );
                     }
 
                     if ( $sgFinancialStatus == "ACCEPTED" ) {
@@ -888,7 +991,6 @@ function scalexpert_init_gateway_class(){
                     } else {
                         update_post_meta( $order_id, 'scalexpert_status_bool', 0 );
                     }
-
                 }
 
                 $response[ 'TextStatus' ]      = $newTextStatus;
@@ -1061,10 +1163,12 @@ function scalexpert_init_gateway_class(){
                 // Mark as on-hold (Waiting for API Feedback => update_scalexpert)
                 $order = new WC_Order( $order_id );
                 $order->add_order_note( __( "Financing request initiated", "woo-scalexpert" ) );
+                $order->update_meta_data('redirectURL', $redirectURL);
+                $order->save();
                 update_post_meta( $order_id, 'scalexpert_finID', $finID );
                 update_post_meta( $order_id, 'scalexpert_solution', $_POST[ 'solutionCode' ] );
-                update_post_meta( $order_id, 'scalexpert_status', __( "Financing request initiated", "woo-scalexpert" ) );
-                update_post_meta( $order_id, 'scalexpert_consolidatedSubstatus', __( "SUBSCRIPTION IN PROGRESS", 'woo-scalexpert' ) );
+                update_post_meta( $order_id, 'scalexpert_consolidatedStatus', "INITIALIZED" );
+                update_post_meta( $order_id, 'scalexpert_consolidatedSubstatus', "SUBSCRIPTION IN PROGRESS" );
                 $woocommerce->cart->empty_cart();
                 $result[ 'result' ] = 'success';
                 wp_die( json_encode( $result ) );
@@ -1074,7 +1178,6 @@ function scalexpert_init_gateway_class(){
                 if ( defined( WP_DEBUG_SGAPI ) && WP_DEBUG_SGAPI == TRUE ) {
                     $this->scalexpert_debug( $result );
                 }
-
 
                 $order = new WC_Order( $order_id );
                 $order->update_status( $this->getWcStatusByScalexperStatus( 'ABORTED' ), $this->getFinancialStateName( 'ABORTED' ) );
@@ -1121,7 +1224,7 @@ function scalexpert_init_gateway_class(){
                     "quantity" => $item[ 'quantity' ],
                     "model" => $model,
                     "label" => $product->get_data()[ 'name' ],
-                    "price" => $item[ 'line_total' ],
+                    "price" => round($item[ 'line_total' ] + $item[ 'line_subtotal_tax' ], 2),
                     "currencyCode" => "EUR",
                     "orderId" => "'" . $orderID . "'",
                     "brandName" => $brandName,
@@ -1172,109 +1275,6 @@ function scalexpert_init_gateway_class(){
             ];
         }
 
-
-        /**
-         * @param $phoneNumber
-         * @param $country
-         *
-         * @return array
-         *
-         * En attendant la correction de l'API concernant la vérif num tél
-         */
-        private function formatPhoneNumber_ok( $phoneNumber, $country ){
-
-            $phoneNumber    = trim( $phoneNumber );
-            $phoneNumberLen = strlen( $phoneNumber );
-            $subStrPhone    = substr( $phoneNumber, 0, 4 );
-
-            /*
-             * We check length before going any further
-             * The JS Regex is too permissive
-             */
-            if ( $phoneNumberLen > 14 ) {
-
-                /* obviously erratic number but we do nothing as in Presta & Magento */
-                $phone[ "number" ] = $phoneNumber;
-                $phone[ "error" ]  = TRUE;
-
-                return $phone;
-                /**/
-
-            } elseif ( $phoneNumberLen > 10 ) {
-                switch ( $subStrPhone ) {
-                    case "0033" :
-                        $phoneNumber = str_replace( "0033", "+33", $phoneNumber );
-                        break;
-                    case "+336" :
-                    case "+337" :
-                        break;
-                    default:
-                        $phone[ "number" ] = $phoneNumber;
-                        $phone[ "error" ]  = TRUE;
-
-                        return $phone;
-                        break;
-                }
-            }
-
-            /*
-             * Lets format the number for DE & FR
-             */
-            if ( !empty( $phoneNumber ) && strpos( $phoneNumber, '+' ) === FALSE ) {
-
-                switch ( strtolower( $country ) ) {
-                    case "de" :
-                        $call_prefix = "+49";
-                        break;
-                    default :
-                        $call_prefix = "+33";
-                        $country     = "fr";
-                        break;
-                }
-                $phoneNumber = sprintf( '%s%s', $call_prefix, substr( $phoneNumber, 1 ) );
-            }
-
-
-            /*
-             * Let's check for DE & FR before API Call
-             */
-            switch ( $country ) {
-                case "de":
-                    $subStrPhone       = substr( $phoneNumber, 0, 3 );
-                    $phone[ "number" ] = $phoneNumber;
-                    $phone[ "error" ]  = ( $subStrPhone != "+49" ) ? TRUE : FALSE;
-                    break;
-                default :
-                    $subStrPhone       = substr( $phoneNumber, 0, 4 );
-                    $phone[ "number" ] = $phoneNumber;
-                    $phone[ "error" ]  = ( $subStrPhone != "+337" && $subStrPhone != "+336" ) ? TRUE : FALSE;
-                    break;
-            }
-
-            /*
-             * Last check before API Call
-             * the phone number must be +49 or +336 or +337
-             */
-
-            /* obviously erratic number but we do nothing as in Presta & Magento */
-            $phoneNumberLen = strlen( $phoneNumber );
-            if ( $phoneNumberLen > 13 ) {
-
-                $phone[ "number" ] = $phoneNumber;
-                $phone[ "error" ]  = TRUE;
-
-                return $phone;
-            }
-
-            print $phoneNumber;
-            /**/
-            $phone[ "number" ] = $phoneNumber;
-            $phone[ "error" ]  = TRUE;
-
-            return $phone;
-        }
-
-
         /**
          * Not needed yet
          */
@@ -1303,7 +1303,7 @@ function showSimulationBeforeAddToCartButton() {
         global $productController;
 
         echo '<!--  SG Paiement Simulation -->';
-        $productController->showSimulation4Product( $product->get_price(), get_locale() );
+        $productController->showSimulation4Product( wc_get_price_including_tax($product), get_locale() );
         echo "<br>";
         echo '<!--  SG Paiement Simulation -->';
     }
@@ -1318,7 +1318,7 @@ function showSimulationAfterAddToCartButton() {
         global $productController;
 
         echo '<!--  SG Paiement Simulation -->';
-        $productController->showSimulation4Product( $product->get_price(), get_locale() );
+        $productController->showSimulation4Product( wc_get_price_including_tax($product), get_locale() );
         echo '<!--  SG Paiement Simulation -->';
     }
 }
@@ -1355,3 +1355,51 @@ function showSimulationAfterCartTable() {
     }
 }
 add_action('woocommerce_after_cart_table', 'showSimulationAfterCartTable', 999);
+
+function ajaxShowSimulation4Product()
+{
+    global $productController;
+
+    include_once('Controller/Front/ProductController.php');
+
+    if (is_null($productController)) {
+        $productController = new wooScalexpert\Controller\Front\ProductController();
+    }
+
+    if (isset($_POST['price']) && isset($_POST['productId'])) {
+        $price = sanitize_text_field($_POST['price']);
+        $productId = intval($_POST['productId']);
+        $productController->showSimulation4Product($price, get_locale(), $productId);
+    }
+
+    wp_die();
+}
+
+add_action( "wp_ajax_sg_solutionView", "ajaxShowSimulation4Product" );
+add_action( "wp_ajax_nopriv_sg_solutionView", "ajaxShowSimulation4Product" );
+
+add_action( 'template_redirect', 'force_user_login_after_redirection', 10 );
+function force_user_login_after_redirection() {
+    // Vérifiez si nous sommes sur la page "order-received" et que l'utilisateur n'est pas connecté
+    if ( is_order_received_page() && !is_user_logged_in() ) {
+        $orderId = wc_get_order_id_by_order_key($_REQUEST['key']);
+        $order = wc_get_order($orderId);
+
+        if (
+            ($user_id = $order->get_user()->ID)
+            && gettype($user_id) === 'integer'
+            && !empty($order->get_meta('redirectURL'))
+            && str_starts_with($order->get_meta('redirectURL'), $_SERVER['HTTP_REFERER'])
+        ) {
+            wp_set_current_user( $user_id );
+            wp_set_auth_cookie( $user_id );
+
+            // Ajoutez un paramètre pour éviter les redirections infinies
+            if ( !isset( $_GET['logged-in'] ) ) {
+                // Redirection vers la même page en ajoutant un paramètre pour éviter une boucle infinie
+                wp_redirect( add_query_arg( 'logged-in', 'true', $_SERVER['REQUEST_URI'] ) );
+                exit;
+            }
+        }
+    }
+}

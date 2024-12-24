@@ -101,7 +101,6 @@
             echo '<!-- end ' . plugin_dir_path( __FILE__ ) . '/Views/' . $template . '.php -->';
         }
         
-        
         /**
          * @param $price
          * @param $locale
@@ -111,20 +110,20 @@
         public function showSimulation4Product( $price = NULL, $locale = "FR", $prodID = NULL ){
             global $product;
             global $post;
-            
             if ( $prodID !== NULL ) {
                 $post    = get_post( $prodID );
                 $product = wc_get_product( $prodID );
                 $data    = $product->get_data();
-                $price   = $data[ "price" ];
+                $price   = wc_get_price_including_tax($product);
             }
-            
-            $terms = get_the_terms( $post->ID, 'product_cat' );
-            foreach ( $terms as $term ) {
-                $product_cat_id = $term->term_id;
-                break;
+            $product_cat_id = '';
+            if ($terms = get_the_terms($post->ID, 'product_cat')) {
+                foreach ($terms as $term) {
+                    $product_cat_id = $term->term_id;
+                    break;
+                }
             }
-            
+
             $locale = explode( '_', $locale );
             $locale = strtoupper( $locale[ 0 ] );
             if ( $prodID !== NULL ) {
@@ -135,7 +134,7 @@
             if ( empty( $simulations ) ) {
                 $this->apiclient = new Client();
                 try {
-                    $price       = ( $price != NULL ) ? $price : $product->get_price();
+                    $price       = ( $price != NULL ) ? $price : wc_get_price_including_tax($product);
                     $simulations = $this->apiclient->getSimulateFinancing4Product( $price, $locale, $product_cat_id );
                 } catch ( Exception $e ) {
                     echo 'Exception reçue : ', $e->getMessage(), "\n";

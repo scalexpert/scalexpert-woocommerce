@@ -24,7 +24,7 @@ document.addEventListener("DOMContentLoaded", function () {
     });
 });
 
-function initModal() {
+export function initModal() {
     if ($('[data-modal="sep_openModal"]').length) {
         let $modal;
         let solutionSelector = '.sep-Simulations-solution [data-js="selectSolutionSimulation"]';
@@ -49,7 +49,7 @@ function initModal() {
     }
 }
 
-openModal = function openModal($modal) {
+const openModal = function openModal($modal) {
     if (typeof $modal !== 'undefined' && $modal.length) {
         $modal.show();
         eventCloseModal($modal);

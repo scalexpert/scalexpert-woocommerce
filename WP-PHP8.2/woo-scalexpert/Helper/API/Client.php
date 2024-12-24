@@ -267,18 +267,21 @@
             );
 
             if (isset($response['errorMessage'])) {
+                update_post_meta($order->get_id(), 'scalexpert_isDelivered', false);
                 $return = [
                     'status' => $response['errorCode'],
                     'message' => json_decode($response['errorMessage']),
                 ];
                 $this->logger->logError("Error confirmDelivery - return response : " . $response['errorMessage']);
             } elseif (isset($response['error'])) {
+                update_post_meta($order->get_id(), 'scalexpert_isDelivered', false);
                 $return = [
                     'status' => $response['error'],
                     'message' => json_decode($response['message']),
                 ];
                 $this->logger->logError("Error confirmDelivery - return response : " . $response['message']);
             } else {
+                update_post_meta($order->get_id(), 'scalexpert_isDelivered', true);
                 $return = [
                     'status' => $response['code'],
                     'message' => json_decode($response['content']),
@@ -423,7 +426,6 @@
 		 * @return array
 		 */
 		public function getSimulateFinancing4Product( $eFinancingAmount = NULL, $eFinancingCountry = "FR", $categoryID, bool $isCart = FALSE ) {
-			
 			$transient         = NULL;
 			$normalize         = array();
 			$simulateFinancing = array(
@@ -465,7 +467,7 @@
 			$eligibleSimulations = $this->getEligibleSimulationsForFront( $response, $categoryID, "", TRUE );
 			$designData          = $this->formatter->buildDesignData( $eligibleSimulations, $eligibleSolutions, FALSE );
 			$normalize           = $this->formatter->normalizeSimulations( $response, $designData['designSolutions'], FALSE, TRUE );
-			
+
 			return $normalize;
 		}
 		
@@ -667,12 +669,14 @@
 				[],
 				TRUE
 			);
-			
-			if ( ! empty( $response['contentsDecoded']['access_token'] ) ) {
-				wp_die( json_encode( __( " API credentials are correct !", "woo-scalexpert" ) ) );
-			}
-			wp_die( json_encode( __( " API credentials are invalid !", "woo-scalexpert" ) ) );
-			
+
+            $res = false;
+
+            if ( !empty( $response[ 'contentsDecoded' ][ 'access_token' ] ) ) {
+                $res = true;
+            }
+
+            wp_die(json_encode($res));
 		}
 		
 		

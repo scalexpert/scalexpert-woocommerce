@@ -8,7 +8,7 @@
 	 */
 	
 	global $product;
-	$financedAmountFormatted = ( isset( $isSimulation ) && $isSimulation == "product" ) ? wc_price( $product->get_price() ) : $cartTotal;
+	$financedAmountFormatted = ( isset( $isSimulation ) && $isSimulation == "product") ? wc_price(wc_get_price_including_tax($product)) : $cartTotal;
 	
 	/*print "<pre>";
 	print_r( $solution );

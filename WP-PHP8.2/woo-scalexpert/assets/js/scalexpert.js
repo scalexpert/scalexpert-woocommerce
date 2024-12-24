@@ -1,1 +1,404 @@
-(()=>{var t={397:()=>{let t;function e(){t("#sg_overlay").attr("data-open","true")}function o(e){let o="New order creation failed !";t(e).attr("data-errorText")&&(o=t(e).attr("data-errorText")),t("#sg_overlay").attr("data-open","false"),alert(o)}document.addEventListener("DOMContentLoaded",(function(){t=jQuery;let n="#sg_newOrder #newBasket";t(n).length&&(function(){let e="";e+='<div id="sg_overlay"><div class="sg_loader"></div></div>',t("body").append(e)}(),function(n){t(n).length&&t(n).off().on("click",(function(a){a.preventDefault(),function(n){if(t(n).length&&"undefined"!=typeof sg_recreateCart_object&&void 0!==sg_recreateCart_object.ajaxurl){let a=parseInt(t(n).attr("data-orderId"));isNaN(a)||t.ajax({type:"POST",headers:{"cache-control":"no-cache"},url:sg_recreateCart_object.ajaxurl,async:!0,cache:!1,dataType:"html",data:{ajax:!0,action:"sg_recreateCart",orderID:a},beforeSend:e()}).success((function(e){void 0!==e&&e?t("#sg_newOrder").submit():o(n)})).error((function(){o(n)}))}}(n)}))}(n))}))},237:()=>{let t;function e(){if(t('[data-modal="sep_openModal"]').length){let e;!function(e){t(e).length&&t(e).each((function(e,o){if(void 0!==o&&t(o).length){let e=t(o).attr("data-id");if(void 0!==e&&e){let n=t(o).attr("data-groupid");t(o).off().on("click",(function(o){o.preventDefault();let a='.sep-Simulations-groupSolution[data-id="'+n+'"]';t(a+" .sep-Simulations-solution").hide(),t(a+' .sep-Simulations-solution[data-id="'+e+'"]').show()}))}}}))}('.sep-Simulations-solution [data-js="selectSolutionSimulation"]'),t('[data-modal="sep_openModal"]').off().on("click",(function(o){o.preventDefault(),t(t(this)).length&&(t(t(this).attr("data-idmodal")).length?e=t(t(this).attr("data-idmodal")):t(t(this).attr("href")).length&&(e=t(t(this).attr("href"))),void 0!==e&&e&&openModal(e))}))}}document.addEventListener("DOMContentLoaded",(function(){t=jQuery,e(),t("body").on("updated_checkout",(function(){e()})),t("body").on("updated_wc_div",(function(){e()}))})),openModal=function(e){void 0!==e&&e.length&&(e.show(),function(e){void 0!==e&&e.length&&(e.off().on("click",(function(o){void 0!==o&&t(o.target).length&&t(o.target).attr("id")===e.attr("id")&&e.hide()})),e.find(".close").length&&e.find(".close").off().on("click",(function(){e.hide()})))}(e))}},307:()=>{let t;function e(){t('.payment_methods input[type="radio"]').length&&(o(t('.payment_methods input[type="radio"]:checked')),t('.payment_methods input[type="radio"]').on("change",(function(e){void 0!==e&&e&&t(e.target).length&&o(t(e.target))}))),function(){let e=t('form.woocommerce-checkout input[type="checkbox"]#terms, form#order_review input[type="checkbox"]#terms');e.length&&e.on("change",(function(e){!function(e){let o=t(e),n=t(".payment_method_scalexpert .sep_financialSolution .sep_financialSolution-buttonPay");n.length&&(n.attr("disabled","").removeAttr("disabled").removeClass("disabled"),o.prop("checked")||n.attr("disabled","disabled").addClass("disabled"))}(e.target)}))}(),function(){let e=t(".payment_method_scalexpert .sep_financialSolution .sep_financialSolution-buttonPay"),o=t('.payment_method_scalexpert input[name="solutionCode"]');e.length&&o.length&&e.off().on("click",(function(){o.val(t(this).attr("data-solutioncode")),t("#place_order").submit()}))}()}function o(e){void 0!==e&&e&&e.length&&t("#place_order").length&&("scalexpert"===e.attr("value")?t("#place_order").hide():t("#place_order").show())}document.addEventListener("DOMContentLoaded",(function(){t=jQuery,e(),t("body").on("updated_checkout",(function(){e()}))}))}},e={};function o(n){var a=e[n];if(void 0!==a)return a.exports;var i=e[n]={exports:{}};return t[n](i,i.exports,o),i.exports}o.n=t=>{var e=t&&t.__esModule?()=>t.default:()=>t;return o.d(e,{a:e}),e},o.d=(t,e)=>{for(var n in e)o.o(e,n)&&!o.o(t,n)&&Object.defineProperty(t,n,{enumerable:!0,get:e[n]})},o.o=(t,e)=>Object.prototype.hasOwnProperty.call(t,e),(()=>{"use strict";o(237),o(307),o(397)})()})();
+/******/ (() => { // webpackBootstrap
+/******/ 	var __webpack_modules__ = ({
+
+/***/ "./js/components/account.js":
+/*!**********************************!*\
+  !*** ./js/components/account.js ***!
+  \**********************************/
+/***/ (() => {
+
+let $;
+document.addEventListener("DOMContentLoaded", function() {
+  $ = jQuery;
+  let btnNeworder = "#sg_newOrder #newBasket";
+  if ($(btnNeworder).length) {
+    createOverlay();
+    addEventOnButtonReOrder(btnNeworder);
+  }
+});
+function addEventOnButtonReOrder(btnNeworder) {
+  if ($(btnNeworder).length) {
+    $(btnNeworder).off().on("click", function(e) {
+      e.preventDefault();
+      callAjax(btnNeworder);
+      return;
+    });
+  }
+}
+function createOverlay() {
+  let html = "";
+  html += '<div id="sg_overlay"><div class="sg_loader"></div></div>';
+  $("body").append(html);
+}
+function openOverlay() {
+  $("#sg_overlay").attr("data-open", "true");
+}
+function closeOverlay() {
+  $("#sg_overlay").attr("data-open", "false");
+}
+function callAjax(btnNeworder) {
+  if ($(btnNeworder).length && typeof sg_recreateCart_object !== "undefined" && typeof sg_recreateCart_object.ajaxurl !== "undefined") {
+    let idOrder = parseInt($(btnNeworder).attr("data-orderId"));
+    if (!isNaN(idOrder)) {
+      $.ajax({
+        type: "POST",
+        headers: { "cache-control": "no-cache" },
+        url: sg_recreateCart_object.ajaxurl,
+        async: true,
+        cache: false,
+        dataType: "html",
+        data: {
+          ajax: true,
+          action: "sg_recreateCart",
+          orderID: idOrder
+        },
+        beforeSend: openOverlay()
+      }).success(function(response) {
+        if (typeof response !== "undefined" && response) {
+          successAjax();
+        } else {
+          errorAjax(btnNeworder);
+        }
+      }).error(function() {
+        errorAjax(btnNeworder);
+      });
+    }
+  }
+}
+function errorAjax(btnNeworder) {
+  let txtError = "New order creation failed !";
+  if ($(btnNeworder).attr("data-errorText")) {
+    txtError = $(btnNeworder).attr("data-errorText");
+  }
+  closeOverlay();
+  alert(txtError);
+}
+function successAjax() {
+  $("#sg_newOrder").submit();
+}
+
+
+/***/ }),
+
+/***/ "./js/components/modal.js":
+/*!********************************!*\
+  !*** ./js/components/modal.js ***!
+  \********************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   initModal: () => (/* binding */ initModal)
+/* harmony export */ });
+let $;
+document.addEventListener("DOMContentLoaded", function() {
+  $ = jQuery;
+  initModal();
+  $("body").on("updated_checkout", function() {
+    initModal();
+  });
+  $("body").on("updated_wc_div", function() {
+    initModal();
+  });
+});
+function initModal() {
+  if ($('[data-modal="sep_openModal"]').length) {
+    let $modal;
+    let solutionSelector = '.sep-Simulations-solution [data-js="selectSolutionSimulation"]';
+    addEventChangeSimulation(solutionSelector);
+    $('[data-modal="sep_openModal"]').off().on("click", function(e) {
+      e.preventDefault();
+      if ($($(this)).length) {
+        if ($($(this).attr("data-idmodal")).length) {
+          $modal = $($(this).attr("data-idmodal"));
+        } else if ($($(this).attr("href")).length) {
+          $modal = $($(this).attr("href"));
+        }
+        if (typeof $modal !== "undefined" && $modal) {
+          openModal($modal);
+        }
+      }
+    });
+  }
+}
+const openModal = function openModal2($modal) {
+  if (typeof $modal !== "undefined" && $modal.length) {
+    $modal.show();
+    eventCloseModal($modal);
+  }
+};
+function eventCloseModal($modal) {
+  if (typeof $modal !== "undefined" && $modal.length) {
+    $modal.off().on("click", function(event) {
+      if (typeof event !== "undefined" && $(event.target).length && $(event.target).attr("id") === $modal.attr("id")) {
+        $modal.hide();
+      }
+    });
+    if ($modal.find(".close").length) {
+      $modal.find(".close").off().on("click", function() {
+        $modal.hide();
+      });
+    }
+  }
+}
+function addEventChangeSimulation(solutionSelector) {
+  if ($(solutionSelector).length) {
+    $(solutionSelector).each(function(i, elm) {
+      if (typeof elm !== "undefined" && $(elm).length) {
+        let idSolution = $(elm).attr("data-id");
+        if (typeof idSolution !== "undefined" && idSolution) {
+          let idGroupSolution = $(elm).attr("data-groupid");
+          $(elm).off().on("click", function(e) {
+            e.preventDefault();
+            let idGroupSolutionSelect = '.sep-Simulations-groupSolution[data-id="' + idGroupSolution + '"]';
+            $(idGroupSolutionSelect + " .sep-Simulations-solution").hide();
+            $(idGroupSolutionSelect + ' .sep-Simulations-solution[data-id="' + idSolution + '"]').show();
+            return;
+          });
+        }
+      }
+    });
+  }
+}
+
+
+/***/ }),
+
+/***/ "./js/components/payment.js":
+/*!**********************************!*\
+  !*** ./js/components/payment.js ***!
+  \**********************************/
+/***/ (() => {
+
+let $;
+document.addEventListener("DOMContentLoaded", function() {
+  $ = jQuery;
+  initPayments();
+  $("body").on("updated_checkout", function() {
+    initPayments();
+  });
+});
+function initPayments() {
+  if ($('.payment_methods input[type="radio"]').length) {
+    changeRadio($('.payment_methods input[type="radio"]:checked'));
+    addEventOnRadio();
+  }
+  checkboxCGV();
+  addEventPaymentButton();
+}
+function addEventOnRadio() {
+  $('.payment_methods input[type="radio"]').on("change", function(event) {
+    if (typeof event !== "undefined" && event && $(event.target).length) {
+      changeRadio($(event.target));
+    }
+  });
+}
+function changeRadio($radio) {
+  if (typeof $radio !== "undefined" && $radio && $radio.length && $("#place_order").length) {
+    if ($radio.attr("value") === "scalexpert") {
+      $("#place_order").hide();
+    } else {
+      $("#place_order").show();
+    }
+  }
+}
+function checkboxCGV() {
+  let $checkboxCGV = $('form.woocommerce-checkout input[type="checkbox"]#terms, form#order_review input[type="checkbox"]#terms');
+  if ($checkboxCGV.length) {
+    $checkboxCGV.on("change", function(elm) {
+      changeCheckboxCGV(elm.target);
+    });
+  }
+}
+function changeCheckboxCGV(checkboxCGV2) {
+  let $checkboxCGV = $(checkboxCGV2);
+  let $paymentButtons = $(".payment_method_scalexpert .sep_financialSolution .sep_financialSolution-buttonPay");
+  if ($paymentButtons.length) {
+    $paymentButtons.attr("disabled", "").removeAttr("disabled").removeClass("disabled");
+    if (!$checkboxCGV.prop("checked")) {
+      $paymentButtons.attr("disabled", "disabled").addClass("disabled");
+    }
+  }
+}
+function addEventPaymentButton() {
+  let $paymentButtons = $(".payment_method_scalexpert .sep_financialSolution .sep_financialSolution-buttonPay");
+  let $inputSolutionCode = $('.payment_method_scalexpert input[name="solutionCode"]');
+  if ($paymentButtons.length && $inputSolutionCode.length) {
+    $paymentButtons.off().on("click", function() {
+      $inputSolutionCode.val($(this).attr("data-solutioncode"));
+      $("#place_order").submit();
+    });
+  }
+}
+
+
+/***/ }),
+
+/***/ "./js/components/product.js":
+/*!**********************************!*\
+  !*** ./js/components/product.js ***!
+  \**********************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _modal__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./modal */ "./js/components/modal.js");
+
+let $;
+document.addEventListener("DOMContentLoaded", function() {
+  $ = jQuery;
+  $("body").on("update_variation_values", function(event) {
+    const variation = getSelectedVariation(event);
+    if (variation)
+      updateViews(variation);
+  });
+});
+const getSelectedVariation = (event) => {
+  const productForm = event.target.closest("form");
+  const variations = JSON.parse(productForm.getAttribute("data-product_variations"));
+  const selectedAttributes = {};
+  $(productForm).find('select[name^="attribute_"]').each(function() {
+    const attributeName = $(this).data("attribute_name");
+    selectedAttributes[attributeName] = $(this).val();
+  });
+  return variations.find(function(variation) {
+    return Object.keys(selectedAttributes).every(function(attributeName) {
+      return variation.attributes[attributeName] === selectedAttributes[attributeName];
+    });
+  });
+};
+function updateViews(variation) {
+  if (!variation.display_price || !variation.variation_id)
+    return;
+  $.ajax({
+    method: "POST",
+    url: "/wp-admin/admin-ajax.php",
+    data: {
+      action: "sg_solutionView",
+      price: variation.display_price,
+      productId: variation.variation_id
+    }
+  }).done(function(response) {
+    if (response)
+      updateHtmlContent(response);
+  }).fail(function(xhr, status, error) {
+  });
+}
+function updateHtmlContent(newHtml) {
+  const elements = document.querySelectorAll(".sep-Simulations-Product");
+  if (elements.length > 0) {
+    elements.forEach((element) => {
+      element.innerHTML = newHtml;
+      (0,_modal__WEBPACK_IMPORTED_MODULE_0__.initModal)();
+    });
+  }
+}
+
+
+/***/ })
+
+/******/ 	});
+/************************************************************************/
+/******/ 	// The module cache
+/******/ 	var __webpack_module_cache__ = {};
+/******/ 	
+/******/ 	// The require function
+/******/ 	function __webpack_require__(moduleId) {
+/******/ 		// Check if module is in cache
+/******/ 		var cachedModule = __webpack_module_cache__[moduleId];
+/******/ 		if (cachedModule !== undefined) {
+/******/ 			return cachedModule.exports;
+/******/ 		}
+/******/ 		// Create a new module (and put it into the cache)
+/******/ 		var module = __webpack_module_cache__[moduleId] = {
+/******/ 			// no module.id needed
+/******/ 			// no module.loaded needed
+/******/ 			exports: {}
+/******/ 		};
+/******/ 	
+/******/ 		// Execute the module function
+/******/ 		__webpack_modules__[moduleId](module, module.exports, __webpack_require__);
+/******/ 	
+/******/ 		// Return the exports of the module
+/******/ 		return module.exports;
+/******/ 	}
+/******/ 	
+/************************************************************************/
+/******/ 	/* webpack/runtime/compat get default export */
+/******/ 	(() => {
+/******/ 		// getDefaultExport function for compatibility with non-harmony modules
+/******/ 		__webpack_require__.n = (module) => {
+/******/ 			var getter = module && module.__esModule ?
+/******/ 				() => (module['default']) :
+/******/ 				() => (module);
+/******/ 			__webpack_require__.d(getter, { a: getter });
+/******/ 			return getter;
+/******/ 		};
+/******/ 	})();
+/******/ 	
+/******/ 	/* webpack/runtime/define property getters */
+/******/ 	(() => {
+/******/ 		// define getter functions for harmony exports
+/******/ 		__webpack_require__.d = (exports, definition) => {
+/******/ 			for(var key in definition) {
+/******/ 				if(__webpack_require__.o(definition, key) && !__webpack_require__.o(exports, key)) {
+/******/ 					Object.defineProperty(exports, key, { enumerable: true, get: definition[key] });
+/******/ 				}
+/******/ 			}
+/******/ 		};
+/******/ 	})();
+/******/ 	
+/******/ 	/* webpack/runtime/hasOwnProperty shorthand */
+/******/ 	(() => {
+/******/ 		__webpack_require__.o = (obj, prop) => (Object.prototype.hasOwnProperty.call(obj, prop))
+/******/ 	})();
+/******/ 	
+/******/ 	/* webpack/runtime/make namespace object */
+/******/ 	(() => {
+/******/ 		// define __esModule on exports
+/******/ 		__webpack_require__.r = (exports) => {
+/******/ 			if(typeof Symbol !== 'undefined' && Symbol.toStringTag) {
+/******/ 				Object.defineProperty(exports, Symbol.toStringTag, { value: 'Module' });
+/******/ 			}
+/******/ 			Object.defineProperty(exports, '__esModule', { value: true });
+/******/ 		};
+/******/ 	})();
+/******/ 	
+/************************************************************************/
+var __webpack_exports__ = {};
+// This entry need to be wrapped in an IIFE because it need to be in strict mode.
+(() => {
+"use strict";
+var __webpack_exports__ = {};
+/*!*********************!*\
+  !*** ./js/front.js ***!
+  \*********************/
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _components_modal__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./components/modal */ "./js/components/modal.js");
+/* harmony import */ var _components_payment__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./components/payment */ "./js/components/payment.js");
+/* harmony import */ var _components_payment__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(_components_payment__WEBPACK_IMPORTED_MODULE_1__);
+/* harmony import */ var _components_account__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./components/account */ "./js/components/account.js");
+/* harmony import */ var _components_account__WEBPACK_IMPORTED_MODULE_2___default = /*#__PURE__*/__webpack_require__.n(_components_account__WEBPACK_IMPORTED_MODULE_2__);
+/* harmony import */ var _components_product__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./components/product */ "./js/components/product.js");
+
+
+
+
+
+})();
+
+// This entry need to be wrapped in an IIFE because it need to be in strict mode.
+(() => {
+"use strict";
+/*!*************************!*\
+  !*** ./scss/front.scss ***!
+  \*************************/
+__webpack_require__.r(__webpack_exports__);
+// extracted by mini-css-extract-plugin
+
+})();
+
+/******/ })()
+;
+//# sourceMappingURL=scalexpert.js.map
