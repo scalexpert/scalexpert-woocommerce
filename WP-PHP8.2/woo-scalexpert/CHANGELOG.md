@@ -7,6 +7,8 @@ Version 1.6.0 of plugin woocommerce
 - Variable product support
 - Change some translation
 - Fix rounding issue with taxes
+- Update simulation on product configuration
+- Fix losing account connected after payment redirect
 
 [add 1.5.5] - 2024-11-29
 Version 1.5.5 of plugin woocommerce
