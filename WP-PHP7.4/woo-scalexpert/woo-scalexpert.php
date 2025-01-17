@@ -6,7 +6,7 @@
  * Description: Solutions de financement - SG Scalexpert
  * Text Domain: woo-scalexpert
  * Domain Path: /languages
- * Version: 1.6.0-7.4
+ * Version: 1.7.0-7.4
  * Author: SOCIETE GENERALE
  * Author URI: https://scalexpert.societegenerale.com
  */
@@ -736,13 +736,10 @@ function scalexpert_init_gateway_class(){
             $order_id = WC()->session->get( 'order_awaiting_payment' );
 
             $totalOrder             = ( $woocommerce->cart->get_cart_contents_total() != 0 ) ? $woocommerce->cart->get_total(null) : $total;
-            $groupFinancingSolution = get_option( "sg_scalexpert_group_financing_solution" );
 
             // Paiements groupés / non groupés
             do_action( 'woocommerce_credit_card_form_start', $this->id );
-            if ( $groupFinancingSolution[ 'group_financing_solution' ] == 1 ) {
-                echo '<input type="hidden" name="solutionCode">';
-            }
+
             echo '<ul class="list-group list-group-flush">';
             if ( SCALEXPERT_SHOWSOLUTIONS ) {
                 $productController->showActifSolutions( 'payment-buttons', "", "", $totalOrder );

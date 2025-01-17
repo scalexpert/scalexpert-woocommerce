@@ -3,8 +3,8 @@ msgstr ""
 "Project-Id-Version: Woocommerce Scalexpert\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2024-01-19 16:50+0000\n"
-"PO-Revision-Date: 2024-12-02 08:33+0000\n"
-"Last-Translator: Thomas LACHEHEB\n"
+"PO-Revision-Date: 2025-01-08 08:26+0000\n"
+"Last-Translator: \n"
 "Language-Team: Français\n"
 "Language: fr_FR\n"
 "Plural-Forms: nplurals=2; plural=n > 1;\n"
@@ -811,3 +811,12 @@ msgstr "Abandon de la souscription par le client"
 
 msgid "ABORTED DUE TO TECHNICAL ISSUE"
 msgstr "Incident technique lors de la souscription"
+
+msgid "WAITING CUSTOMER FOR ADDITIONAL INFORMATION"
+msgstr "Informations complémentaires demandées au client"
+
+msgid "EXPIRED"
+msgstr "Demande de souscription expirée"
+
+msgid "Group financing method"
+msgstr "Grouper les méthodes de financements"

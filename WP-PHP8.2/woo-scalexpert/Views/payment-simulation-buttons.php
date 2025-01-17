@@ -54,22 +54,7 @@
 				}
 			?>
         </div>
-		<?php
-			//Paiements groupés / non groupés
-			if ( $groupFinancingSolution['group_financing_solution'] == 1 ) {
-				?>
-                <button class="button disabled sep_financialSolution-buttonPay"
-                        type="button"
-                        disabled
-                        data-solutioncode="<?= $CommunicationKit['solutionCode'] ?>"
-                >
-					<?= __( 'Pay', 'woo-scalexpert' ); ?>
-                </button>
-				<?php
-			} else {
-				echo '<input type="radio" name="solutionCode" value="' . $CommunicationKit['solutionCode'] . '">';
-			}
-		?>
+        <input type="radio" name="solutionCode" value="<?=  $CommunicationKit['solutionCode'] ?>">
     </div>
 	
 	<?php if ( ! empty( $solutions ) ) { ?>

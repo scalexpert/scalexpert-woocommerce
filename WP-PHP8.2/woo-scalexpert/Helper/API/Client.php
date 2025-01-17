@@ -922,7 +922,7 @@
 			return $statusName;
 		}
 		
-		public function alertAPIstate( $error ) {
+		public function alertAPIstate( $response ) {
 			/**
 			 * Only for monitoring on UAT DS
 			 */
