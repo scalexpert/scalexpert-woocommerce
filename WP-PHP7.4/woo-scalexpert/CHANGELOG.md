@@ -1,3 +1,15 @@
+[add 1.7.0] - 2025-01-17
+Version 1.7.0 of plugin woocommerce
+
+### Added
+
+- Delete group option settings
+- Remove old "Pay" buttons for radio button
+- Fix translation
+- Add new substatus translation
+- Fix token issues on API key settings
+- Add overlay on delivery confirmation
+
 [add 1.6.0] - 2024-12-17
 Version 1.6.0 of plugin woocommerce
 

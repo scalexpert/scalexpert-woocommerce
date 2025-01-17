@@ -121,6 +121,10 @@ jQuery(document).ready(function () {
     });
 
     jQuery("#scalexpert_deliveryConfirmButton").click(function () {
+        jQuery("#scalexpert_deliveryConfirmButton").attr('disabled', 'disabled');
+
+        createOverlay();
+
         let trackingNumber = jQuery("#scalexpert_tracking_number").val();
         let operator = jQuery("#scalexpert_operator_selected").find(':selected').val();
 
@@ -144,7 +148,7 @@ jQuery(document).ready(function () {
                 response = JSON.parse(response);
 
                 if (response.status === 204) {
-                    alert("Confirmation de livraison effectué");
+                    alert("Confirmation de livraison effectuée");
                 } else {
                     alert("Impossible de confirmer la livraison");
                 }

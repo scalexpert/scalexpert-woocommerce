@@ -34,28 +34,8 @@
          data-modal="sep_openModal"
          data-idmodal="#<?= $md5 ?>"
     >
-	
-	<?php
-		//Paiements groupés / non groupés
-		if ( $groupFinancingSolution['group_financing_solution'] == 1 ) {
-			
-			?>
-            <button class="button disabled"
-                    type="button"
-                    disabled
-                    data-solutioncode="<?= $CommunicationKit['solutionCode'] ?>"
-            >
-				<?= __( 'Pay', 'woo-scalexpert' ); ?>
-            </button>
-			
-			<?php
-		} else {
-			
-			echo '<input type="radio" name="solutionCode" value="' . $CommunicationKit['solutionCode'] . '">';
-		}
-	
-	?>
 
+    <input type="radio" name="solutionCode" value="<?=  $CommunicationKit['solutionCode'] ?>">
     <div id="<?= $md5 ?>"
          class="sep_contentModal modal fade product-comment-modal"
          role="dialog"

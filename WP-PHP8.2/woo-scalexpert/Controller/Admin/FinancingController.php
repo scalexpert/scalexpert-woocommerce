@@ -157,12 +157,6 @@
 				);
 			}
 			
-			register_setting(
-				'sg_scalexpert_finances_group', // option_group
-				'sg_scalexpert_group_financing_solution', // option_name
-				array( $this, 'sg_scalexpert_sanitize' ) // sanitize_callback
-			);
-			
 			add_settings_section(
 				'solutions', // id
 				'', // title
@@ -199,8 +193,6 @@
 			if ( isset( $input['solutionnames'] ) ) {
 				$sanitary_values['solutionnames'] = $input['solutionnames'];
 			}
-			
-			$sanitary_values['group_financing_solution'] = 1;
 			
 			return $sanitary_values;
 		}
@@ -317,20 +309,6 @@
 			?>
 			<input value="<?= $solutions ?>" type="hidden" class="wppd-ui-toggle" id="scalexpert_solutions" name="sg_scalexpert_solutions[solutions]">
 			<input value="<?= $solutionnames ?>" type="hidden" class="wppd-ui-toggle" id="scalexpert_solutionnames" name="sg_scalexpert_solutions[solutionnames]">
-			<?php
-		}
-		
-		public function group_financing_solution_callback() {
-			?>
-			<input id="sg_scalexpert_group_financing_solution" type="checkbox" class="wppd-ui-toggle" name="sg_scalexpert_group_financing_solution[group_financing_solution]" value="1"
-			       onchange="changeLabel('sg_scalexpert_group_financing_solution','<?= __( "Activated", "woo-scalexpert" ) ?>','<?= __( "Off", "woo-scalexpert" ) ?>');"
-				<?php echo get_option( 'sg_scalexpert_group_financing_solution' ) && get_option( 'sg_scalexpert_group_financing_solution' )['group_financing_solution'] === "1" ? 'checked' : ''; ?>
-			>
-			<label for="field-id"
-			       id="sg_scalexpert_group_financing_solution_label"><?php echo get_option( 'sg_scalexpert_group_financing_solution' )['group_financing_solution'] && get_option( 'sg_scalexpert_group_financing_solution' )['group_financing_solution'] === "1"
-					? __( "Activated", "woo-scalexpert" )
-					: __( "Off", "woo-scalexpert" );
-				?></label>
 			<?php
 		}
 	}

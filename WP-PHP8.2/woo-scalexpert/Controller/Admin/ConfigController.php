@@ -37,8 +37,9 @@
 				$this->sg_scalexpert_options = get_option( 'sg_scalexpert_keys' );
 				add_action( 'admin_notices', array( $this, 'activate_notice_error' ) );
 				add_action( 'admin_init', array( $this, 'sg_scalexpert_page_init' ) );
+
+                delete_transient( "_appBearer" );
 			}
-			
 		}
 		
 		/**

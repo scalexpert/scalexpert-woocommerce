@@ -65,8 +65,6 @@ class ProductController
         } else {
             $solutions = $this->getEligibleSolutions($price, $productID, '');
         }
-        $groupFinancingSolution = get_option("sg_scalexpert_group_financing_solution");
-
 
         echo '<!-- begin /Views/' . $template . '.php -->';
         if (!$solutions && $template == 'payment-buttons') {
@@ -89,19 +87,6 @@ class ProductController
                     include(plugin_dir_path(__FILE__) . '../../Views/' . $template . '.php');
                 }
             }
-        }
-        // Paiements groupés / non groupés
-        if ($groupFinancingSolution['group_financing_solution'] != 1) {
-            ?>
-            <script>
-                jQuery(document).ready(function () {
-                    jQuery("div.payment_method_scalexpert").attr("style", "block");
-                });
-                jQuery("input[name=solutionCode]:radio").click(function () {
-                    jQuery("#payment_method_scalexpert").attr('checked', true);
-                });
-            </script>
-            <?php
         }
         echo '<!-- end ' . plugin_dir_path(__FILE__) . '/Views/' . $template . '.php -->';
     }
