@@ -6,7 +6,7 @@
  * Description: Solutions de financement - SG Scalexpert
  * Text Domain: woo-scalexpert
  * Domain Path: /languages
- * Version: 1.7.0-7.4
+ * Version: 1.7.1-7.4
  * Author: SOCIETE GENERALE
  * Author URI: https://scalexpert.societegenerale.com
  */
@@ -1049,7 +1049,6 @@ function scalexpert_init_gateway_class(){
                 ),
                 'buyers' => array(
                     array(
-                        'birthName' => $commandeData[ 'billing' ][ 'last_name' ],
                         'deliveryMethod' => 'NC',
                         'vip' => FALSE,
                         'contact' =>
