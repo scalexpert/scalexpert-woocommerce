@@ -1,3 +1,10 @@
+[add 1.7.1] - 2025-01-29
+Version 1.7.1 of plugin woocommerce
+
+### Added
+
+- Unmapped optional input for API subscription
+
 [add 1.7.0] - 2025-01-17
 Version 1.7.0 of plugin woocommerce
 
