@@ -1,3 +1,16 @@
+[add 1.7.2] - 2025-02-20
+Version 1.7.2 of plugin woocommerce
+
+### Fixed
+
+- Fix errors on first install
+
+### Added
+
+- Properly handle checkout when there is no available methods
+- If there is only one method available, select it by default
+- UI/UX tweaks on checkout page
+
 [add 1.7.1] - 2025-01-29
 Version 1.7.1 of plugin woocommerce
 

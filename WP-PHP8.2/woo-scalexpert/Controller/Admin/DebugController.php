@@ -130,6 +130,14 @@
 			
 			return $sanitary_values;
 		}
+
+        public function getSgScalexpertOptions(string $key)
+        {
+            if ($this->sg_scalexpert_options && array_key_exists($key, $this->sg_scalexpert_options)) {
+                return $this->sg_scalexpert_options[$key];
+            }
+            return '';
+        }
 		
 		/**
 		 * @return void
@@ -143,10 +151,10 @@
 			?>
             <input type="checkbox" class="wppd-ui-toggle" id="sg_scalexpert_debug" name="sg_scalexpert_debug[mode_debug]" value="1"
                    onchange="changeLabel('sg_scalexpert_debug','<?= __( "Activated", "woo-scalexpert" ) ?>','<?= __( "Off", "woo-scalexpert" ) ?>');"
-				<?php echo $this->sg_scalexpert_options['mode_debug'] && $this->sg_scalexpert_options['mode_debug'] === "1" ? 'checked' : ''; ?>
+				<?php echo $this->getSgScalexpertOptions('mode_debug') === "1" ? 'checked' : ''; ?>
             >
             <label for="field-id"
-                   id="sg_scalexpert_debug_label"><?php echo $this->sg_scalexpert_options['mode_debug'] && $this->sg_scalexpert_options['mode_debug'] === "1"
+                   id="sg_scalexpert_debug_label"><?php echo $this->getSgScalexpertOptions('mode_debug') === "1"
 					? __( "Activated", "woo-scalexpert" )
 					: __( "Off", "woo-scalexpert" );
 				?></label>
@@ -166,10 +174,10 @@
 				?>
                 <input type="checkbox" class="wppd-ui-toggle" id="sg_scalexpert_cache" name="sg_scalexpert_debug[mode_cache]" value="1"
                        onchange="changeLabel('sg_scalexpert_cache','<?= __( "Activated", "woo-scalexpert" ) ?>','<?= __( "Off", "woo-scalexpert" ) ?>');"
-					<?php echo $this->sg_scalexpert_options['mode_cache'] && $this->sg_scalexpert_options['mode_cache'] === "1" ? 'checked' : ''; ?>
+					<?php echo $this->getSgScalexpertOptions('mode_cache') === "1" ? 'checked' : ''; ?>
                 >
                 <label for="field-id"
-                       id="sg_scalexpert_debug_label"><?php echo $this->sg_scalexpert_options['mode_cache'] && $this->sg_scalexpert_options['mode_cache'] === "1"
+                       id="sg_scalexpert_debug_label"><?php echo $this->getSgScalexpertOptions('mode_cache') === "1"
 						? __( "Activated", "woo-scalexpert" )
 						: __( "Off", "woo-scalexpert" );
 					?></label>
@@ -182,7 +190,7 @@
 		 * @return void
 		 */
 		public function cachelife_environment_callback() : void {
-			$text = ( $this->sg_scalexpert_options['cache_life'] ) ? $this->sg_scalexpert_options['cache_life'] : 3600;
+            $text = $this->getSgScalexpertOptions('cache_life') ?: 3600;
 			?>
             <input type="text" id="sg_scalexpert_cache_life" name="sg_scalexpert_debug[cache_life]" placeholder="<?= __( "Cache duration", "woo-scalexpert" ) ?>"
                    value="<?= $text ?>">
