@@ -30,39 +30,54 @@
 				require_once( PLUGIN_DIR . '/Static/autoload.php' );
 				$this->apiClient = new Client();
 				
-				if ( isset( $_GET['solution'] ) && $_GET['solution'] !== "" ) {
-					if ( get_option( 'sg_scalexpert_design_' . $_GET['solution'] ) ) {
-						$this->sg_scalexpert_options = get_option( 'sg_scalexpert_design_' . $_GET['solution'] );
+				if ( $this->getSolutionCode() ) {
+					if ( get_option( 'sg_scalexpert_design_' . $this->getSolutionCode() ) ) {
+						$this->sg_scalexpert_options = get_option( 'sg_scalexpert_design_' . $this->getSolutionCode() );
 					} else {
 						$this->sg_scalexpert_options = array();
 						$options                     = array(
 							"activate" => "",
 						);
-						add_option( 'sg_scalexpert_design_' . $_GET['solution'], $options );
+						add_option( 'sg_scalexpert_design_' . $this->getSolutionCode(), $options );
 					}
 				}
-				
-				
+
+
 				try {
 					$this->eFinancingSolutions = $this->apiClient->getFinancialSolutions();
 				} catch ( Exception $e ) {
 					echo 'Exception reçue : ', $e->getMessage(), "\n";
 					$this->eFinancingSolutions = array();
 				}
-				
+
 				$this->eFinancingSolutionActivated = ( array_key_exists('solution', $_GET) && get_option( "sg_scalexpert_activated_" . $_GET['solution'] ) ) ? get_option( "sg_scalexpert_activated_" . $_GET['solution'] ) : 0;
-				
+
 				add_action( 'admin_init', array( $this, 'sg_scalexpert_customisation_init' ) );
 				add_action( 'admin_init', array( $this, 'sg_scalexpert_customisation_sectionProduct' ) );
 				add_action( 'admin_init', array( $this, 'sg_scalexpert_customisation_sectionCart' ) );
 				add_action( 'admin_init', array( $this, 'sg_scalexpert_customisation_sectionPaiement' ) );
 				add_action( 'admin_init', array( $this, 'sg_scalexpert_customisation_sectionGeneral' ) );
 
-                $this->sectionName = "sg_scalexpert_design_" . $_GET['solution'];
+                $this->sectionName = "sg_scalexpert_design_" . $this->getSolutionCode();
 			}
-			
 		}
-		
+
+        public function getSolutionCode(): string
+        {
+            if ($_GET && array_key_exists('solution', $_GET)) {
+                return $_GET['solution'];
+            }
+            return '';
+        }
+
+        public function getSgScalexpertOptions(string $key)
+        {
+            if ($this->sg_scalexpert_options && array_key_exists($key, $this->sg_scalexpert_options)) {
+                return $this->sg_scalexpert_options[$key];
+            }
+            return '';
+        }
+
 		/**
 		 * @return void
 		 *
@@ -75,7 +90,7 @@
 					<?php
 						$financeDesignController = new FinancingController();
 						foreach ( $this->eFinancingSolutions as $solutionCode => $solution ) {
-							$navTabActive = ( $_GET['solution'] == $solutionCode ) ? " nav-tab-active" : "";
+							$navTabActive = ($this->getSolutionCode() == $solutionCode ) ? " nav-tab-active" : "";
 							?>
                             <a href="./admin.php?page=sg-scalexpert-customisation&solution=<?= $solutionCode ?>"
                                class="nav-tab<?= $navTabActive ?>">
@@ -93,20 +108,20 @@
 					?>
                 </nav>
 				<?php settings_errors();
-					
-					if ( isset( $_GET['solution'] ) && $_GET['solution'] != "" ) {
+
+					if ( $this->getSolutionCode() ) {
 						?>
-                        <form enctype="multipart/form-data" method="post" action="options.php?solution=<?= $_GET['solution'] ?>">
+                        <form enctype="multipart/form-data" method="post" action="options.php?solution=<?= $this->getSolutionCode() ?>">
 							<?php
 								settings_fields( 'sg_scalexpert_custom_group' );
-								do_settings_sections( 'sg-scalexpert-design-' . $_GET['solution'] );
+								do_settings_sections( 'sg-scalexpert-design-' . $this->getSolutionCode() );
 								do_settings_sections( 'sg-scalexpert-design' );
 								if ( $this->eFinancingSolutionActivated ) {
 									submit_button( __( "Save changes", "woo-scalexpert" ) );
 								}
 							?>
                         </form>
-						
+
 						<?php
 					} else {
 						?>
@@ -117,7 +132,7 @@
             </div>
 			<?php
 		}
-		
+
 		/**
 		 * @return void
 		 *
@@ -125,45 +140,45 @@
 		public function sg_scalexpert_customisation_init() {
             register_setting(
                 'sg_scalexpert_custom_group', // option_group
-                'sg_scalexpert_design_' . $_GET['solution'], // option_name
+                'sg_scalexpert_design_' . $this->getSolutionCode(), // option_name
                 array( $this, 'sg_scalexpert_sanitize' ) // sanitize_callback
             );
-			
+
 			register_setting(
 				'sg_scalexpert_custom_group', // option_group
 				'sg_scalexpert_design', // option_name
 				array( $this, 'sg_scalexpert_sanitize' ) // sanitize_callback
 			);
-            
+
             add_settings_section(
                 'sg_scalexpert_setting_sectionTop', // id
                 __( "Customise", "woo-scalexpert" ), // title
                 array( $this, 'sg_scalexpert_section_info' ), // callback
-                'sg-scalexpert-design-' . $_GET['solution'] // page
+                'sg-scalexpert-design-' . $this->getSolutionCode() // page
             );
 
             add_settings_field(
                 'checkactivate', // id
                 "", // title
                 array( $this, 'checkactivate_callback' ), // callback
-                'sg-scalexpert-design-' . $_GET['solution'], // page
+                'sg-scalexpert-design-' . $this->getSolutionCode(), // page
                 'sg_scalexpert_setting_sectionTop' // section
             );
 		}
-		
+
 		public function sg_scalexpert_customisation_sectionProduct() {
             add_settings_section(
                 'sg_scalexpert_setting_sectionProduct', // id
                 __("Product page", "woo-scalexpert"), // title
                 array($this, 'sg_scalexpert_section_info'), // callback
-                'sg-scalexpert-design-' . $_GET['solution'] // page
+                'sg-scalexpert-design-' . $this->getSolutionCode() // page
             );
 
             add_settings_field(
                 'activate', // id
                 __("Display on product sheets", "woo-scalexpert"), // title
                 array($this, 'activate_callback'), // callback
-                'sg-scalexpert-design-' . $_GET['solution'], // page
+                'sg-scalexpert-design-' . $this->getSolutionCode(), // page
                 'sg_scalexpert_setting_sectionProduct' // section
             );
 
@@ -171,7 +186,7 @@
                 'bloc_title', // id
                 __("Customise the block", "woo-scalexpert"), // title
                 array($this, 'bloc_title_callback'), // callback
-                'sg-scalexpert-design-' . $_GET['solution'], // page
+                'sg-scalexpert-design-' . $this->getSolutionCode(), // page
                 'sg_scalexpert_setting_sectionProduct' // section
             );
 
@@ -179,7 +194,7 @@
                 'showlogo', // id
                 __("Display the logo", "woo-scalexpert"), // title
                 array($this, 'showlogo_callback'), // callback
-                'sg-scalexpert-design-' . $_GET['solution'], // page
+                'sg-scalexpert-design-' . $this->getSolutionCode(), // page
                 'sg_scalexpert_setting_sectionProduct' // section
             );
 
@@ -189,7 +204,7 @@
 				array( $this, 'sg_scalexpert_section_info' ), // callback
 				'sg-scalexpert-design' // page
 			);
-			
+
 			add_settings_field(
 				'blocposition', // id
 				__( "Unique position on product pages", "woo-scalexpert" ), // title
@@ -213,14 +228,14 @@
                 'sg_scalexpert_setting_sectionCart', // id
                 __("Cart page", "woo-scalexpert"), // title
                 array($this, 'sg_scalexpert_section_info'), // callback
-                'sg-scalexpert-design-' . $_GET['solution'] // page
+                'sg-scalexpert-design-' . $this->getSolutionCode() // page
             );
 
             add_settings_field(
                 'activateCart', // id
                 __("Display on cart", "woo-scalexpert"), // title
                 array($this, 'activateCart_callback'), // callback
-                'sg-scalexpert-design-' . $_GET['solution'], // page
+                'sg-scalexpert-design-' . $this->getSolutionCode(), // page
                 'sg_scalexpert_setting_sectionCart' // section
             );
 
@@ -228,7 +243,7 @@
                 'cart_title', // id
                 __("Customise payment", "woo-scalexpert"), // title
                 array($this, 'cart_title_callback'), // callback
-                'sg-scalexpert-design-' . $_GET['solution'], // page
+                'sg-scalexpert-design-' . $this->getSolutionCode(), // page
                 'sg_scalexpert_setting_sectionCart' // section
             );
 
@@ -236,25 +251,25 @@
                 'showlogo_cart_cart', // id
                 __("Show logo for cart", "woo-scalexpert"), // title
                 array($this, 'showlogo_cart_cart_callback'), // callback
-                'sg-scalexpert-design-' . $_GET['solution'], // page
+                'sg-scalexpert-design-' . $this->getSolutionCode(), // page
                 'sg_scalexpert_setting_sectionCart' // section
             );
         }
-		
+
 		public function sg_scalexpert_customisation_sectionPaiement(): void
         {
             add_settings_section(
                 'sg_scalexpert_setting_sectionPaiement', // id
                 __("Payment page", "woo-scalexpert"), // title
                 array($this, 'sg_scalexpert_section_info'), // callback
-                'sg-scalexpert-design-' . $_GET['solution'] // page
+                'sg-scalexpert-design-' . $this->getSolutionCode() // page
             );
 
             add_settings_field(
                 'payment_title', // id
                 __("Customise payment", "woo-scalexpert"), // title
                 array($this, 'payment_title_callback'), // callback
-                'sg-scalexpert-design-' . $_GET['solution'], // page
+                'sg-scalexpert-design-' . $this->getSolutionCode(), // page
                 'sg_scalexpert_setting_sectionPaiement' // section
             );
 
@@ -262,18 +277,18 @@
                 'showlogo_cart', // id
                 __("Show logo for basket", "woo-scalexpert"), // title
                 array($this, 'showlogo_cart_callback'), // callback
-                'sg-scalexpert-design-' . $_GET['solution'], // page
+                'sg-scalexpert-design-' . $this->getSolutionCode(), // page
                 'sg_scalexpert_setting_sectionPaiement' // section
             );
 		}
-		
+
 		public function sg_scalexpert_customisation_sectionGeneral(): void
         {
             add_settings_section(
                 'sg_scalexpert_setting_sectionGeneral', // id
                 __("General Configuration", "woo-scalexpert"), // title
                 array($this, 'sg_scalexpert_section_info'), // callback
-                'sg-scalexpert-design-' . $_GET['solution'], // page
+                'sg-scalexpert-design-' . $this->getSolutionCode(), // page
                 array(
                     'after_section' => __("En sélectionnant des catégories, l'encart ne sera pas affiché pour les produits de ces catégories.") . '<br>' . __("Pour sélectionner plusieurs catégories, maintenez la touche CTRL et cliquer avec la souris sur les options souhaitées.")
                 )
@@ -283,11 +298,11 @@
                 'exclude_cats', // id
                 __("Exclusion of categories", "woo-scalexpert"), // title
                 array($this, 'exclude_cats_callback'), // callback
-                'sg-scalexpert-design-' . $_GET['solution'], // page
+                'sg-scalexpert-design-' . $this->getSolutionCode(), // page
                 'sg_scalexpert_setting_sectionGeneral' // section
             );
 		}
-		
+
 		/**
 		 * @param $input
 		 *
@@ -305,25 +320,25 @@
 					$sanitary_values[ $key ] = sanitize_text_field( $val );
 				}
 			}
-			
+
 			return $sanitary_values;
 		}
-		
-		
+
+
 		/**
 		 * @return void
 		 *
 		 */
 		public function sg_scalexpert_section_info() {}
-		
-		
+
+
 		/**
 		 * @return void
 		 */
 		public function blocposition_callback(): void
         {
 			$blocposition = get_option( "sg_scalexpert_design" );
-			
+
 			?> <select name="sg_scalexpert_design[blocposition]" id="blocposition">
 				<?php $selected = ( isset( $blocposition ) && $blocposition['blocposition'] === 'under' ) ? 'selected' : ''; ?>
                 <option value="under" <?php echo $selected; ?>><?= __( "Under the add to basket blocks", "woo-scalexpert" ) ?></option>
@@ -343,14 +358,14 @@
                 <option value="over" <?php echo $selected; ?>><?= __( "At the top basket block", "woo-scalexpert" ) ?></option>
             </select> <?php
         }
-		
-		
+
+
 		/**
 		 * @return void
 		 */
 		public function activate_callback(): void
         {
-			$checked   = ( get_option( $this->sectionName ) ) ? $this->sg_scalexpert_options['activate'] : 0;
+			$checked   = ( get_option( $this->sectionName ) ) ? $this->getSgScalexpertOptions('activate') : 0;
 			$activated = ( $checked )
 				? __( "Activated", "woo-scalexpert" )
 				: __( "Off", "woo-scalexpert" );
@@ -369,7 +384,7 @@
          */
         public function activateCart_callback(): void
         {
-            $checked   = ( get_option( $this->sectionName ) ) ? $this->sg_scalexpert_options['activateCart'] : 0;
+            $checked   = ( get_option( $this->sectionName ) ) ? $this->getSgScalexpertOptions('activateCart') : 0;
             $activated = ( $checked )
                 ? __( "Activated", "woo-scalexpert" )
                 : __( "Off", "woo-scalexpert" );
@@ -382,14 +397,14 @@
             <label id="label_sg_scalexpert_design_activateCart" for="sg_scalexpert_design_activateCart"><?= $activated ?></label>
             <?php
         }
-		
-		
+
+
 		/**
 		 * @return void
 		 */
 		public function checkactivate_callback(): void
         {
-			$checked = ( get_option( "sg_scalexpert_activated_" . $_GET['solution'] ) ) ? get_option( "sg_scalexpert_activated_" . $_GET['solution'] ) : 0;
+			$checked = ( get_option( "sg_scalexpert_activated_" . $this->getSolutionCode() ) ) ? get_option( "sg_scalexpert_activated_" . $this->getSolutionCode() ) : 0;
 			if ( $checked ) {
 				$message = __( "This option is enabled on your site", "woo-scalexpert" );
 				$class   = 'notice notice-success settings-error is-dismissible';
@@ -399,26 +414,26 @@
 			}
 			printf( '<div class="%1$s"><p>%2$s <a href="/wp-admin/admin.php?page=sg-scalexpert-finances">' . __( "Enable / Disable", "woo-scalexpert" ) . '</a></p></div>', esc_attr( $class ), esc_html( $message ) );
 		}
-		
+
 		/**
 		 * @return void
 		 *
 		 */
 		public function bloc_title_callback(): void
         {
-			$text = ( get_option( $this->sectionName ) ) ? $this->sg_scalexpert_options['bloc_title'] : "";
+			$text = ( get_option( $this->sectionName ) ) ? $this->getSgScalexpertOptions('bloc_title') : "";
 			?>
             <input type="text" id="sg_scalexpert_design_bloc_title" name="<?= $this->sectionName ?>[bloc_title]" placeholder="<?= __( "Title", "woo-scalexpert" ) ?>"
                    value="<?= $text ?>">
 			<?php
 		}
-		
+
 		/**
 		 * @return void
 		 */
 		public function showlogo_callback(): void
         {
-			$checked   = ( get_option( $this->sectionName ) ) ? $this->sg_scalexpert_options['showlogo'] : 0;
+			$checked   = ( get_option( $this->sectionName ) ) ? $this->getSgScalexpertOptions('showlogo') : 0;
 			$activated = ( $checked )
 				? __( "Activated", "woo-scalexpert" )
 				: __( "Off", "woo-scalexpert" );
@@ -434,7 +449,7 @@
 
         public function cart_title_callback(): void
         {
-            $text = ( get_option( $this->sectionName ) ) ? $this->sg_scalexpert_options['cart_title'] : "";
+            $text = ( get_option( $this->sectionName ) ) ? $this->getSgScalexpertOptions('cart_title') : "";
             ?>
             <input type="text" id="sg_scalexpert_design_cart_title" name="<?= $this->sectionName ?>[cart_title]" placeholder="<?= __( "Title", "woo-scalexpert" ) ?>"
                    value="<?= $text ?>">
@@ -446,7 +461,7 @@
          */
         public function showlogo_cart_cart_callback(): void
         {
-            $checked   = ( get_option( $this->sectionName ) ) ? $this->sg_scalexpert_options['showlogo_cart_cart'] : 0;
+            $checked   = ( get_option( $this->sectionName ) ) ? $this->getSgScalexpertOptions('showlogo_cart_cart') : 0;
             $activated = ( $checked )
                 ? __( "Activated", "woo-scalexpert" )
                 : __( "Off", "woo-scalexpert" );
@@ -459,26 +474,26 @@
             <label id="label_sg_scalexpert_design_showlogo_cart_cart" for="sg_scalexpert_design_showlogo_cart_cart"><?= $activated ?></label>
             <?php
         }
-		
+
 		/**
 		 * @return void
 		 *
 		 */
 		public function payment_title_callback(): void
         {
-			$text = ( get_option( $this->sectionName ) ) ? $this->sg_scalexpert_options['payment_title'] : "";
+			$text = ( get_option( $this->sectionName ) ) ? $this->getSgScalexpertOptions('payment_title') : "";
 			?>
             <input type="text" id="sg_scalexpert_design_payment_title" name="<?= $this->sectionName ?>[payment_title]" placeholder="<?= __( "Title", "woo-scalexpert" ) ?>"
                    value="<?= $text ?>">
 			<?php
 		}
-		
+
 		/**
 		 * @return void
 		 */
 		public function showlogo_cart_callback(): void
         {
-			$checked   = ( get_option( $this->sectionName ) ) ? $this->sg_scalexpert_options['showlogo_cart'] : 0;
+			$checked   = ( get_option( $this->sectionName ) ) ? $this->getSgScalexpertOptions('showlogo_cart') : 0;
 			$activated = ( $checked )
 				? __( "Activated", "woo-scalexpert" )
 				: __( "Off", "woo-scalexpert" );
@@ -491,20 +506,20 @@
             <label id="label_sg_scalexpert_design_showlogo_cart" for="sg_scalexpert_design_showlogo_cart"><?= $activated ?></label>
 			<?php
 		}
-		
+
 		/**
 		 * @return void
 		 *
 		 */
 		public function design_payment_bloc() {
-			$enabled = ( get_option( "sg_scalexpert_activated_" . $_GET['solution'] ) ) ? get_option( "sg_scalexpert_activated_" . $_GET['solution'] ) : 0;
+			$enabled = ( get_option( "sg_scalexpert_activated_" . $this->getSolutionCode() ) ) ? get_option( "sg_scalexpert_activated_" . $this->getSolutionCode() ) : 0;
 			if ( $enabled ) {
 				?>
                 <h2 class="scalexpertAdmin"><?= __( "Payment page", "woo-scalexpert" ) ?></h2>
                 <h3 class="scalexpertAdmin"><?= __( "Customise the block", "woo-scalexpert" ) ?></h3>
 			<?php }
 		}
-		
+
 		/**
 		 * @return void
 		 *
@@ -514,12 +529,12 @@
             <h2 class="scalexpertAdmin"><?= __( "Customise the block", "woo-scalexpert" ) ?></h2>
 			<?php
 		}
-		
+
 		/**
 		 * @return void
 		 */
 		public function product_bloc_title() {
-			$enabled = ( get_option( "sg_scalexpert_activated_" . $_GET['solution'] ) ) ? get_option( "sg_scalexpert_activated_" . $_GET['solution'] ) : 0;
+			$enabled = ( get_option( "sg_scalexpert_activated_" . $this->getSolutionCode() ) ) ? get_option( "sg_scalexpert_activated_" . $this->getSolutionCode() ) : 0;
 			if ( $enabled ) {
 				?>
                 <h2 class="scalexpertAdmin"><?= __( "Product page", "woo-scalexpert" ) ?></h2>
@@ -541,7 +556,7 @@
 		 *
 		 */
 		public function exclude_cats_callback() {
-			$excludes = ( $this->sectionName ) ? $this->sg_scalexpert_options['exclude_cats'] : array();
+			$excludes = ( $this->sectionName ) ? $this->getSgScalexpertOptions('exclude_cats') : array();
 			$excludes = explode( ",", $excludes );
 			$terms    = get_terms( array(
 				'taxonomy'   => 'product_cat',

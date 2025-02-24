@@ -1,6 +1,6 @@
 /**
  * Copyright © Scalexpert.
- * This file is part of Scalexpert plugin for PrestaShop.
+ * This file is part of Scalexpert plugin for Wordpress.
  *
  * @author    Société Générale
  * @copyright Scalexpert

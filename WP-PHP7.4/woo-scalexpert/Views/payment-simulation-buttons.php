@@ -26,6 +26,7 @@
 
 <li class="list-group-item sep_financialSolution sep-Simulations">
     <div class="sep_financialSolution-content">
+        <input type="radio" name="solutionCode" value="<?=  $CommunicationKit['solutionCode'] ?>" <?php if ($nbSolutions === 1) { ?> checked <?php } ?>>
         <div class="sep_financialSolution-content-wrapper">
             <div class="sep_financialSolution-content-top">
 				<?php if ( $showlogoCart == 1 ) { ?>
@@ -54,7 +55,6 @@
 				}
 			?>
         </div>
-        <input type="radio" name="solutionCode" value="<?=  $CommunicationKit['solutionCode'] ?>">
     </div>
 	
 	<?php if ( ! empty( $solutions ) ) { ?>

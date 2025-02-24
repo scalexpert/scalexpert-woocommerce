@@ -70,23 +70,29 @@ class ProductController
         if (!$solutions && $template == 'payment-buttons') {
             echo __('Cart value or product not eligible for Scalexpert financing !', 'woo-scalexpert');
         } else {
-            foreach ($solutions as $solution) {
-                $solution = $solution['solutionCode'];
-                $actif = array();
-                $actif = get_option('sg_scalexpert_activated_' . $solution);
-                if (isset($actif['activate']) && $actif['activate'] == 1) {
-                    $solutionname = $this->getTitleBySolution($solution, 'solutionName');
-                    $CommunicationKit = $this->getCommunicationKit($solution);
-                    $DesignSolution = get_option('sg_scalexpert_design_' . $solution);
-                    if (SCALEXPERT_SHOWSIMULATION) {
-                        $locale = explode('_', get_locale());
-                        $locale = strtoupper($locale[0]);
-                        $simulation = $this->apiclient->getSimulateFinancing4Checkout($price, $locale, $solution);
-                        $cartTotal = wc_price($price);
+            $nbSolutions = count($solutions);
+            if ($nbSolutions > 0) {
+                foreach ($solutions as $solution) {
+                    $solution = $solution['solutionCode'];
+                    $actif = array();
+                    $actif = get_option('sg_scalexpert_activated_' . $solution);
+                    if (isset($actif['activate']) && $actif['activate'] == 1) {
+                        $solutionname = $this->getTitleBySolution($solution, 'solutionName');
+                        $CommunicationKit = $this->getCommunicationKit($solution);
+                        $DesignSolution = get_option('sg_scalexpert_design_' . $solution);
+                        if (SCALEXPERT_SHOWSIMULATION) {
+                            $locale = explode('_', get_locale());
+                            $locale = strtoupper($locale[0]);
+                            $simulation = $this->apiclient->getSimulateFinancing4Checkout($price, $locale, $solution);
+                            $cartTotal = wc_price($price);
+                        }
+                        include(plugin_dir_path(__FILE__) . '../../Views/' . $template . '.php');
                     }
-                    include(plugin_dir_path(__FILE__) . '../../Views/' . $template . '.php');
                 }
+            } else {
+                echo __('The total amount of your basket does not allow payment in several times. Please select another payment method.', 'woo-scalexpert');
             }
+
         }
         echo '<!-- end ' . plugin_dir_path(__FILE__) . '/Views/' . $template . '.php -->';
     }

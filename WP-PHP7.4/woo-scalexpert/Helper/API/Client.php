@@ -427,8 +427,8 @@
          *
          * @return array
          */
-        public function getSimulateFinancing4Product( $eFinancingAmount = NULL, $eFinancingCountry = "FR", $categoryID, $isCart = FALSE ){
-            
+        public function getSimulateFinancing4Product( $eFinancingAmount, $eFinancingCountry, $categoryID, $isCart = FALSE ){
+
             $transient         = NULL;
             $normalize         = array();
             $simulateFinancing = array(

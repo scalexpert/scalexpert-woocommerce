@@ -6,7 +6,7 @@
 	 * Description: Solutions de financement - SG Scalexpert
 	 * Text Domain: woo-scalexpert
 	 * Domain Path: /languages
-	 * Version: 1.7.1-8.2
+	 * Version: 1.7.2-8.2
 	 * Author: SOCIETE GENERALE
 	 * Author URI: https://scalexpert.societegenerale.com
 	 */
@@ -589,12 +589,19 @@
 			 * @return mixed
 			 */
 			public function conditional_payment_gateways( $available_gateways ) {
+                if (
+                    !get_option('sg_scalexpert_solutions')
+                    || !array_key_exists('solutions', get_option('sg_scalexpert_solutions'))
+                ) {
+                    return '';
+                }
                 $solutions = explode(',', get_option('sg_scalexpert_solutions')['solutions']);
                 $disable = true;
                 foreach ($solutions as $solution){
                     $sgScalexpertActivated = get_option('sg_scalexpert_activated_' . $solution);
                     if (
-                        array_key_exists('activate', $sgScalexpertActivated)
+                        $sgScalexpertActivated
+                        && array_key_exists('activate', $sgScalexpertActivated)
                         && $sgScalexpertActivated['activate']
                     ) {
                         $disable = false;
@@ -1022,7 +1029,7 @@
 				$apiClient    = new \wooScalexpert\Helper\API\Client;
 				$commande     = wc_get_order( $order_id );
 				$commandeData = $commande->get_data();
-				$basketItems  = $this->getBasketItems( $woocommerce->cart->get_cart(), $order_id );
+				$basketItems  = $this->getBasketItems( $order_id, $woocommerce->cart->get_cart() );
 				$endpoint     = SCALEXPERT_ENDPOINT_SUBSCRIPTION;
 				$redirectURL  = $this->get_return_url( $commande );
 				$finID        = NULL;
@@ -1204,7 +1211,7 @@
 			 *
 			 * @return array
 			 */
-			public function getBasketItems( $basket = array(), $orderID ) {
+			public function getBasketItems( $orderID, $basket = array() ) {
 				
 				
 				$basketItems     = array();
